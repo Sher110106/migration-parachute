@@ -1,0 +1,17 @@
+file '/Users/sher/project/migration-parachute/artifacts/demo/frames/000.png'
+duration 10
+file '/Users/sher/project/migration-parachute/artifacts/demo/frames/001.png'
+duration 20
+file '/Users/sher/project/migration-parachute/artifacts/demo/frames/002.png'
+duration 45
+file '/Users/sher/project/migration-parachute/artifacts/demo/frames/003.png'
+duration 18
+file '/Users/sher/project/migration-parachute/artifacts/demo/frames/004.png'
+duration 18
+file '/Users/sher/project/migration-parachute/artifacts/demo/frames/005.png'
+duration 13
+file '/Users/sher/project/migration-parachute/artifacts/demo/frames/006.png'
+duration 14
+file '/Users/sher/project/migration-parachute/artifacts/demo/frames/007.png'
+duration 12
+file '/Users/sher/project/migration-parachute/artifacts/demo/frames/007.png'

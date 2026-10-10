@@ -1,5 +1,7 @@
 # Demo script (target 2:40, limit 3:00)
 
+Recorded artifact: [`artifacts/demo/execution-ui-replay.mp4`](../artifacts/demo/execution-ui-replay.mp4), 179 seconds. The recording uses the persisted adaptive run `lock_timeout_1137893`; the evidence-summary cut is [`artifacts/demo/migration-parachute-demo.mp4`](../artifacts/demo/migration-parachute-demo.mp4).
+
 The rules ask the video to cover architecture, implementation, runtime, reasoning and result for neatlogs, Entire and cfo.ai. Each segment below names which of those it shows.
 
 | Time | Screen | Say |
