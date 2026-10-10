@@ -1,0 +1,514 @@
+{
+  "base": "2eca418c1e3ee1d4fb09c5d465f3b23f83bc79a8",
+  "head": "809753d",
+  "files": [
+    {
+      "path": "evidence/replay-adaptive-v1.json",
+      "status": "A",
+      "language": "JSON",
+      "changes": [
+        {
+          "type": "added",
+          "kind": "section",
+          "name": "scenario_id",
+          "new_signature": "json key scenario_id",
+          "after_start_line": 3,
+          "dependents_count": 1
+        },
+        {
+          "type": "added",
+          "kind": "section",
+          "name": "description",
+          "new_signature": "json key description",
+          "after_start_line": 4,
+          "dependents_count": 4
+        },
+        {
+          "type": "added",
+          "kind": "section",
+          "name": "run_id",
+          "new_signature": "json key run_id",
+          "after_start_line": 5,
+          "dependents_count": 55
+        },
+        {
+          "type": "added",
+          "kind": "section",
+          "name": "mode",
+          "new_signature": "json key mode",
+          "after_start_line": 6,
+          "dependents_count": 21
+        },
+        {
+          "type": "added",
+          "kind": "section",
+          "name": "planner",
+          "new_signature": "json key planner",
+          "after_start_line": 7,
+          "dependents_count": 18
+        },
+        {
+          "type": "added",
+          "kind": "section",
+          "name": "fixture_sha",
+          "new_signature": "json key fixture_sha",
+          "after_start_line": 8,
+          "dependents_count": 2
+        },
+        {
+          "type": "added",
+          "kind": "section",
+          "name": "plan_hash",
+          "new_signature": "json key plan_hash",
+          "after_start_line": 9,
+          "dependents_count": 8
+        },
+        {
+          "type": "added",
+          "kind": "section",
+          "name": "terminal_state",
+          "new_signature": "json key terminal_state",
+          "after_start_line": 10,
+          "dependents_count": 2
+        },
+        {
+          "type": "added",
+          "kind": "section",
+          "name": "expected",
+          "new_signature": "json key expected",
+          "after_start_line": 11,
+          "dependents_count": 11
+        },
+        {
+          "type": "added",
+          "kind": "section",
+          "name": "passed",
+          "new_signature": "json key passed",
+          "after_start_line": 14,
+          "dependents_count": 17
+        },
+        {
+          "type": "added",
+          "kind": "section",
+          "name": "false_success",
+          "new_signature": "json key false_success",
+          "after_start_line": 15,
+          "dependents_count": 1
+        },
+        {
+          "type": "added",
+          "kind": "section",
+          "name": "unapproved_destructive_steps",
+          "new_signature": "json key unapproved_destructive_steps",
+          "after_start_line": 16,
+          "dependents_count": 1
+        },
+        {
+          "type": "added",
+          "kind": "section",
+          "name": "rows_seen",
+          "new_signature": "json key rows_seen",
+          "after_start_line": 17,
+          "dependents_count": 1
+        },
+        {
+          "type": "added",
+          "kind": "section",
+          "name": "rows_written",
+          "new_signature": "json key rows_written",
+          "after_start_line": 18,
+          "dependents_count": 1
+        },
+        {
+          "type": "added",
+          "kind": "section",
+          "name": "cursor",
+          "new_signature": "json key cursor",
+          "after_start_line": 19,
+          "dependents_count": 19
+        },
+        {
+          "type": "added",
+          "kind": "section",
+          "name": "batches",
+          "new_signature": "json key batches",
+          "after_start_line": 20,
+          "dependents_count": 2
+        },
+        {
+          "type": "added",
+          "kind": "section",
+          "name": "reconciled_chunks",
+          "new_signature": "json key reconciled_chunks",
+          "after_start_line": 21,
+          "dependents_count": 1
+        },
+        {
+          "type": "added",
+          "kind": "section",
+          "name": "final_batch_size",
+          "new_signature": "json key final_batch_size",
+          "after_start_line": 22,
+          "dependents_count": 1
+        },
+        {
+          "type": "added",
+          "kind": "section",
+          "name": "retries",
+          "new_signature": "json key retries",
+          "after_start_line": 23,
+          "dependents_count": 5
+        },
+        {
+          "type": "added",
+          "kind": "section",
+          "name": "lock_wait_ms",
+          "new_signature": "json key lock_wait_ms",
+          "after_start_line": 24,
+          "dependents_count": 21
+        },
+        {
+          "type": "added",
+          "kind": "section",
+          "name": "decisions",
+          "new_signature": "json key decisions",
+          "after_start_line": 25,
+          "dependents_count": 3
+        },
+        {
+          "type": "added",
+          "kind": "section",
+          "name": "rejected_decisions",
+          "new_signature": "json key rejected_decisions",
+          "after_start_line": 26,
+          "dependents_count": 3
+        },
+        {
+          "type": "added",
+          "kind": "section",
+          "name": "replans",
+          "new_signature": "json key replans",
+          "after_start_line": 27,
+          "dependents_count": 5
+        },
+        {
+          "type": "added",
+          "kind": "section",
+          "name": "catch_ups",
+          "new_signature": "json key catch_ups",
+          "after_start_line": 28,
+          "dependents_count": 3
+        },
+        {
+          "type": "added",
+          "kind": "section",
+          "name": "source_checksum",
+          "new_signature": "json key source_checksum",
+          "after_start_line": 29,
+          "dependents_count": 3
+        },
+        {
+          "type": "added",
+          "kind": "section",
+          "name": "target_checksum",
+          "new_signature": "json key target_checksum",
+          "after_start_line": 30,
+          "dependents_count": 3
+        },
+        {
+          "type": "added",
+          "kind": "section",
+          "name": "null_targets",
+          "new_signature": "json key null_targets",
+          "after_start_line": 31,
+          "dependents_count": 5
+        },
+        {
+          "type": "added",
+          "kind": "section",
+          "name": "mismatches",
+          "new_signature": "json key mismatches",
+          "after_start_line": 32,
+          "dependents_count": 5
+        },
+        {
+          "type": "added",
+          "kind": "section",
+          "name": "proof_hash",
+          "new_signature": "json key proof_hash",
+          "after_start_line": 33,
+          "dependents_count": 13
+        },
+        {
+          "type": "added",
+          "kind": "section",
+          "name": "verifier_passed",
+          "new_signature": "json key verifier_passed",
+          "after_start_line": 34,
+          "dependents_count": 1
+        },
+        {
+          "type": "added",
+          "kind": "section",
+          "name": "last_error",
+          "new_signature": "json key last_error",
+          "after_start_line": 35,
+          "dependents_count": 11
+        },
+        {
+          "type": "added",
+          "kind": "section",
+          "name": "tokens_in",
+          "new_signature": "json key tokens_in",
+          "after_start_line": 36,
+          "dependents_count": 12
+        },
+        {
+          "type": "added",
+          "kind": "section",
+          "name": "tokens_out",
+          "new_signature": "json key tokens_out",
+          "after_start_line": 37,
+          "dependents_count": 12
+        },
+        {
+          "type": "added",
+          "kind": "section",
+          "name": "cost_usd",
+          "new_signature": "json key cost_usd",
+          "after_start_line": 38,
+          "dependents_count": 12
+        },
+        {
+          "type": "added",
+          "kind": "section",
+          "name": "db_ms",
+          "new_signature": "json key db_ms",
+          "after_start_line": 39,
+          "dependents_count": 10
+        },
+        {
+          "type": "added",
+          "kind": "section",
+          "name": "independent_check",
+          "new_signature": "json key independent_check",
+          "after_start_line": 40,
+          "dependents_count": 2
+        },
+        {
+          "type": "added",
+          "kind": "section",
+          "name": "old_column_present",
+          "new_signature": "json key old_column_present",
+          "after_start_line": 41,
+          "dependents_count": 4
+        },
+        {
+          "type": "added",
+          "kind": "section",
+          "name": "new_column_present",
+          "new_signature": "json key new_column_present",
+          "after_start_line": 42,
+          "dependents_count": 1
+        },
+        {
+          "type": "added",
+          "kind": "section",
+          "name": "rows",
+          "new_signature": "json key rows",
+          "after_start_line": 43,
+          "dependents_count": 34
+        },
+        {
+          "type": "added",
+          "kind": "section",
+          "name": "wrong_or_missing",
+          "new_signature": "json key wrong_or_missing",
+          "after_start_line": 44,
+          "dependents_count": 2
+        },
+        {
+          "type": "added",
+          "kind": "section",
+          "name": "event_count",
+          "new_signature": "json key event_count",
+          "after_start_line": 46,
+          "dependents_count": 1
+        },
+        {
+          "type": "added",
+          "kind": "section",
+          "name": "chain_ok",
+          "new_signature": "json key chain_ok",
+          "after_start_line": 47,
+          "dependents_count": 1
+        },
+        {
+          "type": "added",
+          "kind": "section",
+          "name": "checkpoint_ref",
+          "new_signature": "json key checkpoint_ref",
+          "after_start_line": 48,
+          "dependents_count": 5
+        },
+        {
+          "type": "added",
+          "kind": "section",
+          "name": "neatlogs_trace_id",
+          "new_signature": "json key neatlogs_trace_id",
+          "after_start_line": 49,
+          "dependents_count": 1
+        },
+        {
+          "type": "added",
+          "kind": "section",
+          "name": "wall_ms",
+          "new_signature": "json key wall_ms",
+          "after_start_line": 50,
+          "dependents_count": 2
+        },
+        {
+          "type": "added",
+          "kind": "section",
+          "name": "error_class",
+          "new_signature": "json key error_class",
+          "after_start_line": 136,
+          "dependents_count": 29
+        },
+        {
+          "type": "added",
+          "kind": "section",
+          "name": "sqlstate",
+          "new_signature": "json key sqlstate",
+          "after_start_line": 137,
+          "dependents_count": 10
+        },
+        {
+          "type": "added",
+          "kind": "section",
+          "name": "message",
+          "new_signature": "json key message",
+          "after_start_line": 138,
+          "dependents_count": 17
+        },
+        {
+          "type": "added",
+          "kind": "section",
+          "name": "retryable",
+          "new_signature": "json key retryable",
+          "after_start_line": 139,
+          "dependents_count": 5
+        },
+        {
+          "type": "added",
+          "kind": "section",
+          "name": "blockers",
+          "new_signature": "json key blockers",
+          "after_start_line": 140,
+          "dependents_count": 5
+        },
+        {
+          "type": "added",
+          "kind": "section",
+          "name": "operator_action",
+          "new_signature": "json key operator_action",
+          "after_start_line": 141,
+          "dependents_count": 13
+        },
+        {
+          "type": "added",
+          "kind": "section",
+          "name": "detail",
+          "new_signature": "json key detail",
+          "after_start_line": 142,
+          "dependents_count": 6
+        }
+      ]
+    },
+    {
+      "path": "src/parachute/cli.py",
+      "status": "M",
+      "language": "Python",
+      "changes": [
+        {
+          "type": "body_changed",
+          "kind": "function",
+          "name": "planner_factory",
+          "before_start_line": 15,
+          "after_start_line": 15,
+          "dependents_count": 3
+        },
+        {
+          "type": "body_changed",
+          "kind": "function",
+          "name": "main",
+          "before_start_line": 23,
+          "after_start_line": 25,
+          "dependents_count": 1
+        }
+      ]
+    },
+    {
+      "path": "src/parachute/orchestrator.py",
+      "status": "M",
+      "language": "Python",
+      "changes": [
+        {
+          "type": "body_changed",
+          "kind": "class",
+          "name": "Orchestrator",
+          "before_start_line": 80,
+          "after_start_line": 80,
+          "dependents_count": 2
+        },
+        {
+          "type": "body_changed",
+          "kind": "method",
+          "name": "Orchestrator._enrich_error",
+          "before_start_line": 519,
+          "after_start_line": 519,
+          "dependents_count": 2
+        }
+      ]
+    },
+    {
+      "path": "src/parachute/planners.py",
+      "status": "M",
+      "language": "Python",
+      "changes": [
+        {
+          "type": "added",
+          "kind": "class",
+          "name": "AdaptivePlanner",
+          "new_signature": "class AdaptivePlanner",
+          "after_start_line": 54,
+          "dependents_count": 1
+        },
+        {
+          "type": "added",
+          "kind": "method",
+          "name": "AdaptivePlanner.__init__",
+          "new_signature": "def __init__(self, base_backoff_ms: int | None = None, shrink_factor: int | None = None)",
+          "after_start_line": 66,
+          "dependents_count": 12
+        },
+        {
+          "type": "added",
+          "kind": "method",
+          "name": "AdaptivePlanner.backoff",
+          "new_signature": "def backoff(self, obs: Observation, lo: int, hi: int, base: int) -\u003e int",
+          "after_start_line": 70,
+          "dependents_count": 2
+        },
+        {
+          "type": "added",
+          "kind": "method",
+          "name": "AdaptivePlanner.decide",
+          "new_signature": "def decide(self, obs: Observation) -\u003e Decision",
+          "after_start_line": 75,
+          "dependents_count": 5
+        }
+      ]
+    }
+  ]
+}

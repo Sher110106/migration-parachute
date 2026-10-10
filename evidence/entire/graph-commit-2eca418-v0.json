@@ -1,0 +1,1478 @@
+{
+  "base": "55fc84259294f348161b56a64245506d9823076e",
+  "head": "2eca418",
+  "files": [
+    {
+      "path": "evidence/replay-naive-v0.json",
+      "status": "A",
+      "language": "JSON",
+      "changes": [
+        {
+          "type": "added",
+          "kind": "section",
+          "name": "scenario_id",
+          "new_signature": "json key scenario_id",
+          "after_start_line": 3,
+          "dependents_count": 1
+        },
+        {
+          "type": "added",
+          "kind": "section",
+          "name": "description",
+          "new_signature": "json key description",
+          "after_start_line": 4,
+          "dependents_count": 4
+        },
+        {
+          "type": "added",
+          "kind": "section",
+          "name": "run_id",
+          "new_signature": "json key run_id",
+          "after_start_line": 5,
+          "dependents_count": 53
+        },
+        {
+          "type": "added",
+          "kind": "section",
+          "name": "mode",
+          "new_signature": "json key mode",
+          "after_start_line": 6,
+          "dependents_count": 21
+        },
+        {
+          "type": "added",
+          "kind": "section",
+          "name": "planner",
+          "new_signature": "json key planner",
+          "after_start_line": 7,
+          "dependents_count": 16
+        },
+        {
+          "type": "added",
+          "kind": "section",
+          "name": "fixture_sha",
+          "new_signature": "json key fixture_sha",
+          "after_start_line": 8,
+          "dependents_count": 2
+        },
+        {
+          "type": "added",
+          "kind": "section",
+          "name": "plan_hash",
+          "new_signature": "json key plan_hash",
+          "after_start_line": 9,
+          "dependents_count": 8
+        },
+        {
+          "type": "added",
+          "kind": "section",
+          "name": "terminal_state",
+          "new_signature": "json key terminal_state",
+          "after_start_line": 10,
+          "dependents_count": 2
+        },
+        {
+          "type": "added",
+          "kind": "section",
+          "name": "expected",
+          "new_signature": "json key expected",
+          "after_start_line": 11,
+          "dependents_count": 11
+        },
+        {
+          "type": "added",
+          "kind": "section",
+          "name": "passed",
+          "new_signature": "json key passed",
+          "after_start_line": 14,
+          "dependents_count": 17
+        },
+        {
+          "type": "added",
+          "kind": "section",
+          "name": "false_success",
+          "new_signature": "json key false_success",
+          "after_start_line": 15,
+          "dependents_count": 1
+        },
+        {
+          "type": "added",
+          "kind": "section",
+          "name": "unapproved_destructive_steps",
+          "new_signature": "json key unapproved_destructive_steps",
+          "after_start_line": 16,
+          "dependents_count": 1
+        },
+        {
+          "type": "added",
+          "kind": "section",
+          "name": "rows_seen",
+          "new_signature": "json key rows_seen",
+          "after_start_line": 17,
+          "dependents_count": 1
+        },
+        {
+          "type": "added",
+          "kind": "section",
+          "name": "rows_written",
+          "new_signature": "json key rows_written",
+          "after_start_line": 18,
+          "dependents_count": 1
+        },
+        {
+          "type": "added",
+          "kind": "section",
+          "name": "cursor",
+          "new_signature": "json key cursor",
+          "after_start_line": 19,
+          "dependents_count": 17
+        },
+        {
+          "type": "added",
+          "kind": "section",
+          "name": "batches",
+          "new_signature": "json key batches",
+          "after_start_line": 20,
+          "dependents_count": 2
+        },
+        {
+          "type": "added",
+          "kind": "section",
+          "name": "reconciled_chunks",
+          "new_signature": "json key reconciled_chunks",
+          "after_start_line": 21,
+          "dependents_count": 1
+        },
+        {
+          "type": "added",
+          "kind": "section",
+          "name": "final_batch_size",
+          "new_signature": "json key final_batch_size",
+          "after_start_line": 22,
+          "dependents_count": 1
+        },
+        {
+          "type": "added",
+          "kind": "section",
+          "name": "retries",
+          "new_signature": "json key retries",
+          "after_start_line": 23,
+          "dependents_count": 5
+        },
+        {
+          "type": "added",
+          "kind": "section",
+          "name": "lock_wait_ms",
+          "new_signature": "json key lock_wait_ms",
+          "after_start_line": 24,
+          "dependents_count": 21
+        },
+        {
+          "type": "added",
+          "kind": "section",
+          "name": "decisions",
+          "new_signature": "json key decisions",
+          "after_start_line": 25,
+          "dependents_count": 3
+        },
+        {
+          "type": "added",
+          "kind": "section",
+          "name": "rejected_decisions",
+          "new_signature": "json key rejected_decisions",
+          "after_start_line": 26,
+          "dependents_count": 3
+        },
+        {
+          "type": "added",
+          "kind": "section",
+          "name": "replans",
+          "new_signature": "json key replans",
+          "after_start_line": 27,
+          "dependents_count": 5
+        },
+        {
+          "type": "added",
+          "kind": "section",
+          "name": "catch_ups",
+          "new_signature": "json key catch_ups",
+          "after_start_line": 28,
+          "dependents_count": 3
+        },
+        {
+          "type": "added",
+          "kind": "section",
+          "name": "source_checksum",
+          "new_signature": "json key source_checksum",
+          "after_start_line": 29,
+          "dependents_count": 3
+        },
+        {
+          "type": "added",
+          "kind": "section",
+          "name": "target_checksum",
+          "new_signature": "json key target_checksum",
+          "after_start_line": 30,
+          "dependents_count": 3
+        },
+        {
+          "type": "added",
+          "kind": "section",
+          "name": "null_targets",
+          "new_signature": "json key null_targets",
+          "after_start_line": 31,
+          "dependents_count": 5
+        },
+        {
+          "type": "added",
+          "kind": "section",
+          "name": "mismatches",
+          "new_signature": "json key mismatches",
+          "after_start_line": 32,
+          "dependents_count": 5
+        },
+        {
+          "type": "added",
+          "kind": "section",
+          "name": "proof_hash",
+          "new_signature": "json key proof_hash",
+          "after_start_line": 33,
+          "dependents_count": 13
+        },
+        {
+          "type": "added",
+          "kind": "section",
+          "name": "verifier_passed",
+          "new_signature": "json key verifier_passed",
+          "after_start_line": 34,
+          "dependents_count": 1
+        },
+        {
+          "type": "added",
+          "kind": "section",
+          "name": "last_error",
+          "new_signature": "json key last_error",
+          "after_start_line": 35,
+          "dependents_count": 9
+        },
+        {
+          "type": "added",
+          "kind": "section",
+          "name": "tokens_in",
+          "new_signature": "json key tokens_in",
+          "after_start_line": 36,
+          "dependents_count": 12
+        },
+        {
+          "type": "added",
+          "kind": "section",
+          "name": "tokens_out",
+          "new_signature": "json key tokens_out",
+          "after_start_line": 37,
+          "dependents_count": 12
+        },
+        {
+          "type": "added",
+          "kind": "section",
+          "name": "cost_usd",
+          "new_signature": "json key cost_usd",
+          "after_start_line": 38,
+          "dependents_count": 12
+        },
+        {
+          "type": "added",
+          "kind": "section",
+          "name": "db_ms",
+          "new_signature": "json key db_ms",
+          "after_start_line": 39,
+          "dependents_count": 10
+        },
+        {
+          "type": "added",
+          "kind": "section",
+          "name": "independent_check",
+          "new_signature": "json key independent_check",
+          "after_start_line": 40,
+          "dependents_count": 2
+        },
+        {
+          "type": "added",
+          "kind": "section",
+          "name": "old_column_present",
+          "new_signature": "json key old_column_present",
+          "after_start_line": 41,
+          "dependents_count": 4
+        },
+        {
+          "type": "added",
+          "kind": "section",
+          "name": "new_column_present",
+          "new_signature": "json key new_column_present",
+          "after_start_line": 42,
+          "dependents_count": 1
+        },
+        {
+          "type": "added",
+          "kind": "section",
+          "name": "rows",
+          "new_signature": "json key rows",
+          "after_start_line": 43,
+          "dependents_count": 33
+        },
+        {
+          "type": "added",
+          "kind": "section",
+          "name": "wrong_or_missing",
+          "new_signature": "json key wrong_or_missing",
+          "after_start_line": 44,
+          "dependents_count": 2
+        },
+        {
+          "type": "added",
+          "kind": "section",
+          "name": "event_count",
+          "new_signature": "json key event_count",
+          "after_start_line": 46,
+          "dependents_count": 1
+        },
+        {
+          "type": "added",
+          "kind": "section",
+          "name": "chain_ok",
+          "new_signature": "json key chain_ok",
+          "after_start_line": 47,
+          "dependents_count": 1
+        },
+        {
+          "type": "added",
+          "kind": "section",
+          "name": "checkpoint_ref",
+          "new_signature": "json key checkpoint_ref",
+          "after_start_line": 48,
+          "dependents_count": 5
+        },
+        {
+          "type": "added",
+          "kind": "section",
+          "name": "neatlogs_trace_id",
+          "new_signature": "json key neatlogs_trace_id",
+          "after_start_line": 49,
+          "dependents_count": 1
+        },
+        {
+          "type": "added",
+          "kind": "section",
+          "name": "wall_ms",
+          "new_signature": "json key wall_ms",
+          "after_start_line": 50,
+          "dependents_count": 2
+        },
+        {
+          "type": "added",
+          "kind": "section",
+          "name": "error_class",
+          "new_signature": "json key error_class",
+          "after_start_line": 136,
+          "dependents_count": 26
+        },
+        {
+          "type": "added",
+          "kind": "section",
+          "name": "sqlstate",
+          "new_signature": "json key sqlstate",
+          "after_start_line": 137,
+          "dependents_count": 8
+        },
+        {
+          "type": "added",
+          "kind": "section",
+          "name": "message",
+          "new_signature": "json key message",
+          "after_start_line": 138,
+          "dependents_count": 17
+        },
+        {
+          "type": "added",
+          "kind": "section",
+          "name": "retryable",
+          "new_signature": "json key retryable",
+          "after_start_line": 139,
+          "dependents_count": 5
+        },
+        {
+          "type": "added",
+          "kind": "section",
+          "name": "blockers",
+          "new_signature": "json key blockers",
+          "after_start_line": 140,
+          "dependents_count": 1
+        },
+        {
+          "type": "added",
+          "kind": "section",
+          "name": "operator_action",
+          "new_signature": "json key operator_action",
+          "after_start_line": 141,
+          "dependents_count": 13
+        },
+        {
+          "type": "added",
+          "kind": "section",
+          "name": "detail",
+          "new_signature": "json key detail",
+          "after_start_line": 142,
+          "dependents_count": 6
+        }
+      ]
+    },
+    {
+      "path": "src/parachute/baseline.py",
+      "status": "A",
+      "language": "Python",
+      "changes": [
+        {
+          "type": "added",
+          "kind": "class",
+          "name": "BaselineOrchestrator",
+          "new_signature": "class BaselineOrchestrator(Orchestrator)",
+          "after_start_line": 9,
+          "dependents_count": 1
+        },
+        {
+          "type": "added",
+          "kind": "method",
+          "name": "BaselineOrchestrator._backfill_loop",
+          "new_signature": "def _backfill_loop(self) -\u003e None",
+          "after_start_line": 14,
+          "dependents_count": 3
+        }
+      ]
+    },
+    {
+      "path": "src/parachute/cli.py",
+      "status": "A",
+      "language": "Python",
+      "changes": [
+        {
+          "type": "added",
+          "kind": "function",
+          "name": "planner_factory",
+          "new_signature": "def planner_factory(name: str)",
+          "after_start_line": 15,
+          "dependents_count": 3
+        },
+        {
+          "type": "added",
+          "kind": "function",
+          "name": "main",
+          "new_signature": "def main(argv: list[str] | None = None) -\u003e int",
+          "after_start_line": 23,
+          "dependents_count": 1
+        }
+      ]
+    },
+    {
+      "path": "src/parachute/domain.py",
+      "status": "M",
+      "language": "Python",
+      "changes": [
+        {
+          "type": "body_changed",
+          "kind": "class",
+          "name": "MigrationSpec",
+          "before_start_line": 229,
+          "after_start_line": 229,
+          "dependents_count": 47
+        },
+        {
+          "type": "added",
+          "kind": "method",
+          "name": "MigrationSpec.content_hash",
+          "new_signature": "def content_hash(self) -\u003e str",
+          "after_start_line": 248,
+          "dependents_count": 2
+        },
+        {
+          "type": "body_changed",
+          "kind": "class",
+          "name": "ActionKind",
+          "before_start_line": 364,
+          "after_start_line": 368,
+          "dependents_count": 14
+        }
+      ]
+    },
+    {
+      "path": "src/parachute/economics.py",
+      "status": "A",
+      "language": "Python",
+      "changes": [
+        {
+          "type": "added",
+          "kind": "class",
+          "name": "CostModel",
+          "new_signature": "class CostModel: # Planner model prices in USD per million tokens. Set from the provider's # price page when an LLM planner is used; the rule planner uses no tokens.",
+          "after_start_line": 10,
+          "dependents_count": 2
+        },
+        {
+          "type": "added",
+          "kind": "method",
+          "name": "CostModel.cost",
+          "new_signature": "def cost(self, tokens_in: int = 0, tokens_out: int = 0, db_ms: int = 0) -\u003e Decimal",
+          "after_start_line": 18,
+          "dependents_count": 3
+        }
+      ]
+    },
+    {
+      "path": "src/parachute/faults.py",
+      "status": "M",
+      "language": "Python",
+      "changes": [
+        {
+          "type": "body_changed",
+          "kind": "class",
+          "name": "FaultPlan",
+          "before_start_line": 88,
+          "after_start_line": 88,
+          "dependents_count": 1
+        }
+      ]
+    },
+    {
+      "path": "src/parachute/orchestrator.py",
+      "status": "A",
+      "language": "Python",
+      "changes": [
+        {
+          "type": "added",
+          "kind": "class",
+          "name": "Services",
+          "new_signature": "class Services",
+          "after_start_line": 70,
+          "dependents_count": 3
+        },
+        {
+          "type": "added",
+          "kind": "class",
+          "name": "Orchestrator",
+          "new_signature": "class Orchestrator",
+          "after_start_line": 80,
+          "dependents_count": 2
+        },
+        {
+          "type": "added",
+          "kind": "method",
+          "name": "Orchestrator.__init__",
+          "new_signature": "def __init__(self, services: Services, owner: str | None = None)",
+          "after_start_line": 83,
+          "dependents_count": 11
+        },
+        {
+          "type": "added",
+          "kind": "method",
+          "name": "Orchestrator.start_run",
+          "new_signature": "def start_run(self, spec: MigrationSpec, run_id: str | None = None) -\u003e RunState",
+          "after_start_line": 92,
+          "dependents_count": 2
+        },
+        {
+          "type": "added",
+          "kind": "method",
+          "name": "Orchestrator.resume_run",
+          "new_signature": "def resume_run(self, run_id: str, new_cost_cap_usd: Decimal | None = None, reason: str = \"operator resume\") -\u003e RunState",
+          "after_start_line": 97,
+          "dependents_count": 2
+        },
+        {
+          "type": "added",
+          "kind": "method",
+          "name": "Orchestrator.approve_contract",
+          "new_signature": "def approve_contract(self, run_id: str, approval_id: str, approver: str) -\u003e RunState",
+          "after_start_line": 106,
+          "dependents_count": 2
+        },
+        {
+          "type": "added",
+          "kind": "method",
+          "name": "Orchestrator.abort_run",
+          "new_signature": "def abort_run(self, run_id: str, reason: str = \"operator abort\") -\u003e RunState",
+          "after_start_line": 114,
+          "dependents_count": 1
+        },
+        {
+          "type": "added",
+          "kind": "method",
+          "name": "Orchestrator.get_run",
+          "new_signature": "def get_run(self, run_id: str) -\u003e RunState",
+          "after_start_line": 120,
+          "dependents_count": 1
+        },
+        {
+          "type": "added",
+          "kind": "method",
+          "name": "Orchestrator.spec",
+          "new_signature": "def spec(self) -\u003e MigrationSpec",
+          "after_start_line": 126,
+          "dependents_count": 74
+        },
+        {
+          "type": "added",
+          "kind": "method",
+          "name": "Orchestrator.fingerprint",
+          "new_signature": "def fingerprint(self) -\u003e str",
+          "after_start_line": 130,
+          "dependents_count": 11
+        },
+        {
+          "type": "added",
+          "kind": "method",
+          "name": "Orchestrator._lease",
+          "new_signature": "def _lease(self, run_id: str) -\u003e None",
+          "after_start_line": 135,
+          "dependents_count": 5
+        },
+        {
+          "type": "added",
+          "kind": "method",
+          "name": "Orchestrator._emit",
+          "new_signature": "def _emit(self, *events: Event) -\u003e RunState",
+          "after_start_line": 139,
+          "dependents_count": 19
+        },
+        {
+          "type": "added",
+          "kind": "method",
+          "name": "Orchestrator._drive",
+          "new_signature": "def _drive(self, run_id: str) -\u003e RunState",
+          "after_start_line": 143,
+          "dependents_count": 4
+        },
+        {
+          "type": "added",
+          "kind": "method",
+          "name": "Orchestrator._drive_locked",
+          "new_signature": "def _drive_locked(self, run_id: str, st: RunState) -\u003e None",
+          "after_start_line": 152,
+          "dependents_count": 2
+        },
+        {
+          "type": "added",
+          "kind": "method",
+          "name": "Orchestrator._runnable",
+          "new_signature": "def _runnable(self) -\u003e bool",
+          "after_start_line": 179,
+          "dependents_count": 2
+        },
+        {
+          "type": "added",
+          "kind": "method",
+          "name": "Orchestrator._step",
+          "new_signature": "def _step(self) -\u003e None",
+          "after_start_line": 187,
+          "dependents_count": 2
+        },
+        {
+          "type": "added",
+          "kind": "method",
+          "name": "Orchestrator._goto",
+          "new_signature": "def _goto(self, dst: Phase, reason: str = \"\", *more: Event) -\u003e None",
+          "after_start_line": 204,
+          "dependents_count": 14
+        },
+        {
+          "type": "added",
+          "kind": "method",
+          "name": "Orchestrator._fail",
+          "new_signature": "def _fail(self, error: ErrorEnvelope) -\u003e None",
+          "after_start_line": 207,
+          "dependents_count": 11
+        },
+        {
+          "type": "added",
+          "kind": "method",
+          "name": "Orchestrator._pause",
+          "new_signature": "def _pause(self, reason: str, detail: str) -\u003e None",
+          "after_start_line": 212,
+          "dependents_count": 5
+        },
+        {
+          "type": "added",
+          "kind": "method",
+          "name": "Orchestrator._cost_event",
+          "new_signature": "def _cost_event(self, result: ToolResult | None = None, tokens_in: int = 0, tokens_out: int = 0, rows: int = 0) -\u003e CostRecorded",
+          "after_start_line": 217,
+          "dependents_count": 6
+        },
+        {
+          "type": "added",
+          "kind": "method",
+          "name": "Orchestrator._over_budget",
+          "new_signature": "def _over_budget(self) -\u003e bool",
+          "after_start_line": 229,
+          "dependents_count": 3
+        },
+        {
+          "type": "added",
+          "kind": "method",
+          "name": "Orchestrator._call",
+          "new_signature": "def _call(self, tool: str, key: str, attempt: int, tx_mode: str = \"transactional\", **params) -\u003e ToolCall",
+          "after_start_line": 236,
+          "dependents_count": 4
+        },
+        {
+          "type": "added",
+          "kind": "method",
+          "name": "Orchestrator._observation",
+          "new_signature": "def _observation(self, options: tuple[ActionOption, ...]) -\u003e Observation",
+          "after_start_line": 248,
+          "dependents_count": 2
+        },
+        {
+          "type": "added",
+          "kind": "method",
+          "name": "Orchestrator._decide",
+          "new_signature": "def _decide(self, options: tuple[ActionOption, ...], obs: Observation | None = None) -\u003e Decision",
+          "after_start_line": 266,
+          "dependents_count": 4
+        },
+        {
+          "type": "added",
+          "kind": "method",
+          "name": "Orchestrator._inspect",
+          "new_signature": "def _inspect(self, purpose: str)",
+          "after_start_line": 297,
+          "dependents_count": 9
+        },
+        {
+          "type": "added",
+          "kind": "method",
+          "name": "Orchestrator._reconcile_on_entry",
+          "new_signature": "def _reconcile_on_entry(self) -\u003e None",
+          "after_start_line": 303,
+          "dependents_count": 2
+        },
+        {
+          "type": "added",
+          "kind": "method",
+          "name": "Orchestrator._init",
+          "new_signature": "def _init(self) -\u003e None",
+          "after_start_line": 333,
+          "dependents_count": 2
+        },
+        {
+          "type": "added",
+          "kind": "method",
+          "name": "Orchestrator._planned",
+          "new_signature": "def _planned(self) -\u003e None",
+          "after_start_line": 354,
+          "dependents_count": 2
+        },
+        {
+          "type": "added",
+          "kind": "method",
+          "name": "Orchestrator._apply_artifacts",
+          "new_signature": "def _apply_artifacts(self, artifacts: tuple[SqlArtifact, ...], phase_tag: str) -\u003e bool",
+          "after_start_line": 384,
+          "dependents_count": 3
+        },
+        {
+          "type": "added",
+          "kind": "method",
+          "name": "Orchestrator._on_step_failure",
+          "new_signature": "def _on_step_failure(self, error: ErrorEnvelope, artifact: SqlArtifact) -\u003e None",
+          "after_start_line": 421,
+          "dependents_count": 2
+        },
+        {
+          "type": "added",
+          "kind": "method",
+          "name": "Orchestrator._expand_apply",
+          "new_signature": "def _expand_apply(self) -\u003e None",
+          "after_start_line": 427,
+          "dependents_count": 2
+        },
+        {
+          "type": "added",
+          "kind": "method",
+          "name": "Orchestrator._expand_verify",
+          "new_signature": "def _expand_verify(self) -\u003e None",
+          "after_start_line": 431,
+          "dependents_count": 2
+        },
+        {
+          "type": "added",
+          "kind": "method",
+          "name": "Orchestrator._backfill_plan",
+          "new_signature": "def _backfill_plan(self) -\u003e None",
+          "after_start_line": 444,
+          "dependents_count": 2
+        },
+        {
+          "type": "added",
+          "kind": "method",
+          "name": "Orchestrator._backfill_loop",
+          "new_signature": "def _backfill_loop(self) -\u003e None",
+          "after_start_line": 452,
+          "dependents_count": 3
+        },
+        {
+          "type": "added",
+          "kind": "method",
+          "name": "Orchestrator._enrich_error",
+          "new_signature": "def _enrich_error(self, error: ErrorEnvelope) -\u003e ErrorEnvelope",
+          "after_start_line": 519,
+          "dependents_count": 2
+        },
+        {
+          "type": "added",
+          "kind": "method",
+          "name": "Orchestrator._backfill_verify",
+          "new_signature": "def _backfill_verify(self) -\u003e None",
+          "after_start_line": 522,
+          "dependents_count": 2
+        },
+        {
+          "type": "added",
+          "kind": "method",
+          "name": "Orchestrator._contract_guard",
+          "new_signature": "def _contract_guard(self) -\u003e None",
+          "after_start_line": 553,
+          "dependents_count": 2
+        },
+        {
+          "type": "added",
+          "kind": "method",
+          "name": "Orchestrator._contract_ready",
+          "new_signature": "def _contract_ready(self) -\u003e None",
+          "after_start_line": 583,
+          "dependents_count": 2
+        },
+        {
+          "type": "added",
+          "kind": "method",
+          "name": "Orchestrator._contract_apply",
+          "new_signature": "def _contract_apply(self) -\u003e None",
+          "after_start_line": 599,
+          "dependents_count": 2
+        },
+        {
+          "type": "added",
+          "kind": "method",
+          "name": "Orchestrator._contract_verify",
+          "new_signature": "def _contract_verify(self) -\u003e None",
+          "after_start_line": 603,
+          "dependents_count": 2
+        },
+        {
+          "type": "added",
+          "kind": "method",
+          "name": "Orchestrator._abort",
+          "new_signature": "def _abort(self, reason: str) -\u003e None",
+          "after_start_line": 615,
+          "dependents_count": 5
+        }
+      ]
+    },
+    {
+      "path": "src/parachute/pg.py",
+      "status": "M",
+      "language": "Python",
+      "changes": [
+        {
+          "type": "body_changed",
+          "kind": "class",
+          "name": "PostgresAdapter",
+          "before_start_line": 92,
+          "after_start_line": 92,
+          "dependents_count": 2
+        },
+        {
+          "type": "body_changed",
+          "kind": "method",
+          "name": "PostgresAdapter.fingerprint",
+          "before_start_line": 107,
+          "after_start_line": 107,
+          "dependents_count": 11
+        }
+      ]
+    },
+    {
+      "path": "src/parachute/planners.py",
+      "status": "A",
+      "language": "Python",
+      "changes": [
+        {
+          "type": "added",
+          "kind": "class",
+          "name": "Planner",
+          "new_signature": "class Planner(Protocol)",
+          "after_start_line": 10,
+          "dependents_count": 6
+        },
+        {
+          "type": "added",
+          "kind": "method",
+          "name": "Planner.decide",
+          "new_signature": "def decide(self, obs: Observation) -\u003e Decision",
+          "after_start_line": 13,
+          "dependents_count": 4
+        },
+        {
+          "type": "added",
+          "kind": "function",
+          "name": "_pick",
+          "new_signature": "def _pick(obs: Observation, *kinds: ActionKind)",
+          "after_start_line": 16,
+          "dependents_count": 2
+        },
+        {
+          "type": "added",
+          "kind": "class",
+          "name": "NaiveRetryPlanner",
+          "new_signature": "class NaiveRetryPlanner",
+          "after_start_line": 24,
+          "dependents_count": 1
+        },
+        {
+          "type": "added",
+          "kind": "method",
+          "name": "NaiveRetryPlanner.__init__",
+          "new_signature": "def __init__(self, backoff_ms: int = 50)",
+          "after_start_line": 29,
+          "dependents_count": 11
+        },
+        {
+          "type": "added",
+          "kind": "method",
+          "name": "NaiveRetryPlanner.decide",
+          "new_signature": "def decide(self, obs: Observation) -\u003e Decision",
+          "after_start_line": 32,
+          "dependents_count": 4
+        }
+      ]
+    },
+    {
+      "path": "src/parachute/planning.py",
+      "status": "A",
+      "language": "Python",
+      "changes": [
+        {
+          "type": "added",
+          "kind": "function",
+          "name": "spec_problems",
+          "new_signature": "def spec_problems(spec: MigrationSpec, snap: SchemaSnapshot, fingerprint: str) -\u003e ErrorEnvelope | None",
+          "after_start_line": 17,
+          "dependents_count": 2
+        },
+        {
+          "type": "added",
+          "kind": "function",
+          "name": "column_conflict",
+          "new_signature": "def column_conflict(spec: MigrationSpec, snap: SchemaSnapshot) -\u003e ErrorEnvelope | None",
+          "after_start_line": 47,
+          "dependents_count": 3
+        },
+        {
+          "type": "added",
+          "kind": "function",
+          "name": "build_plan",
+          "new_signature": "def build_plan(spec: MigrationSpec, snap: SchemaSnapshot) -\u003e MigrationPlan",
+          "after_start_line": 59,
+          "dependents_count": 3
+        }
+      ]
+    },
+    {
+      "path": "src/parachute/policy.py",
+      "status": "A",
+      "language": "Python",
+      "changes": [
+        {
+          "type": "added",
+          "kind": "function",
+          "name": "chunk_recovery_options",
+          "new_signature": "def chunk_recovery_options(state: RunState) -\u003e tuple[ActionOption, ...]",
+          "after_start_line": 20,
+          "dependents_count": 2
+        },
+        {
+          "type": "added",
+          "kind": "function",
+          "name": "step_recovery_options",
+          "new_signature": "def step_recovery_options(state: RunState, error: ErrorEnvelope, attempt: int) -\u003e tuple[ActionOption, ...]",
+          "after_start_line": 44,
+          "dependents_count": 2
+        },
+        {
+          "type": "added",
+          "kind": "function",
+          "name": "chunk_progress_options",
+          "new_signature": "def chunk_progress_options(state: RunState) -\u003e tuple[ActionOption, ...]",
+          "after_start_line": 57,
+          "dependents_count": 2
+        },
+        {
+          "type": "added",
+          "kind": "function",
+          "name": "drift_options",
+          "new_signature": "def drift_options(conflict: bool) -\u003e tuple[ActionOption, ...]",
+          "after_start_line": 70,
+          "dependents_count": 2
+        },
+        {
+          "type": "added",
+          "kind": "function",
+          "name": "is_forced",
+          "new_signature": "def is_forced(options: tuple[ActionOption, ...]) -\u003e bool",
+          "after_start_line": 79,
+          "dependents_count": 4
+        },
+        {
+          "type": "added",
+          "kind": "function",
+          "name": "validate",
+          "new_signature": "def validate(decision: Decision, options: tuple[ActionOption, ...]) -\u003e str | None",
+          "after_start_line": 87,
+          "dependents_count": 2
+        },
+        {
+          "type": "added",
+          "kind": "function",
+          "name": "forced_decision",
+          "new_signature": "def forced_decision(option: ActionOption, summary: str) -\u003e Decision",
+          "after_start_line": 107,
+          "dependents_count": 5
+        },
+        {
+          "type": "added",
+          "kind": "function",
+          "name": "error_is",
+          "new_signature": "def error_is(err: ErrorEnvelope | None, *classes: ErrorClass) -\u003e bool",
+          "after_start_line": 112,
+          "dependents_count": 0
+        }
+      ]
+    },
+    {
+      "path": "src/parachute/replay.py",
+      "status": "A",
+      "language": "Python",
+      "changes": [
+        {
+          "type": "added",
+          "kind": "class",
+          "name": "Scenario",
+          "new_signature": "class Scenario",
+          "after_start_line": 30,
+          "dependents_count": 2
+        },
+        {
+          "type": "added",
+          "kind": "function",
+          "name": "independent_check",
+          "new_signature": "def independent_check(dsn: str) -\u003e dict[str, Any]",
+          "after_start_line": 72,
+          "dependents_count": 2
+        },
+        {
+          "type": "added",
+          "kind": "function",
+          "name": "unapproved_destructive_steps",
+          "new_signature": "def unapproved_destructive_steps(store: ControlStore, run_id: str) -\u003e int",
+          "after_start_line": 95,
+          "dependents_count": 1
+        },
+        {
+          "type": "added",
+          "kind": "function",
+          "name": "record",
+          "new_signature": "def record(scenario: Scenario, state: RunState, store: ControlStore, fixture_sha: str, started: float, check: dict[str, Any], trace_id: str | None, planner: str) -\u003e dict[str, Any]",
+          "after_start_line": 107,
+          "dependents_count": 9
+        },
+        {
+          "type": "added",
+          "kind": "function",
+          "name": "make_tracer",
+          "new_signature": "def make_tracer(var_dir: Path)",
+          "after_start_line": 159,
+          "dependents_count": 1
+        },
+        {
+          "type": "added",
+          "kind": "function",
+          "name": "run_scenario",
+          "new_signature": "def run_scenario( scenario: Scenario, planner_factory: Callable[[], Planner], dsn: str = DEFAULT_DSN, var_dir: Path = Path(\"var\"), store: ControlStore | None = None, reset: bool = True, on_state: Callable[[RunState], None] | None = None, ) -\u003e dict[str, Any]",
+          "after_start_line": 166,
+          "dependents_count": 1
+        },
+        {
+          "type": "added",
+          "kind": "function",
+          "name": "run_suite",
+          "new_signature": "def run_suite(ids: list[str], planner_factory: Callable[[], Planner], out_path: Path, dsn: str = DEFAULT_DSN, var_dir: Path = Path(\"var\")) -\u003e list[dict[str, Any]]",
+          "after_start_line": 209,
+          "dependents_count": 1
+        }
+      ]
+    },
+    {
+      "path": "src/parachute/state.py",
+      "status": "M",
+      "language": "Python",
+      "changes": [
+        {
+          "type": "body_changed",
+          "kind": "function",
+          "name": "_phase",
+          "before_start_line": 132,
+          "after_start_line": 132,
+          "dependents_count": 1
+        }
+      ]
+    },
+    {
+      "path": "src/parachute/store.py",
+      "status": "M",
+      "language": "Python",
+      "changes": [
+        {
+          "type": "body_changed",
+          "kind": "module",
+          "name": "src/parachute/store.py",
+          "before_start_line": 1,
+          "after_start_line": 1,
+          "dependents_count": 0
+        }
+      ]
+    },
+    {
+      "path": "src/parachute/tracing.py",
+      "status": "A",
+      "language": "Python",
+      "changes": [
+        {
+          "type": "added",
+          "kind": "function",
+          "name": "_clean",
+          "new_signature": "def _clean(value: Any) -\u003e Any",
+          "after_start_line": 20,
+          "dependents_count": 6
+        },
+        {
+          "type": "added",
+          "kind": "class",
+          "name": "SpanHandle",
+          "new_signature": "class SpanHandle(Protocol)",
+          "after_start_line": 26,
+          "dependents_count": 0
+        },
+        {
+          "type": "added",
+          "kind": "method",
+          "name": "SpanHandle.set",
+          "new_signature": "def set(self, **attrs: Any) -\u003e None",
+          "after_start_line": 27,
+          "dependents_count": 32
+        },
+        {
+          "type": "added",
+          "kind": "class",
+          "name": "TraceSink",
+          "new_signature": "class TraceSink(Protocol)",
+          "after_start_line": 30,
+          "dependents_count": 0
+        },
+        {
+          "type": "added",
+          "kind": "method",
+          "name": "TraceSink.span",
+          "new_signature": "def span(self, kind: str, name: str, **attrs: Any)",
+          "after_start_line": 31,
+          "dependents_count": 25
+        },
+        {
+          "type": "added",
+          "kind": "method",
+          "name": "TraceSink.flush",
+          "new_signature": "def flush(self) -\u003e None",
+          "after_start_line": 32,
+          "dependents_count": 7
+        },
+        {
+          "type": "added",
+          "kind": "class",
+          "name": "_NullHandle",
+          "new_signature": "class _NullHandle",
+          "after_start_line": 35,
+          "dependents_count": 2
+        },
+        {
+          "type": "added",
+          "kind": "method",
+          "name": "_NullHandle.set",
+          "new_signature": "def set(self, **attrs: Any) -\u003e None",
+          "after_start_line": 36,
+          "dependents_count": 32
+        },
+        {
+          "type": "added",
+          "kind": "class",
+          "name": "NullTrace",
+          "new_signature": "class NullTrace",
+          "after_start_line": 40,
+          "dependents_count": 1
+        },
+        {
+          "type": "added",
+          "kind": "method",
+          "name": "NullTrace.span",
+          "new_signature": "def span(self, kind: str, name: str, **attrs: Any) -\u003e Iterator[_NullHandle]",
+          "after_start_line": 42,
+          "dependents_count": 25
+        },
+        {
+          "type": "added",
+          "kind": "method",
+          "name": "NullTrace.flush",
+          "new_signature": "def flush(self) -\u003e None",
+          "after_start_line": 45,
+          "dependents_count": 7
+        },
+        {
+          "type": "added",
+          "kind": "class",
+          "name": "_JsonlHandle",
+          "new_signature": "class _JsonlHandle",
+          "after_start_line": 49,
+          "dependents_count": 2
+        },
+        {
+          "type": "added",
+          "kind": "method",
+          "name": "_JsonlHandle.__init__",
+          "new_signature": "def __init__(self, record: dict[str, Any])",
+          "after_start_line": 50,
+          "dependents_count": 11
+        },
+        {
+          "type": "added",
+          "kind": "method",
+          "name": "_JsonlHandle.set",
+          "new_signature": "def set(self, **attrs: Any) -\u003e None",
+          "after_start_line": 53,
+          "dependents_count": 32
+        },
+        {
+          "type": "added",
+          "kind": "class",
+          "name": "JsonlTrace",
+          "new_signature": "class JsonlTrace",
+          "after_start_line": 57,
+          "dependents_count": 2
+        },
+        {
+          "type": "added",
+          "kind": "method",
+          "name": "JsonlTrace.__init__",
+          "new_signature": "def __init__(self, directory: str | Path, run_key: str = \"run_id\")",
+          "after_start_line": 60,
+          "dependents_count": 11
+        },
+        {
+          "type": "added",
+          "kind": "method",
+          "name": "JsonlTrace.span",
+          "new_signature": "def span(self, kind: str, name: str, **attrs: Any) -\u003e Iterator[_JsonlHandle]",
+          "after_start_line": 68,
+          "dependents_count": 25
+        },
+        {
+          "type": "added",
+          "kind": "method",
+          "name": "JsonlTrace._write",
+          "new_signature": "def _write(self, record: dict[str, Any]) -\u003e None",
+          "after_start_line": 95,
+          "dependents_count": 2
+        },
+        {
+          "type": "added",
+          "kind": "method",
+          "name": "JsonlTrace.flush",
+          "new_signature": "def flush(self) -\u003e None",
+          "after_start_line": 100,
+          "dependents_count": 7
+        },
+        {
+          "type": "added",
+          "kind": "class",
+          "name": "_NeatlogsHandle",
+          "new_signature": "class _NeatlogsHandle",
+          "after_start_line": 104,
+          "dependents_count": 2
+        },
+        {
+          "type": "added",
+          "kind": "method",
+          "name": "_NeatlogsHandle.__init__",
+          "new_signature": "def __init__(self, span: Any, kind: str)",
+          "after_start_line": 105,
+          "dependents_count": 11
+        },
+        {
+          "type": "added",
+          "kind": "method",
+          "name": "_NeatlogsHandle.set",
+          "new_signature": "def set(self, **attrs: Any) -\u003e None",
+          "after_start_line": 109,
+          "dependents_count": 32
+        },
+        {
+          "type": "added",
+          "kind": "class",
+          "name": "NeatlogsTrace",
+          "new_signature": "class NeatlogsTrace",
+          "after_start_line": 118,
+          "dependents_count": 3
+        },
+        {
+          "type": "added",
+          "kind": "method",
+          "name": "NeatlogsTrace.__init__",
+          "new_signature": "def __init__(self, workflow_name: str = \"migration-parachute\", tags: list[str] | None = None)",
+          "after_start_line": 123,
+          "dependents_count": 11
+        },
+        {
+          "type": "added",
+          "kind": "method",
+          "name": "NeatlogsTrace.span",
+          "new_signature": "def span(self, kind: str, name: str, **attrs: Any) -\u003e Iterator[_NeatlogsHandle]",
+          "after_start_line": 138,
+          "dependents_count": 25
+        },
+        {
+          "type": "added",
+          "kind": "method",
+          "name": "NeatlogsTrace.flush",
+          "new_signature": "def flush(self) -\u003e None",
+          "after_start_line": 150,
+          "dependents_count": 7
+        },
+        {
+          "type": "added",
+          "kind": "class",
+          "name": "_MultiHandle",
+          "new_signature": "class _MultiHandle",
+          "after_start_line": 154,
+          "dependents_count": 2
+        },
+        {
+          "type": "added",
+          "kind": "method",
+          "name": "_MultiHandle.__init__",
+          "new_signature": "def __init__(self, handles: list[Any])",
+          "after_start_line": 155,
+          "dependents_count": 11
+        },
+        {
+          "type": "added",
+          "kind": "method",
+          "name": "_MultiHandle.set",
+          "new_signature": "def set(self, **attrs: Any) -\u003e None",
+          "after_start_line": 158,
+          "dependents_count": 32
+        },
+        {
+          "type": "added",
+          "kind": "class",
+          "name": "MultiTrace",
+          "new_signature": "class MultiTrace",
+          "after_start_line": 163,
+          "dependents_count": 2
+        },
+        {
+          "type": "added",
+          "kind": "method",
+          "name": "MultiTrace.__init__",
+          "new_signature": "def __init__(self, *sinks: Any)",
+          "after_start_line": 164,
+          "dependents_count": 11
+        },
+        {
+          "type": "added",
+          "kind": "method",
+          "name": "MultiTrace.span",
+          "new_signature": "def span(self, kind: str, name: str, **attrs: Any) -\u003e Iterator[_MultiHandle]",
+          "after_start_line": 168,
+          "dependents_count": 25
+        },
+        {
+          "type": "added",
+          "kind": "method",
+          "name": "MultiTrace.flush",
+          "new_signature": "def flush(self) -\u003e None",
+          "after_start_line": 173,
+          "dependents_count": 7
+        },
+        {
+          "type": "added",
+          "kind": "method",
+          "name": "MultiTrace.trace_id",
+          "new_signature": "def trace_id(self, run_id: str) -\u003e str | None",
+          "after_start_line": 177,
+          "dependents_count": 5
+        },
+        {
+          "type": "added",
+          "kind": "function",
+          "name": "default_trace",
+          "new_signature": "def default_trace(var_dir: str | Path) -\u003e MultiTrace",
+          "after_start_line": 185,
+          "dependents_count": 0
+        }
+      ]
+    },
+    {
+      "path": "src/parachute/verifier.py",
+      "status": "A",
+      "language": "Python",
+      "changes": [
+        {
+          "type": "added",
+          "kind": "function",
+          "name": "_report",
+          "new_signature": "def _report(scope, spec: MigrationSpec, schema_hash: str, metrics: dict[str, Any], violations) -\u003e VerificationReport",
+          "after_start_line": 14,
+          "dependents_count": 3
+        },
+        {
+          "type": "added",
+          "kind": "function",
+          "name": "expand_report",
+          "new_signature": "def expand_report(spec: MigrationSpec, schema_hash: str, m: dict[str, Any]) -\u003e VerificationReport",
+          "after_start_line": 27,
+          "dependents_count": 2
+        },
+        {
+          "type": "added",
+          "kind": "function",
+          "name": "backfill_report",
+          "new_signature": "def backfill_report( spec: MigrationSpec, schema_hash: str, m: dict[str, Any], planned_upper: int | None, cursor: int | None, scope: str = \"backfill\", ) -\u003e VerificationReport",
+          "after_start_line": 40,
+          "dependents_count": 4
+        },
+        {
+          "type": "added",
+          "kind": "function",
+          "name": "contract_report",
+          "new_signature": "def contract_report(spec: MigrationSpec, schema_hash: str, m: dict[str, Any], expected_rows: int) -\u003e VerificationReport",
+          "after_start_line": 76,
+          "dependents_count": 2
+        }
+      ]
+    }
+  ]
+}

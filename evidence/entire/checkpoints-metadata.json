@@ -1,0 +1,122 @@
+[
+  {
+    "checkpoint_id": "01M4JC2FEJ5SYGPHTRAR4VAG5A",
+    "session_id": "d7294366-0b5a-45c4-b3a3-fd7eae3d2d90",
+    "agent": "Claude Code",
+    "date": "2026-10-10T15:30:05+05:30",
+    "message": "Initialise neatlogs once per process; record before/after traces",
+    "is_logs_only": true,
+    "session_count": 1,
+    "session_ids": [
+      "d7294366-0b5a-45c4-b3a3-fd7eae3d2d90"
+    ]
+  },
+  {
+    "checkpoint_id": "01M4JC2FEJ5SYGPHTRAR4VAG5A",
+    "session_id": "d7294366-0b5a-45c4-b3a3-fd7eae3d2d90",
+    "agent": "Claude Code",
+    "date": "2026-10-10T14:05:54+05:30",
+    "message": "Add execution UI; make the before/after comparison repeatable",
+    "is_logs_only": true,
+    "session_count": 1,
+    "session_ids": [
+      "d7294366-0b5a-45c4-b3a3-fd7eae3d2d90"
+    ]
+  },
+  {
+    "checkpoint_id": "01M4JC2FEJ5SYGPHTRAR4VAG5A",
+    "session_id": "d7294366-0b5a-45c4-b3a3-fd7eae3d2d90",
+    "agent": "Claude Code",
+    "date": "2026-10-10T13:37:51+05:30",
+    "message": "Measure the 100k-row stress profile for the cost model",
+    "is_logs_only": true,
+    "session_count": 1,
+    "session_ids": [
+      "d7294366-0b5a-45c4-b3a3-fd7eae3d2d90"
+    ]
+  },
+  {
+    "checkpoint_id": "01M4JC2FEJ5SYGPHTRAR4VAG5A",
+    "session_id": "d7294366-0b5a-45c4-b3a3-fd7eae3d2d90",
+    "agent": "Claude Code",
+    "date": "2026-10-10T13:36:33+05:30",
+    "message": "Add README, demo script, cfo.ai inputs and post drafts",
+    "is_logs_only": true,
+    "session_count": 1,
+    "session_ids": [
+      "d7294366-0b5a-45c4-b3a3-fd7eae3d2d90"
+    ]
+  },
+  {
+    "checkpoint_id": "01M4JC2FEJ5SYGPHTRAR4VAG5A",
+    "session_id": "d7294366-0b5a-45c4-b3a3-fd7eae3d2d90",
+    "agent": "Claude Code",
+    "date": "2026-10-10T13:34:31+05:30",
+    "message": "Add Claude recovery planner, HTTP API and integration tests",
+    "is_logs_only": true,
+    "session_count": 1,
+    "session_ids": [
+      "d7294366-0b5a-45c4-b3a3-fd7eae3d2d90"
+    ]
+  },
+  {
+    "checkpoint_id": "01M4JC2FEJ5SYGPHTRAR4VAG5A",
+    "session_id": "d7294366-0b5a-45c4-b3a3-fd7eae3d2d90",
+    "agent": "Claude Code",
+    "date": "2026-10-10T13:27:52+05:30",
+    "message": "Fix lock recovery: record blockers, shrink batch, back off, resume",
+    "is_logs_only": true,
+    "session_count": 1,
+    "session_ids": [
+      "d7294366-0b5a-45c4-b3a3-fd7eae3d2d90"
+    ]
+  },
+  {
+    "checkpoint_id": "01M4JC2FEJ5SYGPHTRAR4VAG5A",
+    "session_id": "d7294366-0b5a-45c4-b3a3-fd7eae3d2d90",
+    "agent": "Claude Code",
+    "date": "2026-10-10T13:26:44+05:30",
+    "message": "Add orchestrator, policy guard, verifier and replay suite (naive retry v0)",
+    "is_logs_only": true,
+    "session_count": 1,
+    "session_ids": [
+      "d7294366-0b5a-45c4-b3a3-fd7eae3d2d90"
+    ]
+  },
+  {
+    "checkpoint_id": "01M4JC2FEJ5SYGPHTRAR4VAG5A",
+    "session_id": "d7294366-0b5a-45c4-b3a3-fd7eae3d2d90",
+    "agent": "Claude Code",
+    "date": "2026-10-10T13:19:36+05:30",
+    "message": "Add Postgres adapter, SQL generation, fixture and fault injection",
+    "is_logs_only": true,
+    "session_count": 1,
+    "session_ids": [
+      "d7294366-0b5a-45c4-b3a3-fd7eae3d2d90"
+    ]
+  },
+  {
+    "checkpoint_id": "01M4JC2FEJ5SYGPHTRAR4VAG5A",
+    "session_id": "d7294366-0b5a-45c4-b3a3-fd7eae3d2d90",
+    "agent": "Claude Code",
+    "date": "2026-10-10T13:16:19+05:30",
+    "message": "Add domain contracts, event reducer and SQLite control store",
+    "is_logs_only": true,
+    "session_count": 1,
+    "session_ids": [
+      "d7294366-0b5a-45c4-b3a3-fd7eae3d2d90"
+    ]
+  },
+  {
+    "checkpoint_id": "01M4JC2FEJ5SYGPHTRAR4VAG5A",
+    "session_id": "d7294366-0b5a-45c4-b3a3-fd7eae3d2d90",
+    "agent": "Claude Code",
+    "date": "2026-10-10T13:10:06+05:30",
+    "message": "Scaffold project and enable Entire for Claude Code",
+    "is_logs_only": true,
+    "session_count": 1,
+    "session_ids": [
+      "d7294366-0b5a-45c4-b3a3-fd7eae3d2d90"
+    ]
+  }
+]
