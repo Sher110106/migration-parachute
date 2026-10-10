@@ -19,7 +19,7 @@ Pricing and volume (Assumptions)
 
 Variable cost per migration
 - Planner decisions per migration: 6 (Measured on a 10,000-row test run with one lock-recovery episode; a clean run used 1).
-- Claude Opus 5.5 tokens per decision: 3,000 input and 500 output (Assumption until measured). Price $4 per million input tokens and $20 per million output tokens.
+- Planner model tokens per decision: 663 input and 374 output (Measured, DeepSeek V4.1 Flash via OpenRouter, 14 decisions). Price $0.30 per million input tokens and $1.20 per million output tokens.
 - Database runner time: 6.3 seconds per million rows on a clean run (Measured: 628 ms per 100,000 rows), priced at $0.50 per runner-hour. Double it to allow for lock recovery.
 
 Other costs (Assumptions)

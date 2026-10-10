@@ -13,7 +13,7 @@ Source: [`evidence/replay-adaptive-v1.json`](../evidence/replay-adaptive-v1.json
 | Planner decisions | 1 | 6 |
 | Wall time | 0.36 s | 9.1 s (includes the 6 s seeded lock) |
 
-These runs used the deterministic planner, so tokens are zero. With `--planner llm`, each decision is one Claude Opus 5.5 call, priced at $4 per million input tokens and $20 per million output tokens. Token counts per decision go in the cost ledger (`tokens_in`, `tokens_out`) and in the neatlogs trace. **To fill in:** measured tokens per decision from the first `--planner llm` replay.
+These runs used the deterministic planner, so tokens are zero. With the language-model planner (DeepSeek V4.1 Flash via OpenRouter, $0.30 per million input tokens and $1.20 per million output tokens on 2026-10-10), the full 12-scenario suite made 14 decisions using 9,278 input and 5,239 output tokens, $0.0094 in total ([`evidence/replay-llm-deepseek-v4.1-flash.json`](../evidence/replay-llm-deepseek-v4.1-flash.json)). That is **663 input and 374 output tokens per decision, about $0.00065 per decision**. The lock-recovery run made 5 decisions.
 
 Database cost grows with rows. The 100,000-row stress profile ([`evidence/replay-adaptive-v1-stress.json`](../evidence/replay-adaptive-v1-stress.json), `--profile stress`):
 
@@ -36,7 +36,7 @@ Ten times the rows cost about eleven times the database time on a clean run (56 
 | Migrations per database per month | 4 | 8 | 2 | Assumption |
 | Rows per migration | 1M | 10M | 100k | Assumption; scales database time |
 | Planner decisions per migration | 6 | 12 | 4 | From replay: 1 clean, 6 with lock recovery (10k rows) |
-| Tokens per decision (in / out) | measure | measure | measure | From the first LLM replay |
+| Tokens per decision (in / out) | 663 / 374 | 663 / 374 | 1,326 / 748 | Measured (DeepSeek V4.1 Flash); downside doubles it |
 | Hosting and storage per team per month | $15 | $25 | $10 | Assumption |
 | Support hours per team per month | 1.0 | 0.5 | 2.0 | Assumption; on-call cost driver |
 | Support cost per hour | $60 | $60 | $60 | Assumption |

@@ -175,3 +175,64 @@ def test_out_of_bounds_claude_answer_is_caught_by_policy():
     client, _ = fake_client(answer({"action": "retry_chunk", "batch_size": 50_000, "backoff_ms": 10, "summary": "Go big."}))
     d = ClaudePlanner(client).decide(obs())
     assert "batch_size" in policy.validate(d, RETRY_OPTIONS)
+
+
+# ------------------------------------------------------------ OpenRouter planner
+
+import openai as _openai
+
+from parachute.llm_planner import OpenRouterPlanner
+
+
+def or_client(behaviour):
+    calls = []
+
+    def create(**kwargs):
+        calls.append(kwargs)
+        return behaviour(kwargs)
+
+    return SimpleNamespace(chat=SimpleNamespace(completions=SimpleNamespace(create=create))), calls
+
+
+def or_answer(payload, finish="stop", pin=871, pout=375):
+    return lambda kwargs: SimpleNamespace(
+        choices=[SimpleNamespace(finish_reason=finish, message=SimpleNamespace(content=json.dumps(payload)))],
+        usage=SimpleNamespace(prompt_tokens=pin, completion_tokens=pout),
+    )
+
+
+def test_openrouter_planner_sends_strict_schema_and_parses_tokens():
+    client, calls = or_client(or_answer({"action": "retry_chunk", "batch_size": 500, "backoff_ms": 1000,
+                                          "summary": "55P03 from pid 4242; smaller batch, longer wait."}))
+    p = OpenRouterPlanner(client)
+    d = p.decide(obs())
+    assert d.kind == ActionKind.RETRY_CHUNK and d.batch_size == 500 and d.tokens_in == 871 and d.tokens_out == 375
+    assert d.planner == "openrouter/deepseek/deepseek-v4.1-flash"
+    rf = calls[0]["response_format"]
+    assert rf["type"] == "json_schema" and rf["json_schema"]["strict"] is True
+    assert rf["json_schema"]["schema"]["properties"]["action"]["enum"] == ["abort", "pause", "retry_chunk"]
+    assert calls[0]["extra_body"]["provider"]["require_parameters"] is True
+    assert str(p.cost_model.input_per_mtok) == "0.30" and str(p.cost_model.output_per_mtok) == "1.20"
+
+
+def test_openrouter_planner_degrades_on_truncation_and_errors():
+    client, _ = or_client(or_answer({"action": "pause"}, finish="length"))
+    d = OpenRouterPlanner(client).decide(obs())
+    assert "answer hit max_tokens" in d.planner and policy.validate(d, RETRY_OPTIONS) is None
+
+    def boom(kwargs):
+        raise _openai.APIConnectionError(request=httpx2.Request("POST", "https://openrouter.ai/api/v1/chat/completions"))
+
+    client, _ = or_client(boom)
+    d = OpenRouterPlanner(client).decide(obs())
+    assert d.planner.startswith("adaptive/v1 (model unavailable: connection error")
+
+
+def test_openrouter_malformed_answer_raises_for_the_orchestrator_to_record():
+    bad = lambda kwargs: SimpleNamespace(
+        choices=[SimpleNamespace(finish_reason="stop", message=SimpleNamespace(content="not json"))],
+        usage=SimpleNamespace(prompt_tokens=10, completion_tokens=2),
+    )
+    client, _ = or_client(bad)
+    with pytest.raises(ValueError):
+        OpenRouterPlanner(client).decide(obs())

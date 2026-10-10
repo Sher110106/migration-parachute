@@ -16,7 +16,11 @@ Same fixture, same seeded fault: a separate session holds row locks on keys 4,00
 | Agent with first recovery policy (`naive-retry/v0`: same batch, 50 ms wait) | `PAUSED_LOCK_BUDGET`, retry budget spent | 6 | 2,647 ms | 4,000 |
 | Agent with fixed recovery policy (`adaptive/v1`) | parity proven, `CONTRACT_READY` | 4 | 1,817 ms | 10,000 |
 
+| Agent with a language-model planner (DeepSeek V4.1 Flash via OpenRouter, inside the same policy fence) | parity proven, `CONTRACT_READY` | 2 | 751 ms | 10,000 |
+
 Neither failing run claims success. Full replay suite, 12 scenarios: v0 passes 11, v1 passes 12. Both have zero false successes and zero destructive statements run without approval. Raw records: [`evidence/replay-naive-v0.json`](evidence/replay-naive-v0.json) and [`evidence/replay-adaptive-v1.json`](evidence/replay-adaptive-v1.json). Lock-wait figures vary by tens of milliseconds between runs; three repeats of each policy gave the same outcome every time.
+
+The language-model planner passes all 12 scenarios with no rejected decisions: 14 decisions, 9,278 input and 5,239 output tokens, $0.0094 in total ([`evidence/replay-llm-deepseek-v4.1-flash.json`](evidence/replay-llm-deepseek-v4.1-flash.json)). On the lock run it read the blocker's age from the error evidence: after the first timeout it waited 1 s; when the blocking transaction was 4.1 s old it waited 3 s, so it needed two retries where the fixed policy needed four. Each answer must name one of the actions policy allows, inside its bounds; anything else is rejected and recorded, and the deterministic planner answers instead.
 
 The v0 policy was committed and measured before the fix. The git history shows the order: `ed9edbe` (v0, 11/12) then `5e05e92` (fix, 12/12). The records each commit produced at the time are kept in [`evidence/history/`](evidence/history/); they used a 3.0 s lock. The lock is now held for 6 s, because v1's blocker inspection made each failed attempt slower, and at 3.5 s the naive policy sometimes outlasted the lock.
 
@@ -78,8 +82,8 @@ Optional keys go in a local `.env` file, which git ignores:
 
 ```sh
 NEATLOGS_API_KEY=...          # send traces to neatlogs
-ANTHROPIC_API_KEY=...         # enable --planner llm (claude-opus-5-5)
-# or: PARACHUTE_LLM=bedrock AWS_PROFILE=... AWS_REGION=...
+OPENROUTER_API_KEY=...        # enable --planner llm (default deepseek/deepseek-v4.1-flash)
+# or ANTHROPIC_API_KEY=... for claude-opus-5-5, or PARACHUTE_LLM=bedrock AWS_PROFILE=... AWS_REGION=...
 ```
 
 ## Partner tools
@@ -111,7 +115,7 @@ src/parachute/
   orchestrator.py  the agent loop
   policy.py        allowed actions and decision checks
   planners.py      naive-retry/v0 and adaptive/v1
-  llm_planner.py   Claude planner inside the policy fence
+  llm_planner.py   language-model planners (OpenRouter, Claude) inside the policy fence
   verifier.py      deterministic proofs
   faults.py        seeded failures through real connections
   replay.py        scenario suite and evidence records

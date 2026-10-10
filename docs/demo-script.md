@@ -17,6 +17,6 @@ The rules ask the video to cover architecture, implementation, runtime, reasonin
 ## Before recording
 
 - Set `NEATLOGS_API_KEY` in `.env`, run `uv run parachute replay lock_timeout --planner naive` and `uv run parachute replay lock_timeout baseline_lock_timeout`, and save both trace links into `evidence/`.
-- Optionally run the same with `--planner llm` once a model key is set, and show one Claude decision summary in the UI.
+- Run `uv run parachute replay lock_timeout --planner llm` (DeepSeek V4.1 Flash via OpenRouter) and show one of its decision summaries in the UI: it reads the blocker's transaction age and picks a longer wait.
 - Enter the cfo.ai model from [`cfo-model-inputs.md`](cfo-model-inputs.md) and export the plan.
 - Record at 1920×1080. Keep the browser zoom at 100%.

@@ -186,7 +186,8 @@ def run_scenario(
     tracer = make_tracer(var_dir)
     faults = FaultPlan(dsn=dsn, kinds=scenario.faults)
     planner = planner_factory()
-    services = Services(store=store, db=db, planner=planner, tracer=tracer, faults=faults, costs=CostModel())
+    services = Services(store=store, db=db, planner=planner, tracer=tracer, faults=faults,
+                        costs=getattr(planner, "cost_model", None) or CostModel())
     spec = demo_spec(db.fingerprint(), **scenario.spec_overrides)
     cls = BaselineOrchestrator if scenario.mode == "baseline" else Orchestrator
     run_id = run_id or f"{scenario.id}_{int(time.time() * 1000) % 10_000_000:07d}"

@@ -18,6 +18,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.responses import FileResponse, JSONResponse
 from pydantic import BaseModel
 
+from .economics import CostModel
 from .fixture import DEFAULT_DSN
 from .orchestrator import Orchestrator, Services
 from .pg import PostgresAdapter
@@ -176,9 +177,11 @@ def create_app(dsn: str = DEFAULT_DSN, var_dir: Path = Path("var"), planners: di
         key = "adaptive"
         if run_id is not None:
             started_with = store.materialized(run_id).planner
-            prefixes = {"naive-retry": "naive", "adaptive": "adaptive", "claude/": "llm"}
+            prefixes = {"naive-retry": "naive", "adaptive": "adaptive", "claude/": "llm", "openrouter/": "llm"}
             key = next((k for p, k in prefixes.items() if started_with.startswith(p) and k in factories), "adaptive")
-        return Services(store=store, db=PostgresAdapter(dsn), planner=factories[key](), tracer=make_tracer(var_dir))
+        planner = factories[key]()
+        return Services(store=store, db=PostgresAdapter(dsn), planner=planner, tracer=make_tracer(var_dir),
+                        costs=getattr(planner, "cost_model", None) or CostModel())
 
     @app.get("/")
     def index():
