@@ -10,6 +10,7 @@ drivers come from evidence/; every other driver is an assumption.
 from __future__ import annotations
 
 from dataclasses import dataclass, replace
+from math import ceil
 
 MONTHS = 24
 
@@ -100,7 +101,7 @@ def main() -> None:
         print(f"| {label} | " + " | ".join(money(units[k][key], cents=True) for k in scenarios) + " |")
     print("| Gross margin | " + " | ".join(f"{u['contribution'] / u['revenue']:.0%}" for u in units.values()) + " |")
     print("| Teams to break even | " + " | ".join(
-        f"{BASE.fixed_monthly / u['contribution']:.0f}" if u["contribution"] > 0 else "never" for u in units.values()) + " |")
+        str(ceil(BASE.fixed_monthly / u["contribution"])) if u["contribution"] > 0 else "never" for u in units.values()) + " |")
     print("\n## Scenario comparison\n")
     print("| Scenario | Month | Paying teams | MRR | Gross margin | Net result | Ending cash | Runway |")
     print("|---|---:|---:|---:|---:|---:|---:|---|")

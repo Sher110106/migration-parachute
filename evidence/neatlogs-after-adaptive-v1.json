@@ -1,73 +1,8 @@
 [
   {
-    "scenario_id": "baseline_lock_timeout",
-    "description": "Naive one-transaction backfill under the same row lock",
-    "run_id": "baseline_lock_timeout_6370830",
-    "mode": "baseline",
-    "planner": "adaptive/v1",
-    "fixture_sha": "aa99e578e8f77ad5517f1f3de8981eac",
-    "faults": [
-      "lock_timeout"
-    ],
-    "lock_hold_ms": 6000,
-    "lock_budget_ms": 300,
-    "plan_hash": "aeca30c90a016cd1fa1bb8923678a00e44b15d036c2c06424be6dfeaa945f0f4",
-    "terminal_state": "FAILED",
-    "expected": [
-      "FAILED"
-    ],
-    "passed": true,
-    "false_success": false,
-    "unapproved_destructive_steps": 0,
-    "rows_seen": 10000,
-    "rows_written": 0,
-    "cursor": 1,
-    "batches": 0,
-    "reconciled_chunks": 0,
-    "final_batch_size": 2000,
-    "retries": 1,
-    "lock_wait_ms": 389,
-    "decisions": 0,
-    "rejected_decisions": 0,
-    "replans": 0,
-    "catch_ups": 0,
-    "source_checksum": null,
-    "target_checksum": null,
-    "null_targets": null,
-    "mismatches": null,
-    "proof_hash": null,
-    "verifier_passed": null,
-    "last_error": {
-      "error_class": "LOCK_PRESSURE",
-      "sqlstate": "55P03",
-      "message": "canceling statement due to lock timeout",
-      "retryable": true,
-      "blockers": [],
-      "operator_action": "The baseline has no recovery: the whole transaction rolled back and kept 0 rows.",
-      "detail": {}
-    },
-    "tokens_in": 0,
-    "tokens_out": 0,
-    "cost_usd": "0.0000553",
-    "db_ms": 398,
-    "independent_check": {
-      "old_column_present": true,
-      "new_column_present": true,
-      "rows": 10000,
-      "wrong_or_missing": 10000
-    },
-    "event_count": 23,
-    "chain_ok": true,
-    "checkpoint_ref": "ckpt:baseline_lock_timeout_6370830:23:9b3f5a3c3a51",
-    "neatlogs_trace_ids": [
-      "d0b4d5a8fcc29726d30be239149bddb4"
-    ],
-    "wall_ms": 6260
-  },
-  {
     "scenario_id": "lock_timeout",
     "description": "Row lock held by another session during a chunk",
-    "run_id": "lock_timeout_6377260",
+    "run_id": "lock_timeout_0210124",
     "mode": "parachute",
     "planner": "adaptive/v1",
     "fixture_sha": "aa99e578e8f77ad5517f1f3de8981eac",
@@ -91,7 +26,7 @@
     "reconciled_chunks": 0,
     "final_batch_size": 1000,
     "retries": 4,
-    "lock_wait_ms": 1530,
+    "lock_wait_ms": 1840,
     "decisions": 6,
     "rejected_decisions": 0,
     "replans": 0,
@@ -105,8 +40,8 @@
     "last_error": null,
     "tokens_in": 0,
     "tokens_out": 0,
-    "cost_usd": "0.0002526",
-    "db_ms": 1817,
+    "cost_usd": "0.0002840",
+    "db_ms": 2044,
     "independent_check": {
       "old_column_present": true,
       "new_column_present": true,
@@ -115,10 +50,10 @@
     },
     "event_count": 82,
     "chain_ok": true,
-    "checkpoint_ref": "ckpt:lock_timeout_6377260:82:4b59de35e5d4",
+    "checkpoint_ref": "ckpt:lock_timeout_0210124:82:d1a28960c27d",
     "neatlogs_trace_ids": [
-      "05d2b3495d95e3c8a7473684bc27a225"
+      "c583c2fb306eb225b9ca35d44345621a"
     ],
-    "wall_ms": 9310
+    "wall_ms": 9364
   }
 ]

@@ -1,0 +1,76 @@
+[
+  {
+    "scenario_id": "lock_timeout",
+    "description": "Row lock held by another session during a chunk",
+    "run_id": "lock_timeout_0362948",
+    "mode": "parachute",
+    "planner": "naive-retry/v0",
+    "fixture_sha": "aa99e578e8f77ad5517f1f3de8981eac",
+    "faults": [
+      "lock_timeout"
+    ],
+    "lock_hold_ms": 6000,
+    "lock_budget_ms": 300,
+    "plan_hash": "aeca30c90a016cd1fa1bb8923678a00e44b15d036c2c06424be6dfeaa945f0f4",
+    "terminal_state": "PAUSED_LOCK_BUDGET",
+    "expected": [
+      "CONTRACT_READY"
+    ],
+    "passed": false,
+    "false_success": false,
+    "unapproved_destructive_steps": 0,
+    "rows_seen": 10000,
+    "rows_written": 4000,
+    "cursor": 4001,
+    "batches": 2,
+    "reconciled_chunks": 0,
+    "final_batch_size": 2000,
+    "retries": 6,
+    "lock_wait_ms": 2284,
+    "decisions": 6,
+    "rejected_decisions": 0,
+    "replans": 0,
+    "catch_ups": 0,
+    "source_checksum": null,
+    "target_checksum": null,
+    "null_targets": null,
+    "mismatches": null,
+    "proof_hash": null,
+    "verifier_passed": null,
+    "last_error": {
+      "error_class": "LOCK_PRESSURE",
+      "sqlstate": "55P03",
+      "message": "canceling statement due to lock timeout",
+      "retryable": true,
+      "blockers": [
+        {
+          "pid": 44755,
+          "lock_mode": "RowShareLock",
+          "granted": true,
+          "state": "idle in transaction",
+          "xact_age_ms": 2725,
+          "query_hash": "841d76edf88e"
+        }
+      ],
+      "operator_action": null,
+      "detail": {}
+    },
+    "tokens_in": 0,
+    "tokens_out": 0,
+    "cost_usd": "0.0003230",
+    "db_ms": 2326,
+    "independent_check": {
+      "old_column_present": true,
+      "new_column_present": true,
+      "rows": 10000,
+      "wrong_or_missing": 6000
+    },
+    "event_count": 50,
+    "chain_ok": true,
+    "checkpoint_ref": "ckpt:lock_timeout_0362948:50:58ee2bc0a814",
+    "neatlogs_trace_ids": [
+      "0b57a2f5d08ac8611110c6773dbec4dc"
+    ],
+    "wall_ms": 6425
+  }
+]

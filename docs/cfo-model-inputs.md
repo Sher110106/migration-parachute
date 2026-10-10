@@ -34,10 +34,10 @@ Ten times the rows cost about eleven times the database time on a clean run (56 
 | Price per database per month | $49 | $99 | $29 | Assumption; compare with migration-tool pricing |
 | Databases per paying team | 3 | 6 | 2 | Assumption |
 | Migrations per database per month | 4 | 8 | 2 | Assumption |
-| Rows per migration | 1M | 10M | 100k | Assumption; scales database time |
-| Planner decisions per migration | 6 | 12 | 4 | From replay: 1 clean, 6 with lock recovery (10k rows) |
-| Tokens per decision (in / out) | 663 / 374 | 663 / 374 | 1,326 / 748 | Measured (DeepSeek V4.1 Flash); downside doubles it |
-| Hosting and storage per team per month | $15 | $25 | $10 | Assumption |
+| Rows per migration | 1M | 1M | 1M | Assumption; same baseline across scenarios |
+| Planner decisions per migration | 6 | 6 | 6 | Measured on the lock-recovery run; scenario overrides were not requested |
+| Tokens per decision (in / out) | 663 / 374 | 663 / 374 | 663 / 374 | Measured (DeepSeek V4.1 Flash) |
+| Hosting and storage per team per month | $15 | $15 | $15 | Assumption; same baseline across scenarios |
 | Support hours per team per month | 1.0 | 0.5 | 2.0 | Assumption; on-call cost driver |
 | Support cost per hour | $60 | $60 | $60 | Assumption |
 | Failure rate needing human help | 5% | 2% | 10% | Replay suite: 0 false successes in 12 scenarios; real-world rate unknown |
@@ -55,4 +55,4 @@ Ten times the rows cost about eleven times the database time on a clean run (56 
 
 ## Status
 
-Not yet entered. cfo.ai signup requires a card, followed by immediate cancellation under the event instructions, and the author must approve that step.
+Entered in cfo.ai as the [`Migration Parachute: business plan`](https://app.cfo.ai/sher-cfoai-a1e2b615/pages/a8fa343a-4234-4a54-a784-971b110829a8) page. The page's Base, Upside, and Downside outputs match `docs/business-plan-check.md` after the break-even rounding correction. The page can be shared from cfo.ai after its external access level is verified.

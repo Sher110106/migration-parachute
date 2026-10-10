@@ -14,7 +14,7 @@ Computed by `scripts/plan_check.py` from the same drivers given to cfo.ai's Ari 
 | Cost to serve | $93.07 | $74.07 | $147.02 |
 | Contribution | $53.93 | $519.93 | -$89.02 |
 | Gross margin | 37% | 88% | -153% |
-| Teams to break even | 74 | 8 | never |
+| Teams to break even | 75 | 8 | never |
 
 ## Scenario comparison
 
