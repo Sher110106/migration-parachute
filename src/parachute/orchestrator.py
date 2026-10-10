@@ -95,7 +95,7 @@ class Orchestrator:
         self.s.store.create_run(
             RunStarted(run_id=run_id, spec=spec, spec_hash=spec.spec_hash(), mode=self.mode, planner=self.s.planner.name)
         )
-        return self._drive(run_id)
+        return self._drive(run_id, entry="migration_run")
 
     def resume_run(self, run_id: str, new_cost_cap_usd: Decimal | None = None, reason: str = "operator resume") -> RunState:
         state = self.s.store.load(run_id)
@@ -104,7 +104,7 @@ class Orchestrator:
         if state.status == RunStatus.PAUSED:
             self._lease(run_id)
             self._emit(RunResumed(reason=reason, new_cost_cap_usd=new_cost_cap_usd))
-        return self._drive(run_id)
+        return self._drive(run_id, entry="migration_resume")
 
     def approve_contract(self, run_id: str, approval_id: str, approver: str) -> RunState:
         state = self.s.store.load(run_id)
@@ -112,7 +112,7 @@ class Orchestrator:
             raise ValueError("no prepared contract with that approval id")
         self._lease(run_id)
         self._emit(ApprovalGranted(approval_id=approval_id, approver=approver, sql_hash=state.contract_sql_hash))
-        return self._drive(run_id)
+        return self._drive(run_id, entry="contract_approval")
 
     def abort_run(self, run_id: str, reason: str = "operator abort") -> RunState:
         self._lease(run_id)
@@ -149,19 +149,19 @@ class Orchestrator:
         self.state = self.s.store.append(self.state.run_id, list(events), self.state.revision, self.fence)
         return self.state
 
-    def _drive(self, run_id: str) -> RunState:
+    def _drive(self, run_id: str, entry: str = "migration_run") -> RunState:
         self._lease(run_id)
         st = self.state
         try:
-            self._drive_locked(run_id, st)
+            self._drive_locked(run_id, st, entry)
         finally:
             self.s.tracer.flush()
         return self.state
 
-    def _drive_locked(self, run_id: str, st: RunState) -> None:
+    def _drive_locked(self, run_id: str, st: RunState, entry: str) -> None:
         with self.s.db.run_lock(run_id), self.s.tracer.span(
             "WORKFLOW",
-            "migration_run",
+            entry,
             run_id=run_id,
             mode=self.mode,
             migration_id=st.spec.migration_id,

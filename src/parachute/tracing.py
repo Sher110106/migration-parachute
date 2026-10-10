@@ -115,36 +115,65 @@ class _NeatlogsHandle:
                 self.span.set_attribute("neatlogs.guardrail.output", str(attrs["reason"]))
 
 
+WORKFLOW_NAME = "postgres-schema-migration"
+INGEST_ENDPOINT = "https://ingest.neatlogs.com"
+_neatlogs_state = {"ready": False}
+
+
+def init_neatlogs(workflow_name: str = WORKFLOW_NAME) -> bool:
+    """Initialise neatlogs once per process, at the entry point. No key, no export."""
+    if _neatlogs_state["ready"]:
+        return True
+    if not os.environ.get("NEATLOGS_API_KEY"):
+        return False
+    import neatlogs
+
+    neatlogs.init(
+        api_key=os.environ["NEATLOGS_API_KEY"],
+        endpoint=INGEST_ENDPOINT,
+        workflow_name=workflow_name,
+        tags=["neatHack", "fictional-fixture"],
+        flush_interval=1.0,
+    )
+    _neatlogs_state["ready"] = True
+    return True
+
+
+def shutdown_neatlogs() -> None:
+    """Flush and stop the exporter. Call once when the process ends."""
+    if not _neatlogs_state["ready"]:
+        return
+    import neatlogs
+
+    neatlogs.flush()
+    neatlogs.shutdown()
+    _neatlogs_state["ready"] = False
+
+
 class NeatlogsTrace:
-    """Sends spans to neatlogs. Needs NEATLOGS_API_KEY in the environment."""
+    """Sends spans to neatlogs. The entry point calls init_neatlogs() first."""
 
-    _initialised = False
-
-    def __init__(self, workflow_name: str = "migration-parachute", tags: list[str] | None = None):
+    def __init__(self):
         import neatlogs
 
+        if not _neatlogs_state["ready"] and not init_neatlogs():
+            raise RuntimeError("NEATLOGS_API_KEY is not set")
         self.neatlogs = neatlogs
-        self.trace_ids: dict[str, str] = {}
-        if not NeatlogsTrace._initialised:
-            neatlogs.init(
-                api_key=os.environ.get("NEATLOGS_API_KEY"),
-                workflow_name=workflow_name,
-                tags=tags or ["neatHack", "migration-parachute"],
-                flush_interval=1.0,
-            )
-            NeatlogsTrace._initialised = True
+        self.trace_ids: dict[str, list[str]] = {}
 
     @contextmanager
     def span(self, kind: str, name: str, **attrs: Any) -> Iterator[_NeatlogsHandle]:
         extra: dict[str, Any] = {}
         if kind == "TOOL":
             extra["tool.name"] = name
+        # Every trace of one run (start, crash resume, approval) shares a session.
         session = attrs.get("run_id") if kind == "WORKFLOW" else None
         with self.neatlogs.trace(name, kind=kind, session_id=session, **extra) as sp:
             handle = _NeatlogsHandle(sp, kind)
             handle.set(**attrs)
             if kind == "WORKFLOW" and attrs.get("run_id"):
-                self.trace_ids[str(attrs["run_id"])] = format(sp.get_span_context().trace_id, "032x")
+                tid = format(sp.get_span_context().trace_id, "032x")
+                self.trace_ids.setdefault(str(attrs["run_id"]), []).append(tid)
             yield handle
 
     def flush(self) -> None:
@@ -174,16 +203,16 @@ class MultiTrace:
         for s in self.sinks:
             s.flush()
 
-    def trace_id(self, run_id: str) -> str | None:
+    def trace_ids(self, run_id: str) -> list[str]:
         for s in self.sinks:
             ids = getattr(s, "trace_ids", None)
             if ids and run_id in ids:
-                return ids[run_id]
-        return None
+                return list(ids[run_id])
+        return []
 
 
 def default_trace(var_dir: str | Path) -> MultiTrace:
     sinks: list[Any] = [JsonlTrace(Path(var_dir) / "traces")]
-    if os.environ.get("NEATLOGS_API_KEY"):
+    if init_neatlogs():
         sinks.append(NeatlogsTrace())
     return MultiTrace(*sinks)

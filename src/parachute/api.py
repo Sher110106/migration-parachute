@@ -11,6 +11,8 @@ from decimal import Decimal
 from pathlib import Path
 from typing import Any, Callable
 
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import FileResponse, JSONResponse
 from pydantic import BaseModel
@@ -21,6 +23,7 @@ from .pg import PostgresAdapter
 from .replay import SCENARIOS, make_tracer, run_scenario
 from .state import RunState
 from .store import ControlStore
+from .tracing import init_neatlogs, shutdown_neatlogs
 
 WEB_DIR = Path(__file__).parent / "web"
 EVIDENCE_DIR = Path(__file__).resolve().parents[2] / "evidence"
@@ -122,7 +125,16 @@ def create_app(dsn: str = DEFAULT_DSN, var_dir: Path = Path("var"), planners: di
         pass
 
     store = ControlStore(var_dir / "control.sqlite")
-    app = FastAPI(title="Migration Parachute")
+
+    @asynccontextmanager
+    async def lifespan(_app: FastAPI):
+        init_neatlogs()  # once per server process, never per request
+        try:
+            yield
+        finally:
+            shutdown_neatlogs()
+
+    app = FastAPI(title="Migration Parachute", lifespan=lifespan)
     job: dict[str, Any] = {"busy": False, "kind": None, "run_id": None, "error": None, "result": None}
     results_dir = var_dir / "results" / "runs"
     results_dir.mkdir(parents=True, exist_ok=True)

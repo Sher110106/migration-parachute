@@ -50,6 +50,14 @@ def main(argv: list[str] | None = None) -> int:
     sv.add_argument("--port", type=int, default=8777)
 
     args = ap.parse_args(argv)
+    from .tracing import init_neatlogs, shutdown_neatlogs
+
+    if args.cmd == "replay":
+        init_neatlogs()
+        try:
+            return _replay(args)
+        finally:
+            shutdown_neatlogs()
     if args.cmd == "serve":
         import uvicorn
 
@@ -57,19 +65,21 @@ def main(argv: list[str] | None = None) -> int:
 
         uvicorn.run(create_app(dsn=args.dsn, var_dir=args.var), host=args.host, port=args.port, log_level="warning")
         return 0
-    if args.cmd == "replay":
-        ids = list(MINIMUM_SUITE) if args.minimum else (args.scenarios or list(SCENARIOS))
-        out = args.out or args.var / "results" / f"replay-{args.planner}.json"
-        profile = None
-        if args.profile:
-            from .fixture import DEMO, STRESS
-
-            profile = STRESS if args.profile == "stress" else DEMO
-        results = run_suite(ids, planner_factory(args.planner), out, dsn=args.dsn, var_dir=args.var, profile=profile)
-        passed = sum(r["passed"] for r in results)
-        print(f"\n{passed}/{len(results)} scenarios behaved as expected -> {out}")
-        return 0 if passed == len(results) else 1
     return 2
+
+
+def _replay(args) -> int:
+    ids = list(MINIMUM_SUITE) if args.minimum else (args.scenarios or list(SCENARIOS))
+    out = args.out or args.var / "results" / f"replay-{args.planner}.json"
+    profile = None
+    if args.profile:
+        from .fixture import DEMO, STRESS
+
+        profile = STRESS if args.profile == "stress" else DEMO
+    results = run_suite(ids, planner_factory(args.planner), out, dsn=args.dsn, var_dir=args.var, profile=profile)
+    passed = sum(r["passed"] for r in results)
+    print(f"\n{passed}/{len(results)} scenarios behaved as expected -> {out}")
+    return 0 if passed == len(results) else 1
 
 
 if __name__ == "__main__":

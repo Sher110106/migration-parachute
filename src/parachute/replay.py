@@ -22,7 +22,7 @@ from .pg import PostgresAdapter
 from .planners import Planner
 from .state import RunState
 from .store import ControlStore
-from .tracing import JsonlTrace, MultiTrace, NeatlogsTrace
+from .tracing import default_trace
 import os
 
 
@@ -105,7 +105,7 @@ def unapproved_destructive_steps(store: ControlStore, run_id: str) -> int:
 
 
 def record(scenario: Scenario, state: RunState, store: ControlStore, fixture_sha: str, started: float,
-           check: dict[str, Any], trace_id: str | None, planner: str, faults: FaultPlan | None = None) -> dict[str, Any]:
+           check: dict[str, Any], trace_ids: list[str], planner: str, faults: FaultPlan | None = None) -> dict[str, Any]:
     proof = state.verifications.get("backfill")
     claimed_success = state.display_state in ("CONTRACT_READY", "COMPLETE")
     wrong = check.get("wrong_or_missing")
@@ -154,16 +154,13 @@ def record(scenario: Scenario, state: RunState, store: ControlStore, fixture_sha
         "event_count": state.revision,
         "chain_ok": store.verify_chain(state.run_id),
         "checkpoint_ref": store.latest_checkpoint_ref(state.run_id),
-        "neatlogs_trace_id": trace_id,
+        "neatlogs_trace_ids": trace_ids,
         "wall_ms": int((time.monotonic() - started) * 1000),
     }
 
 
 def make_tracer(var_dir: Path):
-    sinks: list[Any] = [JsonlTrace(var_dir / "traces")]
-    if os.environ.get("NEATLOGS_API_KEY"):
-        sinks.append(NeatlogsTrace())
-    return MultiTrace(*sinks)
+    return default_trace(var_dir)
 
 
 def run_scenario(
@@ -202,7 +199,7 @@ def run_scenario(
         state = cls(services, owner="worker-a").approve_contract(run_id, state.approval_id, approver="fixture-owner")
     faults.close()
     check = independent_check(dsn)
-    out = record(scenario, state, store, fixture_sha, started, check, tracer.trace_id(run_id), planner.name, faults)
+    out = record(scenario, state, store, fixture_sha, started, check, tracer.trace_ids(run_id), planner.name, faults)
     if on_state:
         on_state(state)
     return out

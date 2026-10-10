@@ -1,0 +1,141 @@
+[
+  {
+    "scenario_id": "baseline_lock_timeout",
+    "description": "Naive one-transaction backfill under the same row lock",
+    "run_id": "baseline_lock_timeout_6357739",
+    "mode": "baseline",
+    "planner": "naive-retry/v0",
+    "fixture_sha": "aa99e578e8f77ad5517f1f3de8981eac",
+    "faults": [
+      "lock_timeout"
+    ],
+    "lock_hold_ms": 6000,
+    "lock_budget_ms": 300,
+    "plan_hash": "aeca30c90a016cd1fa1bb8923678a00e44b15d036c2c06424be6dfeaa945f0f4",
+    "terminal_state": "FAILED",
+    "expected": [
+      "FAILED"
+    ],
+    "passed": true,
+    "false_success": false,
+    "unapproved_destructive_steps": 0,
+    "rows_seen": 10000,
+    "rows_written": 0,
+    "cursor": 1,
+    "batches": 0,
+    "reconciled_chunks": 0,
+    "final_batch_size": 2000,
+    "retries": 1,
+    "lock_wait_ms": 389,
+    "decisions": 0,
+    "rejected_decisions": 0,
+    "replans": 0,
+    "catch_ups": 0,
+    "source_checksum": null,
+    "target_checksum": null,
+    "null_targets": null,
+    "mismatches": null,
+    "proof_hash": null,
+    "verifier_passed": null,
+    "last_error": {
+      "error_class": "LOCK_PRESSURE",
+      "sqlstate": "55P03",
+      "message": "canceling statement due to lock timeout",
+      "retryable": true,
+      "blockers": [],
+      "operator_action": "The baseline has no recovery: the whole transaction rolled back and kept 0 rows.",
+      "detail": {}
+    },
+    "tokens_in": 0,
+    "tokens_out": 0,
+    "cost_usd": "0.0000556",
+    "db_ms": 400,
+    "independent_check": {
+      "old_column_present": true,
+      "new_column_present": true,
+      "rows": 10000,
+      "wrong_or_missing": 10000
+    },
+    "event_count": 23,
+    "chain_ok": true,
+    "checkpoint_ref": "ckpt:baseline_lock_timeout_6357739:23:8610aaa243ba",
+    "neatlogs_trace_ids": [
+      "fdc921aab8a8234016d7a764a1121801"
+    ],
+    "wall_ms": 6467
+  },
+  {
+    "scenario_id": "lock_timeout",
+    "description": "Row lock held by another session during a chunk",
+    "run_id": "lock_timeout_6364017",
+    "mode": "parachute",
+    "planner": "naive-retry/v0",
+    "fixture_sha": "aa99e578e8f77ad5517f1f3de8981eac",
+    "faults": [
+      "lock_timeout"
+    ],
+    "lock_hold_ms": 6000,
+    "lock_budget_ms": 300,
+    "plan_hash": "aeca30c90a016cd1fa1bb8923678a00e44b15d036c2c06424be6dfeaa945f0f4",
+    "terminal_state": "PAUSED_LOCK_BUDGET",
+    "expected": [
+      "CONTRACT_READY"
+    ],
+    "passed": false,
+    "false_success": false,
+    "unapproved_destructive_steps": 0,
+    "rows_seen": 10000,
+    "rows_written": 4000,
+    "cursor": 4001,
+    "batches": 2,
+    "reconciled_chunks": 0,
+    "final_batch_size": 2000,
+    "retries": 6,
+    "lock_wait_ms": 2290,
+    "decisions": 6,
+    "rejected_decisions": 0,
+    "replans": 0,
+    "catch_ups": 0,
+    "source_checksum": null,
+    "target_checksum": null,
+    "null_targets": null,
+    "mismatches": null,
+    "proof_hash": null,
+    "verifier_passed": null,
+    "last_error": {
+      "error_class": "LOCK_PRESSURE",
+      "sqlstate": "55P03",
+      "message": "canceling statement due to lock timeout",
+      "retryable": true,
+      "blockers": [
+        {
+          "pid": 64007,
+          "lock_mode": "RowShareLock",
+          "granted": true,
+          "state": "idle in transaction",
+          "xact_age_ms": 2694,
+          "query_hash": "841d76edf88e"
+        }
+      ],
+      "operator_action": null,
+      "detail": {}
+    },
+    "tokens_in": 0,
+    "tokens_out": 0,
+    "cost_usd": "0.0003226",
+    "db_ms": 2322,
+    "independent_check": {
+      "old_column_present": true,
+      "new_column_present": true,
+      "rows": 10000,
+      "wrong_or_missing": 6000
+    },
+    "event_count": 50,
+    "chain_ok": true,
+    "checkpoint_ref": "ckpt:lock_timeout_6364017:50:112d394d52f1",
+    "neatlogs_trace_ids": [
+      "bc07c5291fecc41f0426889f62128b7c"
+    ],
+    "wall_ms": 6337
+  }
+]
