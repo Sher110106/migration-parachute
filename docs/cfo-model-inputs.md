@@ -15,7 +15,16 @@ Source: [`evidence/replay-adaptive-v1.json`](../evidence/replay-adaptive-v1.json
 
 These runs used the deterministic planner, so tokens are zero. With `--planner llm`, each decision is one Claude Opus 5.5 call, priced at $4 per million input tokens and $20 per million output tokens. Token counts per decision go in the cost ledger (`tokens_in`, `tokens_out`) and in the neatlogs trace. **To fill in:** measured tokens per decision from the first `--planner llm` replay.
 
-Database cost grows with rows. The 100,000-row stress profile (`fixture.STRESS`) has not been measured yet.
+Database cost grows with rows. The 100,000-row stress profile ([`evidence/replay-adaptive-v1-stress.json`](../evidence/replay-adaptive-v1-stress.json), `--profile stress`):
+
+| Driver | Clean run | Run with lock recovery |
+|---|---:|---:|
+| Database time billed | 680 ms | 2,039 ms |
+| Ledger cost | $0.0000946 | $0.0002830 |
+| Batches | 24 | 35 |
+| Wall time | 1.8 s | 6.3 s |
+
+Ten times the rows cost about twelve times the database time on a clean run (59 ms to 680 ms). Planner decisions stay roughly flat, because the batch grows after clean streaks.
 
 ## Assumptions to set in cfo.ai
 

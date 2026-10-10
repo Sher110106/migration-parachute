@@ -43,6 +43,7 @@ def main(argv: list[str] | None = None) -> int:
     rp.add_argument("--minimum", action="store_true", help="run the minimum adversarial suite")
     rp.add_argument("--planner", default="adaptive", choices=["adaptive", "naive", "llm"])
     rp.add_argument("--out", type=Path, default=None)
+    rp.add_argument("--profile", choices=["demo", "stress"], default=None, help="override the fixture size")
 
     sv = sub.add_parser("serve", help="serve the execution UI and API")
     sv.add_argument("--host", default="127.0.0.1")
@@ -59,7 +60,12 @@ def main(argv: list[str] | None = None) -> int:
     if args.cmd == "replay":
         ids = list(MINIMUM_SUITE) if args.minimum else (args.scenarios or list(SCENARIOS))
         out = args.out or args.var / "results" / f"replay-{args.planner}.json"
-        results = run_suite(ids, planner_factory(args.planner), out, dsn=args.dsn, var_dir=args.var)
+        profile = None
+        if args.profile:
+            from .fixture import DEMO, STRESS
+
+            profile = STRESS if args.profile == "stress" else DEMO
+        results = run_suite(ids, planner_factory(args.planner), out, dsn=args.dsn, var_dir=args.var, profile=profile)
         passed = sum(r["passed"] for r in results)
         print(f"\n{passed}/{len(results)} scenarios behaved as expected -> {out}")
         return 0 if passed == len(results) else 1

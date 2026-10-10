@@ -209,10 +209,16 @@ def run_scenario(
 
 
 def run_suite(ids: list[str], planner_factory: Callable[[], Planner], out_path: Path, dsn: str = DEFAULT_DSN,
-              var_dir: Path = Path("var")) -> list[dict[str, Any]]:
+              var_dir: Path = Path("var"), profile: FixtureProfile | None = None) -> list[dict[str, Any]]:
+    import dataclasses
+
     results = []
     for sid in ids:
-        res = run_scenario(SCENARIOS[sid], planner_factory, dsn=dsn, var_dir=var_dir)
+        scenario = SCENARIOS[sid]
+        if profile is not None:
+            scenario = dataclasses.replace(scenario, profile=dataclasses.replace(
+                profile, with_dependent_view=scenario.profile.with_dependent_view))
+        res = run_scenario(scenario, planner_factory, dsn=dsn, var_dir=var_dir)
         results.append(res)
         print(f"{sid:24s} {res['terminal_state']:18s} {'PASS' if res['passed'] else 'FAIL'} "
               f"retries={res['retries']} lock_wait_ms={res['lock_wait_ms']} batches={res['batches']} wall_ms={res['wall_ms']}")

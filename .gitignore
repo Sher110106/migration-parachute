@@ -10,3 +10,4 @@ var/
 .entire/settings.local.json
 .claude/settings.local.json
 .DS_Store
+var-*/
