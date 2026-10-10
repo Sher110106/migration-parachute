@@ -435,6 +435,7 @@ class RunStarted(EventBase):
     spec: MigrationSpec
     spec_hash: str
     mode: str = "parachute"
+    planner: str = ""
 
 
 class LeaseAcquired(EventBase):

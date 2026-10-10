@@ -92,7 +92,9 @@ class Orchestrator:
 
     def start_run(self, spec: MigrationSpec, run_id: str | None = None) -> RunState:
         run_id = run_id or f"run_{uuid.uuid4().hex[:10]}"
-        self.s.store.create_run(RunStarted(run_id=run_id, spec=spec, spec_hash=spec.spec_hash(), mode=self.mode))
+        self.s.store.create_run(
+            RunStarted(run_id=run_id, spec=spec, spec_hash=spec.spec_hash(), mode=self.mode, planner=self.s.planner.name)
+        )
         return self._drive(run_id)
 
     def resume_run(self, run_id: str, new_cost_cap_usd: Decimal | None = None, reason: str = "operator resume") -> RunState:

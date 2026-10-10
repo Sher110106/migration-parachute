@@ -31,6 +31,7 @@ def snapshot(state: RunState) -> dict[str, Any]:
     return {
         "run_id": state.run_id,
         "mode": state.mode,
+        "planner": state.planner,
         "display_state": state.display_state,
         "phase": state.phase.value,
         "status": state.status.value,
@@ -140,8 +141,14 @@ def create_app(dsn: str = DEFAULT_DSN, var_dir: Path = Path("var"), planners: di
 
         threading.Thread(target=worker, daemon=True, name=f"job-{kind}").start()
 
-    def services(planner_name: str = "adaptive") -> Services:
-        return Services(store=store, db=PostgresAdapter(dsn), planner=factories[planner_name](), tracer=make_tracer(var_dir))
+    def services(run_id: str | None = None) -> Services:
+        """Services for follow-up actions, using the planner the run started with."""
+        key = "adaptive"
+        if run_id is not None:
+            started_with = store.materialized(run_id).planner
+            prefixes = {"naive-retry": "naive", "adaptive": "adaptive", "claude/": "llm"}
+            key = next((k for p, k in prefixes.items() if started_with.startswith(p) and k in factories), "adaptive")
+        return Services(store=store, db=PostgresAdapter(dsn), planner=factories[key](), tracer=make_tracer(var_dir))
 
     @app.get("/")
     def index():
@@ -204,19 +211,28 @@ def create_app(dsn: str = DEFAULT_DSN, var_dir: Path = Path("var"), planners: di
             return []
         return [json.loads(line) for line in path.read_text().splitlines() if line.strip()]
 
+    def require(run_id: str) -> None:
+        try:
+            store.materialized(run_id)
+        except KeyError:
+            raise HTTPException(404, "no such run")
+
     @app.post("/api/runs/{run_id}/approve")
     def approve(run_id: str, body: Approve):
-        launch("approve", run_id, lambda: snapshot(Orchestrator(services()).approve_contract(run_id, body.approval_id, body.approver)))
+        require(run_id)
+        launch("approve", run_id, lambda: snapshot(Orchestrator(services(run_id)).approve_contract(run_id, body.approval_id, body.approver)))
         return {"ok": True}
 
     @app.post("/api/runs/{run_id}/resume")
     def resume(run_id: str, body: Resume):
-        launch("resume", run_id, lambda: snapshot(Orchestrator(services()).resume_run(run_id, new_cost_cap_usd=body.cost_cap_usd)))
+        require(run_id)
+        launch("resume", run_id, lambda: snapshot(Orchestrator(services(run_id)).resume_run(run_id, new_cost_cap_usd=body.cost_cap_usd)))
         return {"ok": True}
 
     @app.post("/api/runs/{run_id}/abort")
     def abort(run_id: str):
-        launch("abort", run_id, lambda: snapshot(Orchestrator(services()).abort_run(run_id, "operator abort from UI")))
+        require(run_id)
+        launch("abort", run_id, lambda: snapshot(Orchestrator(services(run_id)).abort_run(run_id, "operator abort from UI")))
         return {"ok": True}
 
     @app.get("/api/evidence")

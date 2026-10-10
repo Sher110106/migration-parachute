@@ -58,6 +58,7 @@ class RunState(BaseModel):
     spec: MigrationSpec
     spec_hash: str
     mode: str
+    planner: str = ""
     phase: Phase = Phase.INIT
     status: RunStatus = RunStatus.RUNNING
     revision: int = 0
@@ -151,6 +152,7 @@ def apply(state: RunState | None, event: Event) -> RunState:
             spec=event.spec,
             spec_hash=event.spec_hash,
             mode=event.mode,
+            planner=event.planner,
             cost_cap_usd=event.spec.cost_cap_usd,
             batch_size=event.spec.chunk_policy.initial_batch,
             revision=1,
