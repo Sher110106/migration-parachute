@@ -517,7 +517,14 @@ class Orchestrator:
         )
 
     def _enrich_error(self, error: ErrorEnvelope) -> ErrorEnvelope:
-        return error
+        """On lock pressure, record who holds the lock while they still hold it."""
+        if error.error_class != ErrorClass.LOCK_PRESSURE:
+            return error
+        with self.s.tracer.span("TOOL", "inspect_locks", table=self.spec.target_table) as sp:
+            blockers = self.s.db.inspect_locks(self.spec)
+            sp.set(blockers=len(blockers), pids=",".join(str(b.pid) for b in blockers),
+                   oldest_xact_ms=max((b.xact_age_ms or 0 for b in blockers), default=0))
+        return error.model_copy(update={"blockers": blockers})
 
     def _backfill_verify(self) -> None:
         self.s.faults.before_backfill_verify(self.spec)

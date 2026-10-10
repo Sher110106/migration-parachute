@@ -17,6 +17,8 @@ def planner_factory(name: str):
 
     if name == "naive":
         return planners.NaiveRetryPlanner
+    if name == "adaptive":
+        return planners.AdaptivePlanner
     raise SystemExit(f"unknown planner {name!r}")
 
 
@@ -29,7 +31,7 @@ def main(argv: list[str] | None = None) -> int:
     rp = sub.add_parser("replay", help="run scenarios against a fresh fixture each time")
     rp.add_argument("scenarios", nargs="*", help=f"ids (default: all). Known: {', '.join(SCENARIOS)}")
     rp.add_argument("--minimum", action="store_true", help="run the minimum adversarial suite")
-    rp.add_argument("--planner", default="naive")
+    rp.add_argument("--planner", default="adaptive", choices=["adaptive", "naive"])
     rp.add_argument("--out", type=Path, default=None)
 
     args = ap.parse_args(argv)
