@@ -24,7 +24,7 @@ Database cost grows with rows. The 100,000-row stress profile ([`evidence/replay
 | Batches | 24 | 35 |
 | Wall time | 1.8 s | 6.3 s |
 
-Ten times the rows cost about twelve times the database time on a clean run (59 ms to 680 ms). Planner decisions stay roughly flat, because the batch grows after clean streaks.
+Ten times the rows cost about twelve times the database time on a clean run (59 ms to 680 ms). Planner decisions grow much more slowly than rows (1 to 2 on a clean run, 5 to 8 with lock recovery) because the batch grows after clean streaks.
 
 ## Assumptions to set in cfo.ai
 
