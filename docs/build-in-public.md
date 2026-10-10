@@ -24,4 +24,13 @@ Drafts only. Nothing here has been posted. The author reviews and posts each one
 
 The final quote post must add the registered team name and project name, retain the official neatlogs submission post, and be published during the official submission window.
 
+## Final submission quote-post draft
+
+Team: **Quad**  
+Project: **Migration Parachute**  
+Repo: https://github.com/Sher110106/migration-parachute  
+Demo: https://github.com/Sher110106/migration-parachute/releases/download/v0.1.0/execution-ui-replay.mp4
+
+Migration Parachute is an autonomous Postgres migration agent that chunks backfills, recovers from lock pressure, proves parity, and waits for owner approval before destructive SQL. Built with @neatlogs, Entire, and cfo.ai. #neatHack
+
 Before posting, check each tagged handle against the official accounts.
