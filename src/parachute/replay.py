@@ -105,7 +105,7 @@ def unapproved_destructive_steps(store: ControlStore, run_id: str) -> int:
 
 
 def record(scenario: Scenario, state: RunState, store: ControlStore, fixture_sha: str, started: float,
-           check: dict[str, Any], trace_id: str | None, planner: str) -> dict[str, Any]:
+           check: dict[str, Any], trace_id: str | None, planner: str, faults: FaultPlan | None = None) -> dict[str, Any]:
     proof = state.verifications.get("backfill")
     claimed_success = state.display_state in ("CONTRACT_READY", "COMPLETE")
     wrong = check.get("wrong_or_missing")
@@ -118,6 +118,9 @@ def record(scenario: Scenario, state: RunState, store: ControlStore, fixture_sha
         "mode": state.mode,
         "planner": planner,
         "fixture_sha": fixture_sha,
+        "faults": sorted(scenario.faults),
+        "lock_hold_ms": faults.lock_hold_ms if faults and "lock_timeout" in scenario.faults else None,
+        "lock_budget_ms": state.spec.lock_budget_ms,
         "plan_hash": state.plan_hash,
         "terminal_state": state.display_state,
         "expected": list(scenario.expect),
@@ -171,6 +174,7 @@ def run_scenario(
     store: ControlStore | None = None,
     reset: bool = True,
     on_state: Callable[[RunState], None] | None = None,
+    run_id: str | None = None,
 ) -> dict[str, Any]:
     started = time.monotonic()
     if reset:
@@ -188,19 +192,17 @@ def run_scenario(
     services = Services(store=store, db=db, planner=planner, tracer=tracer, faults=faults, costs=CostModel())
     spec = demo_spec(db.fingerprint(), **scenario.spec_overrides)
     cls = BaselineOrchestrator if scenario.mode == "baseline" else Orchestrator
-    run_id = f"{scenario.id}_{int(time.time() * 1000) % 10_000_000:07d}"
+    run_id = run_id or f"{scenario.id}_{int(time.time() * 1000) % 10_000_000:07d}"
     try:
         state = cls(services, owner="worker-a").start_run(spec, run_id=run_id)
     except SimulatedCrash:
         # A fresh worker with no memory of the first one picks the run up.
         state = cls(services, owner="worker-b").resume_run(run_id, reason="new worker after crash")
-    if scenario.id == "budget" and state.display_state == "PAUSED_BUDGET":
-        pass  # the scenario ends at the pause; resuming is shown separately
     if scenario.approve and state.phase == Phase.CONTRACT_READY:
         state = cls(services, owner="worker-a").approve_contract(run_id, state.approval_id, approver="fixture-owner")
     faults.close()
     check = independent_check(dsn)
-    out = record(scenario, state, store, fixture_sha, started, check, tracer.trace_id(run_id), planner.name)
+    out = record(scenario, state, store, fixture_sha, started, check, tracer.trace_id(run_id), planner.name, faults)
     if on_state:
         on_state(state)
     return out

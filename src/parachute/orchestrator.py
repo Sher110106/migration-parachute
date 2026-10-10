@@ -56,7 +56,7 @@ from .domain import (
 from .economics import CostModel
 from .faults import FaultHooks, NoFaults
 from .pg import PostgresAdapter, chunk_key, step_key
-from .planners import Planner
+from .planners import AdaptivePlanner, Planner
 from .planning import build_plan, column_conflict, spec_problems
 from .state import RunState
 from .store import ControlStore
@@ -75,6 +75,7 @@ class Services:
     faults: FaultHooks = field(default_factory=NoFaults)
     costs: CostModel = field(default_factory=CostModel)
     sleep: Callable[[float], None] = time.sleep
+    fallback: Planner | None = field(default_factory=AdaptivePlanner)
 
 
 class Orchestrator:
@@ -279,8 +280,7 @@ class Orchestrator:
                 events.append(self._cost_event(tokens_in=decision.tokens_in, tokens_out=decision.tokens_out))
             if rejection:
                 events.append(DecisionMade(decision=decision, accepted=False, rejection=rejection))
-                safe = next((o for o in options if o.kind == ActionKind.PAUSE), options[0])
-                decision = policy.forced_decision(safe, f"Planner answer rejected ({rejection}); policy chose {safe.kind.value}.")
+                decision = self._fallback_decision(obs, options, rejection)
             events.append(DecisionMade(decision=decision, accepted=True, forced=decision.planner == "policy"))
             self._emit(*events)
             sp.set(
@@ -293,6 +293,19 @@ class Orchestrator:
                 tokens_out=decision.tokens_out,
             )
         return decision
+
+    def _fallback_decision(self, obs: Observation, options: tuple[ActionOption, ...], rejection: str) -> Decision:
+        """After a rejected answer: ask the deterministic planner, else pause."""
+        fb = self.s.fallback
+        if fb is not None and fb is not self.s.planner:
+            try:
+                alt = fb.decide(obs)
+                if policy.validate(alt, options) is None:
+                    return alt.model_copy(update={"summary": f"Planner answer rejected ({rejection}). {alt.summary}"})
+            except Exception:
+                pass
+        safe = next((o for o in options if o.kind == ActionKind.PAUSE), options[0])
+        return policy.forced_decision(safe, f"Planner answer rejected ({rejection}); policy chose {safe.kind.value}.")
 
     def _inspect(self, purpose: str):
         with self.s.tracer.span("TOOL", "inspect_schema", phase=self.state.phase.value, purpose=purpose) as sp:

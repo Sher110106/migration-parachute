@@ -89,7 +89,7 @@ class FaultPlan:
     dsn: str
     kinds: frozenset[str] = frozenset()
     lock_range: tuple[int, int] = (4_001, 4_100)
-    lock_hold_ms: int = 3_000
+    lock_hold_ms: int = 3_500
     crash_on_chunk: int = 3
     corrupt_key: int = 777
     concurrent_insert_rows: int = 240

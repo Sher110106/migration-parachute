@@ -8,10 +8,10 @@ from decimal import Decimal
 
 @dataclass(frozen=True)
 class CostModel:
-    # Planner model prices in USD per million tokens. Set from the provider's
-    # price page when an LLM planner is used; the rule planner uses no tokens.
-    input_per_mtok: Decimal = Decimal("1.00")
-    output_per_mtok: Decimal = Decimal("5.00")
+    # Planner model prices in USD per million tokens: claude-opus-5-5 first-party
+    # list price ($4 in / $20 out). Bedrock prices differ. Rule planners use no tokens.
+    input_per_mtok: Decimal = Decimal("4.00")
+    output_per_mtok: Decimal = Decimal("20.00")
     # Database runner time, priced as a small managed Postgres instance.
     db_usd_per_hour: Decimal = Decimal("0.50")
 
