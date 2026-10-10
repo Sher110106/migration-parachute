@@ -1,0 +1,12 @@
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+.env
+.env.*
+*.sqlite
+*.sqlite-journal
+var/
+.entire/settings.local.json
+.claude/settings.local.json
+.DS_Store
