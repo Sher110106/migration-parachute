@@ -116,6 +116,13 @@ class _NeatlogsHandle:
 
 
 WORKFLOW_NAME = "postgres-schema-migration"
+# Each separately triggered entry point gets its own workflow in neatlogs.
+ROOT_WORKFLOWS = {
+    "migration_run": WORKFLOW_NAME,
+    "migration_resume": WORKFLOW_NAME,
+    "contract_approval": "contract-approval",
+    "migration_abort": "migration-abort",
+}
 INGEST_ENDPOINT = "https://ingest.neatlogs.com"
 _neatlogs_state = {"ready": False}
 
@@ -145,8 +152,8 @@ def shutdown_neatlogs() -> None:
         return
     import neatlogs
 
-    neatlogs.flush()
-    neatlogs.shutdown()
+    neatlogs.flush(timeout_millis=10_000)
+    neatlogs.shutdown(timeout_millis=10_000)
     _neatlogs_state["ready"] = False
 
 
@@ -166,6 +173,8 @@ class NeatlogsTrace:
         extra: dict[str, Any] = {}
         if kind == "TOOL":
             extra["tool.name"] = name
+        if kind == "WORKFLOW" and name in ROOT_WORKFLOWS:
+            extra["neatlogs.workflow_name"] = ROOT_WORKFLOWS[name]
         # Every trace of one run (start, crash resume, approval) shares a session.
         session = attrs.get("run_id") if kind == "WORKFLOW" else None
         with self.neatlogs.trace(name, kind=kind, session_id=session, **extra) as sp:

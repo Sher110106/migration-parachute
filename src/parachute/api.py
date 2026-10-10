@@ -3,6 +3,7 @@ the shared local fixture database."""
 
 from __future__ import annotations
 
+import asyncio
 import json
 import threading
 import time
@@ -132,7 +133,7 @@ def create_app(dsn: str = DEFAULT_DSN, var_dir: Path = Path("var"), planners: di
         try:
             yield
         finally:
-            shutdown_neatlogs()
+            await asyncio.to_thread(shutdown_neatlogs)  # synchronous; keep it off the event loop
 
     app = FastAPI(title="Migration Parachute", lifespan=lifespan)
     job: dict[str, Any] = {"busy": False, "kind": None, "run_id": None, "error": None, "result": None}

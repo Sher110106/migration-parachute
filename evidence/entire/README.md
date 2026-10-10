@@ -35,4 +35,4 @@ Every commit carries an `Entire-Checkpoint` trailer. Entire's hooks did not run 
 
 ## Why the transcripts are not published
 
-Entire stores session transcripts in git refs and, by default, pushes them along with the code. The build transcript holds the author's private machine context, including a pasted project API key. Entire's secret redaction is best effort. So this repository sets `strategy_options.push_sessions: false` in `.entire/settings.json`, and the checkpoints stay on the author's machine. The rules ask for checkpoints *or* entire-graph output. They do not ask for transcripts to be public.
+Entire stores session transcripts in git refs and, by default, pushes them along with the code. The build transcript holds the author's private machine context and credentials. Entire's secret redaction is best effort. So this repository sets `strategy_options.push_sessions: false` in `.entire/settings.json`, and the checkpoints stay on the author's machine. The rules ask for checkpoints *or* entire-graph output. They do not ask for transcripts to be public.
