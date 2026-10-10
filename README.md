@@ -84,7 +84,7 @@ ANTHROPIC_API_KEY=...         # enable --planner llm (claude-opus-5-5)
 
 ## Partner tools
 
-- **neatlogs** traces every run as one `WORKFLOW` with nested `AGENT` (planner decisions), `TOOL` (database calls, lock inspection, ledger reconciliation), `GUARDRAIL` (spec validation, drift, contract guard, fail-closed) and `EVALUATOR` (expand, backfill and contract verification) spans. Attributes carry hashes, counts, SQLSTATEs and timings, never row values. The same tree is written locally to `var/traces/` for the UI.
+- **neatlogs** traces every run as one `WORKFLOW` with nested `AGENT` (planner decisions), `TOOL` (database calls, lock inspection, ledger reconciliation), `GUARDRAIL` (spec validation, drift, contract guard, fail-closed) and `EVALUATOR` (expand, backfill and contract verification) spans. Attributes carry hashes, counts, SQLSTATEs and timings, never row values. The same tree is written locally to `var/traces/` for the UI. The before/after runs were exported to neatlogs; their trace ids are in [`evidence/neatlogs-before-naive-v0.json`](evidence/neatlogs-before-naive-v0.json) and [`evidence/neatlogs-after-adaptive-v1.json`](evidence/neatlogs-after-adaptive-v1.json) (field `neatlogs_trace_ids`). Each process initialises neatlogs once, and every trace of one run shares the run id as its session.
 - **Entire** records the coding-agent sessions that built this repository. Each commit carries an `Entire-Checkpoint` trailer; `entire checkpoint explain <id>` shows the prompts and decisions behind it, including the v0-to-v1 recovery fix.
 - **cfo.ai** holds the business model: price, runs per customer, the measured cost ledger per run, and three adoption scenarios. See [`docs/cfo-model-inputs.md`](docs/cfo-model-inputs.md).
 
