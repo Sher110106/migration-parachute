@@ -135,6 +135,8 @@ def _phase(state: RunState, dst: Phase) -> dict:
     status = state.status
     if dst == Phase.CONTRACT_READY:
         status = RunStatus.AWAITING_APPROVAL
+    elif dst == Phase.MANUAL_INTERVENTION:
+        status = RunStatus.MANUAL_INTERVENTION
     elif state.phase == Phase.CONTRACT_READY:
         status = RunStatus.RUNNING
     return {"phase": dst, "status": status}

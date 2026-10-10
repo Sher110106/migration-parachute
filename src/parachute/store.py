@@ -76,8 +76,9 @@ CREATE TABLE IF NOT EXISTS backfill_chunks (
     rows INTEGER NOT NULL,
     checksum TEXT NOT NULL,
     attempts INTEGER NOT NULL,
-    idempotency_key TEXT NOT NULL UNIQUE,
-    reconciled INTEGER NOT NULL
+    idempotency_key TEXT NOT NULL,
+    reconciled INTEGER NOT NULL,
+    UNIQUE (run_id, idempotency_key)
 );
 CREATE TABLE IF NOT EXISTS checkpoints (
     run_id TEXT NOT NULL,

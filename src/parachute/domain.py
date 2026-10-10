@@ -245,6 +245,10 @@ class MigrationSpec(Frozen):
     def spec_hash(self) -> str:
         return sha256_hex(self)
 
+    def content_hash(self) -> str:
+        """The spec without the database identity, for comparing proofs across fixture resets."""
+        return sha256_hex(self.model_dump(mode="json", exclude={"database_fingerprint"}))
+
 
 # --------------------------------------------------------------------------
 # Schema, plan, tools, verification
@@ -370,6 +374,7 @@ class ActionKind(str, enum.Enum):
     PLAN_BACKFILL = "plan_backfill"
     RUN_CHUNK = "run_chunk"
     RETRY_CHUNK = "retry_chunk"
+    RETRY_STEP = "retry_step"
     CATCH_UP = "catch_up"
     VERIFY_BACKFILL = "verify_backfill"
     PREPARE_CONTRACT = "prepare_contract"

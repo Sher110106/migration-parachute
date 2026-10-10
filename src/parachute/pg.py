@@ -110,8 +110,10 @@ class PostgresAdapter:
                 sysid = conn.execute("SELECT system_identifier FROM pg_control_system()").fetchone()[0]
             except psycopg.Error:
                 sysid = "unknown"
-            db = conn.execute("SELECT current_database()").fetchone()[0]
-        return f"pg:{sysid}:{db}"
+            db, oid = conn.execute(
+                "SELECT datname, oid FROM pg_database WHERE datname = current_database()"
+            ).fetchone()
+        return f"pg:{sysid}:{db}:{oid}"
 
     def bootstrap(self) -> None:
         with self.connect() as conn, conn.transaction():
