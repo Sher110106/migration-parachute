@@ -2,7 +2,7 @@
   {
     "scenario_id": "clean",
     "description": "Clean additive migration; stops at the approval gate",
-    "run_id": "clean_9633256",
+    "run_id": "clean_1069172",
     "mode": "parachute",
     "planner": "adaptive/v1",
     "fixture_sha": "ee0c2de119a5fe6e038cc4b77ac2effb",
@@ -38,8 +38,8 @@
     "last_error": null,
     "tokens_in": 0,
     "tokens_out": 0,
-    "cost_usd": "0.0000946",
-    "db_ms": 680,
+    "cost_usd": "0.0000873",
+    "db_ms": 628,
     "independent_check": {
       "old_column_present": true,
       "new_column_present": true,
@@ -48,21 +48,21 @@
     },
     "event_count": 99,
     "chain_ok": true,
-    "checkpoint_ref": "ckpt:clean_9633256:99:9ab1ff851b0c",
+    "checkpoint_ref": "ckpt:clean_1069172:99:1a52386b5b90",
     "neatlogs_trace_id": null,
-    "wall_ms": 1839
+    "wall_ms": 2422
   },
   {
     "scenario_id": "lock_timeout",
     "description": "Row lock held by another session during a chunk",
-    "run_id": "lock_timeout_9635063",
+    "run_id": "lock_timeout_1070934",
     "mode": "parachute",
     "planner": "adaptive/v1",
     "fixture_sha": "ee0c2de119a5fe6e038cc4b77ac2effb",
     "faults": [
       "lock_timeout"
     ],
-    "lock_hold_ms": 3500,
+    "lock_hold_ms": 6000,
     "lock_budget_ms": 300,
     "plan_hash": "e40888985675f1169ec8e03ebbf2853a71513d9496e693e31f6ed31e4cffa5f3",
     "terminal_state": "CONTRACT_READY",
@@ -78,9 +78,9 @@
     "batches": 35,
     "reconciled_chunks": 0,
     "final_batch_size": 5000,
-    "retries": 3,
-    "lock_wait_ms": 1366,
-    "decisions": 8,
+    "retries": 4,
+    "lock_wait_ms": 1835,
+    "decisions": 9,
     "rejected_decisions": 0,
     "replans": 0,
     "catch_ups": 0,
@@ -93,18 +93,18 @@
     "last_error": null,
     "tokens_in": 0,
     "tokens_out": 0,
-    "cost_usd": "0.0002830",
-    "db_ms": 2039,
+    "cost_usd": "0.0003505",
+    "db_ms": 2525,
     "independent_check": {
       "old_column_present": true,
       "new_column_present": true,
       "rows": 100000,
       "wrong_or_missing": 0
     },
-    "event_count": 147,
+    "event_count": 151,
     "chain_ok": true,
-    "checkpoint_ref": "ckpt:lock_timeout_9635063:147:5466914106ee",
+    "checkpoint_ref": "ckpt:lock_timeout_1070934:151:5ff4ca3bffc4",
     "neatlogs_trace_id": null,
-    "wall_ms": 6307
+    "wall_ms": 10022
   }
 ]

@@ -8,11 +8,11 @@ Drafts only. Nothing here has been posted. The author reviews and posts each one
 
 ## 2. First failure, on purpose
 
-> First recovery policy for #neatHack's Migration Parachute: retry the same 2,000-row batch after 50 ms. Against a 3 s row lock it burned 6 retries and 2.3 s of lock wait, then paused. It didn't corrupt anything or claim success, but it didn't finish either. Committed it as-is so the fix has an honest baseline. @neatlogs
+> First recovery policy for #neatHack's Migration Parachute: retry the same 2,000-row batch after 50 ms. Against a row lock held by another session it burned 6 retries and 2.3 s of lock wait, then paused. It didn't corrupt anything or claim success, but it didn't finish either. Committed it as-is so the fix has an honest baseline. @neatlogs
 
 ## 3. The fix
 
-> Fix: on a lock timeout, roll back the chunk, record the blocking session while it still holds the lock, cut the batch to 500, back off exponentially, retry from the same cursor, grow the batch back after 4 clean chunks. Same fault: 3 retries, 1.1 s lock wait, parity verified. 12/12 replay scenarios. Before/after traces in @neatlogs. #neatHack
+> Fix: on a lock timeout, roll back the chunk, record the blocking session while it still holds the lock, cut the batch to 500, back off exponentially, retry from the same cursor, grow the batch back after 4 clean chunks. Same fault: 4 retries, 1.8 s lock wait, parity verified (naive: 6 retries, 2.6 s, paused). 12/12 replay scenarios. Before/after traces in @neatlogs. #neatHack
 
 ## 4. Crash test
 

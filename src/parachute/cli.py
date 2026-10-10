@@ -47,7 +47,7 @@ def main(argv: list[str] | None = None) -> int:
 
     sv = sub.add_parser("serve", help="serve the execution UI and API")
     sv.add_argument("--host", default="127.0.0.1")
-    sv.add_argument("--port", type=int, default=8765)
+    sv.add_argument("--port", type=int, default=8777)
 
     args = ap.parse_args(argv)
     if args.cmd == "serve":

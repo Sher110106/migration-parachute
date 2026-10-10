@@ -78,7 +78,7 @@ def test_lock_timeout_recovers_with_adaptive_and_pauses_with_naive(env, tmp_path
     reset_database(DSN)
     seed(DSN)
     spec = demo_spec(env.db.fingerprint())
-    faults = FaultPlan(dsn=DSN, kinds=frozenset({"lock_timeout"}), lock_hold_ms=5_000)
+    faults = FaultPlan(dsn=DSN, kinds=frozenset({"lock_timeout"}))
     st = Orchestrator(services(env, planner=NaiveRetryPlanner(), faults=faults)).start_run(spec, run_id="naive")
     faults.close()
     assert st.display_state == "PAUSED_LOCK_BUDGET"

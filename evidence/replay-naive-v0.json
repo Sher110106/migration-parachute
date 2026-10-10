@@ -2,10 +2,13 @@
   {
     "scenario_id": "clean",
     "description": "Clean additive migration; stops at the approval gate",
-    "run_id": "clean_8994605",
+    "run_id": "clean_1023479",
     "mode": "parachute",
     "planner": "naive-retry/v0",
     "fixture_sha": "aa99e578e8f77ad5517f1f3de8981eac",
+    "faults": [],
+    "lock_hold_ms": null,
+    "lock_budget_ms": 300,
     "plan_hash": "aeca30c90a016cd1fa1bb8923678a00e44b15d036c2c06424be6dfeaa945f0f4",
     "terminal_state": "CONTRACT_READY",
     "expected": [
@@ -35,8 +38,8 @@
     "last_error": null,
     "tokens_in": 0,
     "tokens_out": 0,
-    "cost_usd": "0.0000085",
-    "db_ms": 61,
+    "cost_usd": "0.0000086",
+    "db_ms": 62,
     "independent_check": {
       "old_column_present": true,
       "new_column_present": true,
@@ -45,17 +48,20 @@
     },
     "event_count": 41,
     "chain_ok": true,
-    "checkpoint_ref": "ckpt:clean_8994605:41:a66348699add",
+    "checkpoint_ref": "ckpt:clean_1023479:41:c3a80f12a1e3",
     "neatlogs_trace_id": null,
-    "wall_ms": 325
+    "wall_ms": 346
   },
   {
     "scenario_id": "clean_approved",
     "description": "Clean migration with owner approval; contract runs and verifies",
-    "run_id": "clean_approved_8994884",
+    "run_id": "clean_approved_1023784",
     "mode": "parachute",
     "planner": "naive-retry/v0",
     "fixture_sha": "aa99e578e8f77ad5517f1f3de8981eac",
+    "faults": [],
+    "lock_hold_ms": null,
+    "lock_budget_ms": 300,
     "plan_hash": "aeca30c90a016cd1fa1bb8923678a00e44b15d036c2c06424be6dfeaa945f0f4",
     "terminal_state": "COMPLETE",
     "expected": [
@@ -85,8 +91,8 @@
     "last_error": null,
     "tokens_in": 0,
     "tokens_out": 0,
-    "cost_usd": "0.0000101",
-    "db_ms": 72,
+    "cost_usd": "0.0000095",
+    "db_ms": 69,
     "independent_check": {
       "old_column_present": false,
       "new_column_present": true,
@@ -95,17 +101,22 @@
     },
     "event_count": 63,
     "chain_ok": true,
-    "checkpoint_ref": "ckpt:clean_approved_8994884:63:2e9f2cef62a0",
+    "checkpoint_ref": "ckpt:clean_approved_1023784:63:a8e238381273",
     "neatlogs_trace_id": null,
-    "wall_ms": 347
+    "wall_ms": 362
   },
   {
     "scenario_id": "baseline_lock_timeout",
     "description": "Naive one-transaction backfill under the same row lock",
-    "run_id": "baseline_lock_timeout_8995234",
+    "run_id": "baseline_lock_timeout_1024160",
     "mode": "baseline",
     "planner": "naive-retry/v0",
     "fixture_sha": "aa99e578e8f77ad5517f1f3de8981eac",
+    "faults": [
+      "lock_timeout"
+    ],
+    "lock_hold_ms": 6000,
+    "lock_budget_ms": 300,
     "plan_hash": "aeca30c90a016cd1fa1bb8923678a00e44b15d036c2c06424be6dfeaa945f0f4",
     "terminal_state": "FAILED",
     "expected": [
@@ -121,7 +132,7 @@
     "reconciled_chunks": 0,
     "final_batch_size": 2000,
     "retries": 1,
-    "lock_wait_ms": 384,
+    "lock_wait_ms": 445,
     "decisions": 0,
     "rejected_decisions": 0,
     "replans": 0,
@@ -143,8 +154,8 @@
     },
     "tokens_in": 0,
     "tokens_out": 0,
-    "cost_usd": "0.0000546",
-    "db_ms": 393,
+    "cost_usd": "0.0000631",
+    "db_ms": 454,
     "independent_check": {
       "old_column_present": true,
       "new_column_present": true,
@@ -153,17 +164,22 @@
     },
     "event_count": 23,
     "chain_ok": true,
-    "checkpoint_ref": "ckpt:baseline_lock_timeout_8995234:23:aeec67d9e7c5",
+    "checkpoint_ref": "ckpt:baseline_lock_timeout_1024160:23:8f5831170ed8",
     "neatlogs_trace_id": null,
-    "wall_ms": 3200
+    "wall_ms": 6218
   },
   {
     "scenario_id": "lock_timeout",
     "description": "Row lock held by another session during a chunk",
-    "run_id": "lock_timeout_8998484",
+    "run_id": "lock_timeout_1030405",
     "mode": "parachute",
     "planner": "naive-retry/v0",
     "fixture_sha": "aa99e578e8f77ad5517f1f3de8981eac",
+    "faults": [
+      "lock_timeout"
+    ],
+    "lock_hold_ms": 6000,
+    "lock_budget_ms": 300,
     "plan_hash": "aeca30c90a016cd1fa1bb8923678a00e44b15d036c2c06424be6dfeaa945f0f4",
     "terminal_state": "PAUSED_LOCK_BUDGET",
     "expected": [
@@ -179,7 +195,7 @@
     "reconciled_chunks": 0,
     "final_batch_size": 2000,
     "retries": 6,
-    "lock_wait_ms": 2307,
+    "lock_wait_ms": 2647,
     "decisions": 6,
     "rejected_decisions": 0,
     "replans": 0,
@@ -195,14 +211,23 @@
       "sqlstate": "55P03",
       "message": "canceling statement due to lock timeout",
       "retryable": true,
-      "blockers": [],
+      "blockers": [
+        {
+          "pid": 9576,
+          "lock_mode": "RowShareLock",
+          "granted": true,
+          "state": "idle in transaction",
+          "xact_age_ms": 3081,
+          "query_hash": "841d76edf88e"
+        }
+      ],
       "operator_action": null,
       "detail": {}
     },
     "tokens_in": 0,
     "tokens_out": 0,
-    "cost_usd": "0.0003246",
-    "db_ms": 2336,
+    "cost_usd": "0.0003713",
+    "db_ms": 2674,
     "independent_check": {
       "old_column_present": true,
       "new_column_present": true,
@@ -211,17 +236,22 @@
     },
     "event_count": 50,
     "chain_ok": true,
-    "checkpoint_ref": "ckpt:lock_timeout_8998484:50:74c9ffcdfa29",
+    "checkpoint_ref": "ckpt:lock_timeout_1030405:50:97eeb3187af8",
     "neatlogs_trace_id": null,
-    "wall_ms": 3267
+    "wall_ms": 6261
   },
   {
     "scenario_id": "crash_after_commit",
     "description": "Worker dies after the database commits a chunk; a new worker resumes",
-    "run_id": "crash_after_commit_9001752",
+    "run_id": "crash_after_commit_1036663",
     "mode": "parachute",
     "planner": "naive-retry/v0",
     "fixture_sha": "aa99e578e8f77ad5517f1f3de8981eac",
+    "faults": [
+      "crash_after_commit"
+    ],
+    "lock_hold_ms": null,
+    "lock_budget_ms": 300,
     "plan_hash": "aeca30c90a016cd1fa1bb8923678a00e44b15d036c2c06424be6dfeaa945f0f4",
     "terminal_state": "CONTRACT_READY",
     "expected": [
@@ -251,8 +281,8 @@
     "last_error": null,
     "tokens_in": 0,
     "tokens_out": 0,
-    "cost_usd": "0.0000069",
-    "db_ms": 49,
+    "cost_usd": "0.0000067",
+    "db_ms": 48,
     "independent_check": {
       "old_column_present": true,
       "new_column_present": true,
@@ -261,17 +291,22 @@
     },
     "event_count": 41,
     "chain_ok": true,
-    "checkpoint_ref": "ckpt:crash_after_commit_9001752:41:c8b637e3ca1e",
+    "checkpoint_ref": "ckpt:crash_after_commit_1036663:41:3c2be442f047",
     "neatlogs_trace_id": null,
-    "wall_ms": 351
+    "wall_ms": 340
   },
   {
     "scenario_id": "parity_mismatch",
     "description": "A writer bypasses the trigger and stores a wrong id",
-    "run_id": "parity_mismatch_9002059",
+    "run_id": "parity_mismatch_1036959",
     "mode": "parachute",
     "planner": "naive-retry/v0",
     "fixture_sha": "aa99e578e8f77ad5517f1f3de8981eac",
+    "faults": [
+      "parity_mismatch"
+    ],
+    "lock_hold_ms": null,
+    "lock_budget_ms": 300,
     "plan_hash": "aeca30c90a016cd1fa1bb8923678a00e44b15d036c2c06424be6dfeaa945f0f4",
     "terminal_state": "FAILED",
     "expected": [
@@ -311,8 +346,8 @@
     },
     "tokens_in": 0,
     "tokens_out": 0,
-    "cost_usd": "0.0000134",
-    "db_ms": 96,
+    "cost_usd": "0.0000083",
+    "db_ms": 60,
     "independent_check": {
       "old_column_present": true,
       "new_column_present": true,
@@ -321,17 +356,22 @@
     },
     "event_count": 38,
     "chain_ok": true,
-    "checkpoint_ref": "ckpt:parity_mismatch_9002059:38:7d11c071e9d3",
+    "checkpoint_ref": "ckpt:parity_mismatch_1036959:38:8b943e32a8ce",
     "neatlogs_trace_id": null,
-    "wall_ms": 317
+    "wall_ms": 271
   },
   {
     "scenario_id": "schema_drift",
     "description": "Unrelated column added between plan and expand",
-    "run_id": "schema_drift_9002410",
+    "run_id": "schema_drift_1037239",
     "mode": "parachute",
     "planner": "naive-retry/v0",
     "fixture_sha": "aa99e578e8f77ad5517f1f3de8981eac",
+    "faults": [
+      "schema_drift"
+    ],
+    "lock_hold_ms": null,
+    "lock_budget_ms": 300,
     "plan_hash": "05530ba7e18ee694bceadbc7167425c352cb2bd5d95088f154916b79822c1569",
     "terminal_state": "CONTRACT_READY",
     "expected": [
@@ -361,8 +401,8 @@
     "last_error": null,
     "tokens_in": 0,
     "tokens_out": 0,
-    "cost_usd": "0.0000127",
-    "db_ms": 91,
+    "cost_usd": "0.0000081",
+    "db_ms": 58,
     "independent_check": {
       "old_column_present": true,
       "new_column_present": true,
@@ -371,17 +411,22 @@
     },
     "event_count": 46,
     "chain_ok": true,
-    "checkpoint_ref": "ckpt:schema_drift_9002410:46:6faad560830f",
+    "checkpoint_ref": "ckpt:schema_drift_1037239:46:9bfa4f9f9a90",
     "neatlogs_trace_id": null,
-    "wall_ms": 381
+    "wall_ms": 312
   },
   {
     "scenario_id": "schema_conflict",
     "description": "Target column created by someone else with the wrong type",
-    "run_id": "schema_conflict_9002756",
+    "run_id": "schema_conflict_1037569",
     "mode": "parachute",
     "planner": "naive-retry/v0",
     "fixture_sha": "aa99e578e8f77ad5517f1f3de8981eac",
+    "faults": [
+      "schema_conflict"
+    ],
+    "lock_hold_ms": null,
+    "lock_budget_ms": 300,
     "plan_hash": "aeca30c90a016cd1fa1bb8923678a00e44b15d036c2c06424be6dfeaa945f0f4",
     "terminal_state": "FAILED",
     "expected": [
@@ -429,17 +474,22 @@
     },
     "event_count": 7,
     "chain_ok": true,
-    "checkpoint_ref": "ckpt:schema_conflict_9002756:7:30cdef994e75",
+    "checkpoint_ref": "ckpt:schema_conflict_1037569:7:1eae84f648d6",
     "neatlogs_trace_id": null,
-    "wall_ms": 142
+    "wall_ms": 168
   },
   {
     "scenario_id": "concurrent_inserts",
     "description": "New orders arrive mid-backfill, some skipping triggers",
-    "run_id": "concurrent_inserts_9002894",
+    "run_id": "concurrent_inserts_1037738",
     "mode": "parachute",
     "planner": "naive-retry/v0",
     "fixture_sha": "aa99e578e8f77ad5517f1f3de8981eac",
+    "faults": [
+      "concurrent_inserts"
+    ],
+    "lock_hold_ms": null,
+    "lock_budget_ms": 300,
     "plan_hash": "aeca30c90a016cd1fa1bb8923678a00e44b15d036c2c06424be6dfeaa945f0f4",
     "terminal_state": "CONTRACT_READY",
     "expected": [
@@ -469,8 +519,8 @@
     "last_error": null,
     "tokens_in": 0,
     "tokens_out": 0,
-    "cost_usd": "0.0000085",
-    "db_ms": 61,
+    "cost_usd": "0.0000081",
+    "db_ms": 59,
     "independent_check": {
       "old_column_present": true,
       "new_column_present": true,
@@ -479,17 +529,20 @@
     },
     "event_count": 46,
     "chain_ok": true,
-    "checkpoint_ref": "ckpt:concurrent_inserts_9002894:46:09d3bdeca12a",
+    "checkpoint_ref": "ckpt:concurrent_inserts_1037738:46:fd435901d299",
     "neatlogs_trace_id": null,
-    "wall_ms": 296
+    "wall_ms": 337
   },
   {
     "scenario_id": "invalid_key",
     "description": "Spec names a non-unique chunk key",
-    "run_id": "invalid_key_9003267",
+    "run_id": "invalid_key_1038077",
     "mode": "parachute",
     "planner": "naive-retry/v0",
     "fixture_sha": "aa99e578e8f77ad5517f1f3de8981eac",
+    "faults": [],
+    "lock_hold_ms": null,
+    "lock_budget_ms": 300,
     "plan_hash": null,
     "terminal_state": "FAILED",
     "expected": [
@@ -537,17 +590,20 @@
     },
     "event_count": 4,
     "chain_ok": true,
-    "checkpoint_ref": "ckpt:invalid_key_9003267:4:f60202e9f546",
+    "checkpoint_ref": "ckpt:invalid_key_1038077:4:39c535a22692",
     "neatlogs_trace_id": null,
-    "wall_ms": 197
+    "wall_ms": 153
   },
   {
     "scenario_id": "budget",
     "description": "Cost cap reached mid-run; pauses with checkpoint",
-    "run_id": "budget_9003389",
+    "run_id": "budget_1038222",
     "mode": "parachute",
     "planner": "naive-retry/v0",
     "fixture_sha": "aa99e578e8f77ad5517f1f3de8981eac",
+    "faults": [],
+    "lock_hold_ms": null,
+    "lock_budget_ms": 300,
     "plan_hash": "aeca30c90a016cd1fa1bb8923678a00e44b15d036c2c06424be6dfeaa945f0f4",
     "terminal_state": "PAUSED_BUDGET",
     "expected": [
@@ -577,8 +633,8 @@
     "last_error": null,
     "tokens_in": 0,
     "tokens_out": 0,
-    "cost_usd": "0.0000041",
-    "db_ms": 29,
+    "cost_usd": "0.0000042",
+    "db_ms": 30,
     "independent_check": {
       "old_column_present": true,
       "new_column_present": true,
@@ -587,17 +643,20 @@
     },
     "event_count": 26,
     "chain_ok": true,
-    "checkpoint_ref": "ckpt:budget_9003389:26:579da713f561",
+    "checkpoint_ref": "ckpt:budget_1038222:26:0a5c7266a765",
     "neatlogs_trace_id": null,
-    "wall_ms": 192
+    "wall_ms": 218
   },
   {
     "scenario_id": "view_dependency",
     "description": "A view still reads the column contract would drop",
-    "run_id": "view_dependency_9003578",
+    "run_id": "view_dependency_1038449",
     "mode": "parachute",
     "planner": "naive-retry/v0",
     "fixture_sha": "aa99e578e8f77ad5517f1f3de8981eac",
+    "faults": [],
+    "lock_hold_ms": null,
+    "lock_budget_ms": 300,
     "plan_hash": "aeca30c90a016cd1fa1bb8923678a00e44b15d036c2c06424be6dfeaa945f0f4",
     "terminal_state": "PAUSED_OPERATOR",
     "expected": [
@@ -627,8 +686,8 @@
     "last_error": null,
     "tokens_in": 0,
     "tokens_out": 0,
-    "cost_usd": "0.0000081",
-    "db_ms": 58,
+    "cost_usd": "0.0000079",
+    "db_ms": 57,
     "independent_check": {
       "old_column_present": true,
       "new_column_present": true,
@@ -637,8 +696,8 @@
     },
     "event_count": 40,
     "chain_ok": true,
-    "checkpoint_ref": "ckpt:view_dependency_9003578:40:75cb08028382",
+    "checkpoint_ref": "ckpt:view_dependency_1038449:40:61ba5aadd161",
     "neatlogs_trace_id": null,
-    "wall_ms": 285
+    "wall_ms": 326
   }
 ]

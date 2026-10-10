@@ -8,17 +8,17 @@ Built for neatHack 2026 (10–12 October 2026). All code in this repository was 
 
 ## Results
 
-Same fixture, same seeded fault: a separate session holds row locks on keys 4,001–4,100 while the backfill reaches them. The per-statement lock budget is 300 ms.
+Same fixture, same seeded fault: a separate session holds row locks on keys 4,001–4,100 for 6 seconds while the backfill reaches them. The per-statement lock budget is 300 ms.
 
 | Run | Outcome | Retries | Lock wait | Rows kept |
 |---|---|---:|---:|---:|
-| Baseline: one `UPDATE` in one transaction | `FAILED`, whole transaction rolled back | – | 390 ms | 0 |
-| Agent with first recovery policy (`naive-retry/v0`: same batch, 50 ms wait) | `PAUSED_LOCK_BUDGET`, retry budget spent | 6 | 2,307 ms | 4,000 |
-| Agent with fixed recovery policy (`adaptive/v1`) | parity proven, `CONTRACT_READY` | 3 | 1,143 ms | 10,000 |
+| Baseline: one `UPDATE` in one transaction | `FAILED`, whole transaction rolled back | – | 452 ms | 0 |
+| Agent with first recovery policy (`naive-retry/v0`: same batch, 50 ms wait) | `PAUSED_LOCK_BUDGET`, retry budget spent | 6 | 2,647 ms | 4,000 |
+| Agent with fixed recovery policy (`adaptive/v1`) | parity proven, `CONTRACT_READY` | 4 | 1,817 ms | 10,000 |
 
-Neither failing run claims success. Full replay suite, 12 scenarios: v0 passes 11, v1 passes 12. Both have zero false successes and zero destructive statements run without approval. Raw records: [`evidence/replay-naive-v0.json`](evidence/replay-naive-v0.json) and [`evidence/replay-adaptive-v1.json`](evidence/replay-adaptive-v1.json). Lock-wait timings vary by tens of milliseconds between runs. Those two files used a 3.0 s seeded lock; the default is now 3.5 s, which gives the comparison a wider margin (see the fix commit).
+Neither failing run claims success. Full replay suite, 12 scenarios: v0 passes 11, v1 passes 12. Both have zero false successes and zero destructive statements run without approval. Raw records: [`evidence/replay-naive-v0.json`](evidence/replay-naive-v0.json) and [`evidence/replay-adaptive-v1.json`](evidence/replay-adaptive-v1.json). Lock-wait figures vary by tens of milliseconds between runs; three repeats of each policy gave the same outcome every time.
 
-The v0 policy was committed and measured before the fix. The git history shows the order: `2eca418` (v0, 11/12) then `809753d` (fix, 12/12).
+The v0 policy was committed and measured before the fix. The git history shows the order: `2eca418` (v0, 11/12) then `809753d` (fix, 12/12). The records each commit produced at the time are kept in [`evidence/history/`](evidence/history/); they used a 3.0 s lock. The lock is now held for 6 s, because v1's blocker inspection made each failed attempt slower, and at 3.5 s the naive policy sometimes outlasted the lock.
 
 ## What the agent does
 
@@ -70,8 +70,8 @@ Needs Python 3.13 with [uv](https://docs.astral.sh/uv/), and a local Postgres 15
 uv sync
 uv run parachute replay                     # all scenarios, adaptive planner
 uv run parachute replay lock_timeout --planner naive
-uv run parachute serve                      # execution UI on http://127.0.0.1:8765
-uv run pytest                               # 39 tests, including real-Postgres runs
+uv run parachute serve                      # execution UI on http://127.0.0.1:8777
+uv run pytest                               # unit and real-Postgres tests
 ```
 
 Optional keys go in a local `.env` file, which git ignores:
@@ -116,6 +116,6 @@ src/parachute/
   faults.py        seeded failures through real connections
   replay.py        scenario suite and evidence records
   api.py, web/     execution UI
-evidence/          committed replay results
+evidence/          replay results; history/ keeps what each commit measured
 tests/             unit and integration tests
 ```

@@ -116,8 +116,14 @@ class Orchestrator:
 
     def abort_run(self, run_id: str, reason: str = "operator abort") -> RunState:
         self._lease(run_id)
-        with self.s.db.run_lock(run_id):
-            self._abort(reason)
+        try:
+            with self.s.db.run_lock(run_id), self.s.tracer.span(
+                "WORKFLOW", "migration_abort", run_id=run_id, mode=self.mode, reason=reason
+            ) as root:
+                self._abort(reason)
+                root.set(final_state=self.state.display_state)
+        finally:
+            self.s.tracer.flush()
         return self.state
 
     def get_run(self, run_id: str) -> RunState:

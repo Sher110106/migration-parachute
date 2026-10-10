@@ -107,6 +107,8 @@ class RunState(BaseModel):
     cost_cap_usd: Decimal = Decimal("0")
 
     pause_reason: str | None = None
+    pause_detail: str | None = None
+    abort_reason: str | None = None
     final_proof_hash: str | None = None
     started_at: str | None = None
     updated_at: str | None = None
@@ -251,12 +253,12 @@ def apply(state: RunState | None, event: Event) -> RunState:
             cost_usd=state.cost_usd + event.cost_usd,
         )
     elif isinstance(event, RunPaused):
-        u.update(status=RunStatus.PAUSED, pause_reason=event.reason)
+        u.update(status=RunStatus.PAUSED, pause_reason=event.reason, pause_detail=event.detail)
     elif isinstance(event, RunResumed):
         if state.status != RunStatus.PAUSED:
             raise IllegalTransition("only a paused run can resume")
         status = RunStatus.AWAITING_APPROVAL if state.phase == Phase.CONTRACT_READY else RunStatus.RUNNING
-        u.update(status=status, pause_reason=None, retry_count=0)
+        u.update(status=status, pause_reason=None, pause_detail=None, retry_count=0)
         if event.new_cost_cap_usd is not None:
             u["cost_cap_usd"] = event.new_cost_cap_usd
     elif isinstance(event, RunFailed):
@@ -267,7 +269,7 @@ def apply(state: RunState | None, event: Event) -> RunState:
         u.update(status=RunStatus.COMPLETE, final_proof_hash=event.proof_hash)
     elif isinstance(event, RunAborted):
         u.update(_phase(state, Phase.ABORTED))
-        u.update(status=RunStatus.ABORTED, pause_reason=None)
+        u.update(status=RunStatus.ABORTED, pause_reason=None, abort_reason=event.reason)
     else:  # pragma: no cover - the union is closed
         raise IllegalTransition(f"unknown event {event!r}")
 

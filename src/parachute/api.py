@@ -59,6 +59,7 @@ def snapshot(state: RunState) -> dict[str, Any]:
         "batch_size": state.batch_size,
         "rows_backfilled": state.rows_backfilled,
         "chunks": [c.model_dump() for c in state.chunks],
+        "chunk_widths": [c.upper - c.lower + 1 for c in state.chunks],
         "retry_count": state.retry_count,
         "total_retries": state.total_retries,
         "catch_ups": state.catch_ups,
@@ -73,6 +74,8 @@ def snapshot(state: RunState) -> dict[str, Any]:
         "last_decision": state.last_decision.model_dump(mode="json") if state.last_decision else None,
         "last_error": state.last_error.model_dump(mode="json") if state.last_error else None,
         "pause_reason": state.pause_reason,
+        "pause_detail": state.pause_detail,
+        "abort_reason": state.abort_reason,
         "verifications": {k: v.model_dump(mode="json") for k, v in state.verifications.items()},
         "contract": {
             "sql_hash": state.contract_sql_hash,
@@ -121,8 +124,22 @@ def create_app(dsn: str = DEFAULT_DSN, var_dir: Path = Path("var"), planners: di
     store = ControlStore(var_dir / "control.sqlite")
     app = FastAPI(title="Migration Parachute")
     job: dict[str, Any] = {"busy": False, "kind": None, "run_id": None, "error": None, "result": None}
-    results: dict[str, dict] = {}
+    results_dir = var_dir / "results" / "runs"
+    results_dir.mkdir(parents=True, exist_ok=True)
     lock = threading.Lock()
+
+    def save_result(run_id: str, res: dict) -> None:
+        (results_dir / f"{run_id}.json").write_text(json.dumps(res, indent=1, default=str))
+
+    def load_result(run_id: str) -> dict | None:
+        p = results_dir / f"{run_id}.json"
+        return json.loads(p.read_text()) if p.exists() else None
+
+    def state_or_404(run_id: str) -> RunState:
+        try:
+            return store.materialized(run_id)
+        except KeyError:
+            raise HTTPException(404, "no such run")
 
     def launch(kind: str, run_id: str | None, fn: Callable[[], Any]) -> None:
         with lock:
@@ -178,60 +195,81 @@ def create_app(dsn: str = DEFAULT_DSN, var_dir: Path = Path("var"), planners: di
         def go():
             res = run_scenario(SCENARIOS[body.scenario], factories[body.planner], dsn=dsn, var_dir=var_dir, store=store,
                                run_id=run_id)
-            results[run_id] = res
+            save_result(run_id, res)
             return res
 
         launch("start", run_id, go)
         return {"run_id": run_id}
 
+    def latest_run_id() -> str | None:
+        runs = store.runs()
+        return runs[0]["run_id"] if runs else None
+
     @app.get("/api/runs")
     def list_runs():
-        return store.runs()
+        latest = latest_run_id()
+        out = []
+        for row in store.runs():
+            st = store.materialized(row["run_id"])
+            scenario = next((sid for sid in SCENARIOS if row["run_id"].startswith(sid + "_")), None)
+            out.append({**row, "display_state": st.display_state, "planner": st.planner, "pause_reason": st.pause_reason,
+                        "scenario": scenario, "fixture_live": row["run_id"] == latest})
+        return out
 
     @app.get("/api/runs/{run_id}")
     def get_run(run_id: str):
-        try:
-            state = store.materialized(run_id)
-        except KeyError:
-            raise HTTPException(404, "no such run")
+        state = state_or_404(run_id)
         out = snapshot(state)
-        out["result"] = results.get(run_id)
+        out["result"] = load_result(run_id)
         out["chain_ok"] = store.verify_chain(run_id)
         out["checkpoint_ref"] = store.latest_checkpoint_ref(run_id)
+        out["fixture_live"] = run_id == latest_run_id()
         return out
 
     @app.get("/api/runs/{run_id}/events")
     def events(run_id: str, after: int = 0):
+        state_or_404(run_id)
         return store.event_dicts(run_id, after)
 
     @app.get("/api/runs/{run_id}/trace")
     def trace(run_id: str):
+        state_or_404(run_id)
         path = var_dir / "traces" / f"{run_id}.jsonl"
         if not path.exists():
             return []
         return [json.loads(line) for line in path.read_text().splitlines() if line.strip()]
 
-    def require(run_id: str) -> None:
-        try:
-            store.materialized(run_id)
-        except KeyError:
-            raise HTTPException(404, "no such run")
+    def require_live(run_id: str) -> RunState:
+        st = state_or_404(run_id)
+        if run_id != latest_run_id():
+            raise HTTPException(409, "a newer run has reset the shared fixture; this run's database is gone")
+        return st
 
     @app.post("/api/runs/{run_id}/approve")
     def approve(run_id: str, body: Approve):
-        require(run_id)
+        st = require_live(run_id)
+        if st.phase.value != "CONTRACT_READY":
+            raise HTTPException(409, f"run is {st.display_state}, not CONTRACT_READY")
+        if body.approval_id != st.approval_id:
+            raise HTTPException(422, "approval id does not match the prepared contract")
         launch("approve", run_id, lambda: snapshot(Orchestrator(services(run_id)).approve_contract(run_id, body.approval_id, body.approver)))
         return {"ok": True}
 
     @app.post("/api/runs/{run_id}/resume")
     def resume(run_id: str, body: Resume):
-        require(run_id)
+        st = require_live(run_id)
+        if st.status.value != "PAUSED":
+            raise HTTPException(409, f"run is {st.display_state}, not paused")
+        if body.cost_cap_usd is not None and body.cost_cap_usd <= st.cost_usd:
+            raise HTTPException(422, f"new cap must exceed spend so far (${st.cost_usd})")
         launch("resume", run_id, lambda: snapshot(Orchestrator(services(run_id)).resume_run(run_id, new_cost_cap_usd=body.cost_cap_usd)))
         return {"ok": True}
 
     @app.post("/api/runs/{run_id}/abort")
     def abort(run_id: str):
-        require(run_id)
+        st = require_live(run_id)
+        if st.terminal or st.phase.value in ("CONTRACT_APPLY", "CONTRACT_VERIFY"):
+            raise HTTPException(409, f"run is {st.display_state}; abort is only possible before the contract starts")
         launch("abort", run_id, lambda: snapshot(Orchestrator(services(run_id)).abort_run(run_id, "operator abort from UI")))
         return {"ok": True}
 

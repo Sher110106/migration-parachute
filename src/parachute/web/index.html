@@ -1,0 +1,1910 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Migration Parachute</title>
+<link rel="icon" href="data:,">
+<style>
+:root {
+  --canvas: #F7F6F3;
+  --surface: #FFFFFF;
+  --subtle: #FBFBFA;
+  --border: #EAEAEA;
+  --hair: rgba(0, 0, 0, 0.06);
+  --text: #111111;
+  --text2: #2F3437;
+  --muted: #787774;
+  --faint: #B4B3AF;
+  --red-bg: #FDEBEC;   --red: #9F2F2D;
+  --green-bg: #EDF3EC; --green: #346538;
+  --yellow-bg: #FBF3DB; --yellow: #956400;
+  --blue-bg: #E1F3FE;  --blue: #1F6C9F;
+  --sans: 'SF Pro Display', 'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --mono: 'SF Mono', ui-monospace, 'JetBrains Mono', Menlo, Consolas, monospace;
+  --serif: 'New York', ui-serif, 'Iowan Old Style', Charter, Georgia, serif;
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+}
+* { box-sizing: border-box; }
+html { font-size: 14px; }
+@media (min-width: 1760px) { html { font-size: 15px; } }
+body {
+  margin: 0; background: var(--canvas); color: var(--text2);
+  font-family: var(--sans); line-height: 1.5; -webkit-font-smoothing: antialiased;
+}
+.mono, code, pre { font-family: var(--mono); }
+.muted { color: var(--muted); }
+.small { font-size: 0.86rem; }
+[hidden] { display: none !important; }
+
+.page { max-width: 1880px; margin: 0 auto; padding: 18px 28px 48px; display: flex; flex-direction: column; gap: 14px; }
+
+/* Header */
+header.top { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; padding: 4px 2px 2px; }
+h1 { font-family: var(--serif); font-weight: 500; font-size: 2.1rem; letter-spacing: -0.025em; line-height: 1.1; color: var(--text); margin: 0; }
+.promise { margin: 6px 0 0; color: var(--muted); font-size: 1.04rem; max-width: 980px; }
+.top-right { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: flex-end; }
+.fixture-tag {
+  font-family: var(--mono); font-size: 0.8rem; color: var(--text2); background: var(--surface);
+  border: 1px solid var(--border); border-radius: 6px; padding: 4px 9px; white-space: nowrap;
+}
+.job { display: inline-flex; align-items: center; gap: 7px; font-size: 0.86rem; color: var(--muted); white-space: nowrap; }
+.job.err { color: var(--red); white-space: normal; max-width: 520px; }
+.dot { width: 8px; height: 8px; border-radius: 50%; background: var(--faint); display: inline-block; flex: none; }
+.dot.live { background: var(--text); animation: pulse 1.3s ease-in-out infinite; }
+.dot.err { background: var(--red); }
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.25; } }
+
+/* Cards */
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; min-width: 0; }
+.card-h { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
+.card-h h2, h2 { margin: 0; font-size: 0.8rem; font-weight: 650; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text2); }
+.card-h .aside { font-size: 0.84rem; color: var(--muted); }
+.label { font-size: 0.74rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+
+/* Pills */
+.pill {
+  display: inline-flex; align-items: center; gap: 5px; border-radius: 9999px; padding: 2px 9px;
+  font-size: 0.72rem; font-weight: 650; letter-spacing: 0.05em; text-transform: uppercase; white-space: nowrap;
+  background: #F1F1EF; color: var(--text2); line-height: 1.6;
+}
+.pill.red { background: var(--red-bg); color: var(--red); }
+.pill.green { background: var(--green-bg); color: var(--green); }
+.pill.yellow { background: var(--yellow-bg); color: var(--yellow); }
+.pill.blue { background: var(--blue-bg); color: var(--blue); }
+.pill.dark { background: var(--text); color: #fff; }
+.pill.mono { font-family: var(--mono); text-transform: none; letter-spacing: 0; font-weight: 500; }
+
+/* Buttons and inputs */
+.btn {
+  font: inherit; font-size: 0.93rem; font-weight: 550; border-radius: 6px; padding: 7px 14px; cursor: pointer;
+  border: 1px solid var(--border); background: var(--surface); color: var(--text); transition: background 160ms, transform 120ms;
+  white-space: nowrap;
+}
+.btn:active:not(:disabled) { transform: scale(0.98); }
+.btn.primary { background: var(--text); border-color: var(--text); color: #fff; }
+.btn.primary:hover:not(:disabled) { background: #333; }
+.btn.ghost:hover:not(:disabled) { background: var(--subtle); }
+.btn.danger { color: var(--red); }
+.btn.danger.armed { background: var(--red-bg); border-color: var(--red-bg); }
+.btn.yellow { background: var(--yellow-bg); border-color: var(--yellow-bg); color: var(--yellow); }
+.btn:disabled { cursor: not-allowed; opacity: 0.45; }
+.btn.primary:disabled { background: #BDBCB8; border-color: #BDBCB8; opacity: 1; }
+.input, select {
+  font: inherit; font-size: 0.93rem; color: var(--text); background: var(--surface); border: 1px solid var(--border);
+  border-radius: 6px; padding: 6px 9px; min-width: 0;
+}
+.input:focus, select:focus, .btn:focus-visible { outline: 2px solid rgba(17, 17, 17, 0.18); outline-offset: 1px; }
+.input.bad { border-color: var(--red); }
+
+/* Banner */
+.banner { border: 1px solid var(--red-bg); background: var(--red-bg); color: var(--red); border-radius: 8px; padding: 9px 14px; display: flex; justify-content: space-between; gap: 12px; align-items: center; }
+.banner button { font: inherit; background: none; border: 0; color: var(--red); cursor: pointer; font-weight: 600; }
+
+/* Controls */
+.controls { display: grid; grid-template-columns: minmax(320px, 520px) 220px auto minmax(0, 1fr); gap: 10px 16px; align-items: end; }
+.controls .recent { grid-column: 1 / -1; grid-row: 2; padding-top: 10px; border-top: 1px solid var(--hair); }
+.controls .scenario-info { grid-column: 4; grid-row: 1; align-self: center; margin: 14px 0 0; }
+.field { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.field select { width: 100%; }
+.scenario-info { font-size: 0.88rem; color: var(--muted); line-height: 1.45; }
+.scenario-info b { color: var(--text2); font-weight: 600; }
+.recent { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.recent-list { display: flex; gap: 6px; flex-wrap: wrap; max-height: 64px; overflow-y: auto; }
+.run-chip {
+  font: inherit; display: inline-flex; align-items: center; gap: 7px; border: 1px solid var(--border); background: var(--surface);
+  border-radius: 6px; padding: 4px 8px; cursor: pointer; white-space: nowrap; font-size: 0.82rem; color: var(--text2);
+}
+.run-chip:hover { background: var(--subtle); }
+.run-chip.active { border-color: var(--text); }
+.run-chip .rid { font-family: var(--mono); font-size: 0.8rem; }
+.run-chip .rnum { color: var(--faint); font-family: var(--mono); font-size: 0.74rem; }
+.run-chip .pill { font-size: 0.64rem; padding: 0 6px; }
+
+/* Run head */
+.runhead { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr) auto; gap: 20px; align-items: start; }
+.run-title { font-family: var(--mono); font-size: 1.12rem; color: var(--text); font-weight: 550; word-break: break-all; }
+.run-sub { font-size: 0.86rem; color: var(--muted); margin-top: 2px; }
+.run-sub .mono { color: var(--text2); }
+.state-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.state-badge {
+  font-family: var(--mono); font-size: 1.05rem; font-weight: 600; border-radius: 6px; padding: 3px 10px;
+  background: #F1F1EF; color: var(--text); transition: background 240ms, color 240ms;
+}
+.state-badge.red { background: var(--red-bg); color: var(--red); }
+.state-badge.green { background: var(--green-bg); color: var(--green); }
+.state-badge.yellow { background: var(--yellow-bg); color: var(--yellow); }
+.state-badge.dark { background: var(--text); color: #fff; }
+.state-text { font-size: 0.98rem; color: var(--text2); margin-top: 6px; }
+.result-line { font-size: 0.84rem; color: var(--muted); margin-top: 6px; font-family: var(--mono); }
+.result-line .ok { color: var(--green); }
+.result-line .bad { color: var(--red); }
+.run-actions { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
+.action-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; justify-content: flex-end; }
+.action-msg { font-size: 0.84rem; color: var(--muted); max-width: 420px; text-align: right; }
+.action-msg.err { color: var(--red); }
+.replay-row { display: flex; gap: 6px; align-items: center; font-size: 0.84rem; color: var(--muted); }
+.replay-row select { padding: 4px 6px; font-size: 0.84rem; }
+.replay-row .btn { padding: 4px 10px; font-size: 0.84rem; }
+.note { margin-top: 10px; border-radius: 8px; padding: 7px 12px; font-size: 0.88rem; }
+.note.yellow { background: var(--yellow-bg); color: var(--yellow); }
+
+/* Phase strip */
+.strip-wrap { margin-top: 14px; display: flex; flex-direction: column; gap: 6px; }
+.strip { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 3px; flex: 1; min-width: 0; }
+.ph {
+  position: relative; border-radius: 6px; padding: 6px 7px 6px; background: var(--subtle); border: 1px solid var(--hair);
+  color: var(--faint); min-height: 66px; display: flex; flex-direction: column; justify-content: space-between; gap: 2px;
+  transition: background 260ms, color 260ms, border-color 260ms;
+}
+.ph-i { font-family: var(--mono); font-size: 0.66rem; }
+.ph-n { font-family: var(--mono); font-size: 0.7rem; font-weight: 600; line-height: 1.2; word-break: normal; overflow-wrap: anywhere; }
+.ph-s { font-size: 0.68rem; line-height: 1.2; min-height: 0.8rem; }
+.ph.done { background: var(--green-bg); color: var(--green); border-color: transparent; }
+.ph.current { background: var(--text); color: #fff; border-color: var(--text); }
+.ph.current.waiting, .ph.current.paused { background: var(--yellow-bg); color: var(--yellow); border-color: var(--yellow); }
+.ph.stopped.failed { background: var(--red-bg); color: var(--red); border-color: var(--red); }
+.ph.stopped.aborted { background: #EFEFED; color: var(--text2); border-color: var(--text2); }
+.ph.final { background: var(--green-bg); color: var(--green); border-color: var(--green); }
+.ph .chk { width: 10px; height: 10px; vertical-align: -1px; }
+.side-states { display: flex; flex-wrap: wrap; align-items: center; gap: 5px; justify-content: flex-end; }
+.side-states .label { margin-right: 3px; }
+.side { font-family: var(--mono); font-size: 0.7rem; font-weight: 600; border-radius: 5px; padding: 2px 7px; color: var(--faint); background: var(--subtle); border: 1px solid var(--hair); }
+.side.on.red { background: var(--red-bg); color: var(--red); border-color: var(--red); }
+.side.on.yellow { background: var(--yellow-bg); color: var(--yellow); border-color: var(--yellow); }
+.side.on.dark { background: #EFEFED; color: var(--text); border-color: var(--text2); }
+
+/* Layout */
+.grid { display: grid; grid-template-columns: minmax(0, 1fr) clamp(430px, 31vw, 610px); gap: 14px; align-items: start; }
+.col-main, .col-side { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+.col-side { position: sticky; top: 12px; }
+.two { display: grid; grid-template-columns: minmax(0, 0.82fr) minmax(0, 1.18fr); gap: 14px; align-items: start; }
+@media (max-width: 1280px) {
+  .grid, .two { grid-template-columns: minmax(0, 1fr); }
+  .col-side { position: static; }
+  .controls { grid-template-columns: 1fr 1fr; }
+  .controls .scenario-info { grid-column: 1 / -1; grid-row: auto; }
+  .controls .recent { grid-row: auto; }
+  .runhead { grid-template-columns: 1fr; }
+  .run-actions { align-items: flex-start; }
+}
+
+/* Key range */
+.range-meta { font-size: 0.9rem; color: var(--text2); margin: -2px 0 8px; }
+.range-meta .mono { color: var(--text); }
+.legend { display: flex; gap: 14px; flex-wrap: wrap; font-size: 0.78rem; color: var(--muted); }
+.legend i { display: inline-block; width: 12px; height: 10px; border-radius: 2px; vertical-align: -1px; margin-right: 5px; }
+.lg-commit { background: var(--green-bg); border: 1px solid rgba(52, 101, 56, 0.5); }
+.lg-recon { background: var(--blue-bg); border: 1px dashed var(--blue); }
+.lg-fail { background: var(--red-bg); border: 1px solid var(--red); }
+.lg-cursor { background: var(--text); width: 3px !important; }
+.bar-area { position: relative; }
+.marks { position: relative; height: 20px; }
+.mark { position: absolute; bottom: 2px; transform: translateX(-5px); display: flex; align-items: flex-end; gap: 3px; color: var(--red); font-family: var(--mono); font-size: 0.72rem; font-weight: 600; white-space: nowrap; }
+.mark::before { content: ''; width: 0; height: 0; border-left: 5px solid transparent; border-right: 5px solid transparent; border-top: 8px solid var(--red); margin-bottom: 1px; }
+.bar { position: relative; height: 48px; background: var(--subtle); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
+.bar .empty { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: var(--muted); font-size: 0.88rem; }
+.seg {
+  position: absolute; top: 0; bottom: 0; background: var(--green-bg); border-right: 1px solid rgba(52, 101, 56, 0.45);
+  display: flex; align-items: center; justify-content: center; overflow: hidden;
+  color: var(--green); font-family: var(--mono); font-size: 0.76rem; white-space: nowrap; transform-origin: left center;
+}
+.seg.reconciled { background: var(--blue-bg); color: var(--blue); border: 1px dashed var(--blue); }
+.seg.enter { animation: grow 560ms var(--ease) both; }
+@keyframes grow { from { transform: scaleX(0); opacity: 0.3; } to { transform: none; opacity: 1; } }
+.catchup-zone { position: absolute; top: 0; bottom: 0; border-left: 1px dashed var(--muted); }
+.catchup-zone span { position: absolute; top: 2px; left: 4px; font-size: 0.68rem; color: var(--muted); white-space: nowrap; }
+.cursor { position: absolute; inset: 0; pointer-events: none; z-index: 2; transition: transform 460ms var(--ease); }
+.cursor-line { position: absolute; top: 0; bottom: 0; left: -1px; width: 2px; background: var(--text); }
+.cursor-tag {
+  position: absolute; top: 50%; left: 6px; transform: translateY(-50%); background: var(--text); color: #fff; border-radius: 4px;
+  font-family: var(--mono); font-size: 0.72rem; padding: 1px 6px; white-space: nowrap;
+}
+.cursor.flip .cursor-tag { left: auto; right: calc(100% + 6px); }
+.lane { position: relative; margin-top: 4px; }
+.attempt { position: absolute; height: 5px; background: var(--red-bg); border: 1px solid var(--red); border-radius: 2px; }
+.attempt.enter { animation: grow 420ms var(--ease) both; transform-origin: left center; }
+.axis { position: relative; height: 18px; margin-top: 3px; font-family: var(--mono); font-size: 0.7rem; color: var(--muted); }
+.axis span { position: absolute; transform: translateX(-50%); white-space: nowrap; }
+.axis span.first { transform: none; }
+.axis span.last { transform: translateX(-100%); }
+.batch-wrap { margin-top: 12px; }
+.batch-h { display: flex; justify-content: space-between; font-size: 0.78rem; color: var(--muted); margin-bottom: 4px; }
+.batch-h .mono { color: var(--text2); }
+.batch-plot { position: relative; height: 96px; border-bottom: 1px solid var(--border); border-top: 1px solid var(--hair); }
+.batch-plot .layer { position: absolute; top: 18px; right: 0; bottom: 0; left: 0; }
+.bcol { position: absolute; bottom: 0; background: var(--green-bg); border-top: 2px solid var(--green); border-right: 1px solid var(--surface); }
+.bcol.reconciled { background: var(--blue-bg); border-top: 2px dashed var(--blue); }
+.bcol.enter { animation: rise 520ms var(--ease) both; transform-origin: bottom center; }
+@keyframes rise { from { transform: scaleY(0); opacity: 0.3; } to { transform: none; opacity: 1; } }
+.bcol .blab { position: absolute; bottom: 100%; left: 2px; margin-bottom: 2px; font-family: var(--mono); font-size: 0.7rem; color: var(--green); white-space: nowrap; }
+.bcol.reconciled .blab { color: var(--blue); }
+.bdot { position: absolute; width: 8px; height: 8px; border-radius: 50%; background: var(--red); transform: translate(-50%, 50%); border: 1.5px solid var(--surface); }
+.bdot.enter { animation: pop 360ms var(--ease) both; }
+@keyframes pop { from { opacity: 0; transform: translate(-50%, 50%) scale(0.2); } to { opacity: 1; transform: translate(-50%, 50%); } }
+
+/* Metrics */
+.metrics { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+.tile { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 11px 14px; min-width: 0; }
+.tile .v { font-family: var(--mono); font-size: 1.5rem; color: var(--text); font-weight: 500; line-height: 1.25; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tile .v .of { font-size: 0.95rem; color: var(--muted); }
+.tile .s { font-size: 0.8rem; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tile .s.mono { font-size: 0.74rem; }
+.tile.red .v { color: var(--red); }
+.tile.green .v { color: var(--green); }
+.tile.yellow .v { color: var(--yellow); }
+.prog { height: 4px; background: var(--subtle); border-radius: 2px; margin-top: 6px; overflow: hidden; border: 1px solid var(--hair); }
+.prog > div { height: 100%; background: var(--green); transform-origin: left center; transition: transform 420ms var(--ease); }
+
+/* Error card */
+.kv { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 4px 14px; font-size: 0.9rem; }
+.kv dt { color: var(--muted); }
+.kv dd { margin: 0; color: var(--text2); min-width: 0; overflow-wrap: anywhere; }
+.kv dd.mono { font-size: 0.84rem; }
+.msg { font-family: var(--mono); font-size: 0.88rem; color: var(--text); background: var(--subtle); border: 1px solid var(--hair); border-radius: 6px; padding: 7px 10px; margin: 8px 0; overflow-wrap: anywhere; }
+.msg.red { background: var(--red-bg); color: var(--red); border-color: transparent; }
+table.tbl { width: 100%; border-collapse: collapse; font-size: 0.86rem; margin: 6px 0 4px; }
+table.tbl th { text-align: left; font-weight: 600; color: var(--muted); font-size: 0.72rem; letter-spacing: 0.05em; text-transform: uppercase; padding: 4px 6px; border-bottom: 1px solid var(--border); }
+table.tbl td { padding: 5px 6px; border-bottom: 1px solid var(--hair); vertical-align: top; }
+table.tbl td.mono, table.tbl td.num { font-family: var(--mono); font-size: 0.82rem; }
+table.tbl td.num, table.tbl th.num { text-align: right; }
+.op-action { margin-top: 8px; font-size: 0.92rem; color: var(--text); border-left: 2px solid var(--text); padding: 2px 0 2px 10px; }
+.quiet { color: var(--muted); font-size: 0.9rem; }
+
+/* Verification */
+.vblock { border-top: 1px solid var(--hair); padding: 10px 0 8px; }
+.vblock:first-child { border-top: 0; padding-top: 0; }
+.vhead { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.vhead .scope { font-family: var(--mono); font-size: 0.88rem; font-weight: 600; color: var(--text); }
+.vhead .proof { font-family: var(--mono); font-size: 0.78rem; color: var(--muted); margin-left: auto; }
+.cks { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 6px; margin: 8px 0 6px; }
+.ck { border-radius: 6px; padding: 5px 9px; background: var(--subtle); border: 1px solid var(--hair); min-width: 0; }
+.ck .label { font-size: 0.66rem; }
+.ck .h { font-family: var(--mono); font-size: 0.76rem; color: var(--text); overflow-wrap: anywhere; }
+.cks.match .ck { background: var(--green-bg); border-color: transparent; }
+.cks.match .ck .h { color: var(--green); }
+.cks.diff .ck { background: var(--red-bg); border-color: transparent; }
+.cks.diff .ck .h { color: var(--red); }
+.mchips { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 4px; }
+.mchip { font-family: var(--mono); font-size: 0.76rem; border-radius: 5px; padding: 1px 7px; background: var(--subtle); border: 1px solid var(--hair); color: var(--text2); }
+.mchip b { font-weight: 600; color: var(--text); }
+.mchip.bad { background: var(--red-bg); color: var(--red); border-color: transparent; }
+.mchip.bad b { color: var(--red); }
+.viol { margin: 6px 0 0; padding: 0; list-style: none; }
+.viol li { background: var(--red-bg); color: var(--red); border-radius: 6px; padding: 5px 9px; font-size: 0.86rem; margin-top: 4px; font-family: var(--mono); }
+
+/* Contract gate */
+.gate-lead { font-size: 1.02rem; color: var(--text); margin: 0 0 10px; max-width: 1000px; }
+.gate-facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 8px; margin-bottom: 10px; }
+.fact { border: 1px solid var(--hair); background: var(--subtle); border-radius: 6px; padding: 6px 10px; min-width: 0; }
+.fact .val { font-family: var(--mono); font-size: 0.88rem; color: var(--text); overflow-wrap: anywhere; }
+.fact.red .val { color: var(--red); }
+.fact.green .val { color: var(--green); }
+.sql { border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+.sql.dim { opacity: 0.6; }
+.art { display: grid; grid-template-columns: 190px minmax(0, 1fr); border-top: 1px solid var(--hair); }
+.art:first-child { border-top: 0; }
+.art-name { padding: 7px 10px; font-family: var(--mono); font-size: 0.78rem; color: var(--text2); background: var(--subtle); border-right: 1px solid var(--hair); display: flex; flex-direction: column; gap: 4px; align-items: flex-start; }
+.art-name .pill { font-size: 0.62rem; padding: 0 6px; }
+.stmts { padding: 6px 10px; display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.stmt { font-family: var(--mono); font-size: 0.8rem; color: var(--text); white-space: pre-wrap; overflow-wrap: anywhere; display: flex; gap: 8px; align-items: baseline; }
+.stmt .t { flex: none; font-family: var(--sans); font-size: 0.64rem; font-weight: 650; letter-spacing: 0.05em; text-transform: uppercase; border-radius: 9999px; padding: 0 6px; background: #F1F1EF; color: var(--muted); }
+.stmt .t.red { background: var(--red-bg); color: var(--red); }
+details.fold { margin-top: 10px; }
+details.fold > summary { cursor: pointer; font-size: 0.86rem; color: var(--text2); list-style: none; display: flex; align-items: center; gap: 6px; }
+details.fold > summary::-webkit-details-marker { display: none; }
+details.fold > summary::before { content: '+'; font-family: var(--mono); width: 12px; color: var(--muted); }
+details.fold[open] > summary::before { content: '\2212'; }
+pre.code { margin: 6px 0 0; font-size: 0.8rem; background: var(--subtle); border: 1px solid var(--hair); border-radius: 6px; padding: 8px 10px; white-space: pre-wrap; overflow-wrap: anywhere; color: var(--text); }
+.approve-row { display: flex; align-items: center; gap: 10px; margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--border); flex-wrap: wrap; }
+.approve-row .input { width: 220px; }
+.approve-hint { font-size: 0.86rem; color: var(--muted); }
+.approve-hint.err { color: var(--red); }
+
+/* Decisions */
+.dlist { display: flex; flex-direction: column; gap: 8px; max-height: 38vh; overflow-y: auto; padding-right: 2px; }
+.dec { border: 1px solid var(--border); border-left: 3px solid var(--blue); border-radius: 8px; padding: 9px 12px; background: var(--surface); }
+.dec.rejected { border-left-color: var(--red); }
+.dec-h { display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; font-size: 0.8rem; color: var(--muted); }
+.dec-h .mono { color: var(--text2); font-size: 0.8rem; }
+.dec-h .when { margin-left: auto; font-family: var(--mono); font-size: 0.74rem; color: var(--faint); }
+.dec-s { margin: 6px 0 0; font-size: 1.08rem; line-height: 1.45; color: var(--text); }
+.rej { margin-top: 6px; background: var(--red-bg); color: var(--red); border-radius: 6px; padding: 5px 9px; font-size: 0.86rem; }
+.enter-fade { animation: fadein 460ms var(--ease) both; }
+@keyframes fadein { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+
+/* Timeline */
+.tl-tools { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: var(--muted); }
+.tl-tools input { margin: 0; }
+.elist { max-height: 44vh; overflow-y: auto; border-top: 1px solid var(--hair); }
+.ev { display: grid; grid-template-columns: 38px minmax(0, 1fr) auto; gap: 0 8px; padding: 5px 4px 5px 8px; border-bottom: 1px solid var(--hair); border-left: 2px solid transparent; }
+.ev-seq { font-family: var(--mono); font-size: 0.74rem; color: var(--faint); padding-top: 1px; }
+.ev-type { font-family: var(--mono); font-size: 0.82rem; font-weight: 600; color: var(--text2); }
+.ev-time { font-family: var(--mono); font-size: 0.72rem; color: var(--faint); padding-top: 2px; }
+.ev-det { grid-column: 2 / -1; font-size: 0.82rem; color: var(--muted); overflow-wrap: anywhere; }
+.ev-det .mono { font-size: 0.78rem; color: var(--text2); }
+.ev.red { border-left-color: var(--red); } .ev.red .ev-type { color: var(--red); }
+.ev.green { border-left-color: var(--green); } .ev.green .ev-type { color: var(--green); }
+.ev.blue { border-left-color: var(--blue); } .ev.blue .ev-type { color: var(--blue); }
+.ev.yellow { border-left-color: var(--yellow); } .ev.yellow .ev-type { color: var(--yellow); }
+.empty-note { padding: 14px 4px; color: var(--muted); font-size: 0.9rem; }
+
+/* Evidence */
+.ev-grid { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 18px; align-items: start; }
+.cmp { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+.cmp th, .cmp td { padding: 7px 10px; border-bottom: 1px solid var(--hair); text-align: left; vertical-align: middle; }
+.cmp thead th { font-weight: 600; color: var(--text); font-size: 0.92rem; border-bottom: 1px solid var(--border); }
+.cmp thead th .sub { display: block; font-weight: 400; color: var(--muted); font-size: 0.8rem; }
+.cmp tbody th { font-weight: 500; color: var(--muted); font-size: 0.84rem; white-space: nowrap; }
+.cmp td.num { font-family: var(--mono); }
+.hbar { display: flex; align-items: center; gap: 8px; white-space: nowrap; }
+.hbar .b { height: 8px; border-radius: 2px; background: var(--faint); min-width: 2px; transform-origin: left center; }
+.hbar .b.red { background: var(--red); } .hbar .b.green { background: var(--green); } .hbar .b.yellow { background: var(--yellow); }
+.totals { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+.total { border: 1px solid var(--border); border-radius: 8px; padding: 9px 12px; }
+.total .v { font-family: var(--mono); font-size: 1.35rem; color: var(--text); }
+.total .s { font-size: 0.82rem; color: var(--muted); }
+.matrix { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
+.matrix th, .matrix td { padding: 3px 6px; border-bottom: 1px solid var(--hair); text-align: left; }
+.matrix th { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); font-weight: 600; }
+.matrix td.mono { font-family: var(--mono); font-size: 0.76rem; }
+.cell { font-family: var(--mono); font-size: 0.72rem; border-radius: 4px; padding: 0 5px; }
+.cell.pass { background: var(--green-bg); color: var(--green); }
+.cell.fail { background: var(--red-bg); color: var(--red); }
+
+/* Trace */
+details.trace > summary { cursor: pointer; list-style: none; display: flex; align-items: center; gap: 10px; }
+details.trace > summary::-webkit-details-marker { display: none; }
+details.trace > summary::before { content: '+'; font-family: var(--mono); color: var(--muted); width: 12px; }
+details.trace[open] > summary::before { content: '\2212'; }
+.trace-body { margin-top: 10px; max-height: 60vh; overflow: auto; border-top: 1px solid var(--hair); }
+.span { display: grid; grid-template-columns: minmax(0, 1fr) 90px 70px; gap: 10px; padding: 3px 4px; border-bottom: 1px solid var(--hair); font-size: 0.82rem; align-items: baseline; }
+.span .nm { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.span .nm .n { font-family: var(--mono); color: var(--text); }
+.span .nm .a { color: var(--muted); font-family: var(--mono); font-size: 0.74rem; margin-left: 8px; }
+.span .kind { font-family: var(--mono); font-size: 0.64rem; font-weight: 650; letter-spacing: 0.04em; border-radius: 4px; padding: 0 5px; margin-right: 6px; background: #F1F1EF; color: var(--text2); }
+.span .kind.AGENT { background: var(--blue-bg); color: var(--blue); }
+.span .kind.GUARDRAIL { background: var(--yellow-bg); color: var(--yellow); }
+.span .kind.EVALUATOR { background: var(--green-bg); color: var(--green); }
+.span .kind.WORKFLOW { background: var(--text); color: #fff; }
+.span .kind.bad { background: var(--red-bg); color: var(--red); }
+.span .dur { font-family: var(--mono); font-size: 0.76rem; color: var(--text2); text-align: right; }
+.span .dbar { height: 6px; background: var(--border); border-radius: 2px; align-self: center; }
+.span.err .n { color: var(--red); }
+
+footer { color: var(--muted); font-size: 0.82rem; padding: 4px 2px; }
+.empty-run { padding: 34px 18px; text-align: center; color: var(--muted); }
+.empty-run b { color: var(--text2); }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+<header class="top">
+  <div>
+    <h1>Migration Parachute</h1>
+    <p class="promise">Runs a Postgres column migration in small chunks, recovers from lock timeouts, proves parity with a deterministic verifier, and waits for an owner before any destructive step.</p>
+  </div>
+  <div class="top-right">
+    <span class="fixture-tag">Fictional local fixture · Postgres 15</span>
+    <span id="jobState" class="job"><span class="dot"></span>Connecting</span>
+  </div>
+</header>
+
+<div id="banner" class="banner" hidden><span id="bannerText"></span><button id="bannerClose" type="button">Dismiss</button></div>
+
+<section class="card controls" aria-label="Start a run">
+  <div class="field">
+    <label class="label" for="scenario">Scenario</label>
+    <select id="scenario"></select>
+  </div>
+  <div class="field">
+    <label class="label" for="planner">Planner</label>
+    <select id="planner"></select>
+  </div>
+  <div class="field">
+    <span class="label">&nbsp;</span>
+    <button id="startBtn" class="btn primary" type="button" disabled>Start run</button>
+  </div>
+  <div class="recent">
+    <span class="label">Recent runs</span>
+    <div id="recentRuns" class="recent-list"><span class="muted small">None yet</span></div>
+  </div>
+  <div id="scenarioInfo" class="scenario-info"></div>
+</section>
+
+<div id="noRun" class="card empty-run">No run selected. Pick a scenario and press <b>Start run</b>, or open a recent run.</div>
+
+<div id="runArea" hidden>
+  <section class="card" id="runCard">
+    <div class="runhead">
+      <div>
+        <div class="label">Run</div>
+        <div id="runTitle" class="run-title">-</div>
+        <div id="runSub" class="run-sub"></div>
+      </div>
+      <div>
+        <div class="state-row"><span id="stateBadge" class="state-badge">-</span><span id="stateLive" class="job"></span></div>
+        <div id="stateText" class="state-text"></div>
+        <div id="resultLine" class="result-line"></div>
+      </div>
+      <div class="run-actions">
+        <div class="action-row">
+          <span id="resumeGroup" class="action-row" hidden>
+            <input id="costCap" class="input mono" placeholder="new cost cap, e.g. 0.50" inputmode="decimal" maxlength="16" size="18" aria-label="New cost cap in USD (optional)">
+            <button id="resumeBtn" class="btn primary" type="button">Resume</button>
+          </span>
+          <button id="reviewBtn" class="btn yellow" type="button" hidden>Review contract</button>
+          <button id="abortBtn" class="btn ghost danger" type="button" hidden>Abort run</button>
+        </div>
+        <div class="replay-row">
+          <button id="replayBtn" class="btn ghost" type="button">Replay events</button>
+          <select id="replaySpeed" aria-label="Replay speed"><option value="normal">normal</option><option value="slow">slow</option></select>
+          <button id="skipBtn" class="btn ghost" type="button" hidden>Skip to end</button>
+          <span id="replayState"></span>
+        </div>
+        <div id="actionMsg" class="action-msg"></div>
+      </div>
+    </div>
+    <div id="staleNote" class="note yellow" hidden>A newer run has reset the shared fixture database since this run. Approve or resume on this run will be checked against the current database and will fail closed.</div>
+    <div class="strip-wrap">
+      <ol id="phaseStrip" class="strip" aria-label="State machine"></ol>
+      <div id="sideStates" class="side-states"></div>
+    </div>
+  </section>
+
+  <div class="grid" style="margin-top:14px">
+    <div class="col-main">
+      <section class="card" id="rangeCard">
+        <div class="card-h">
+          <h2>Backfill key range</h2>
+          <div class="legend">
+            <span><i class="lg-commit"></i>committed chunk</span>
+            <span><i class="lg-recon"></i>adopted from ledger after crash</span>
+            <span><i class="lg-fail"></i>failed attempt, rolled back</span>
+            <span><i class="lg-cursor"></i>persisted cursor</span>
+          </div>
+        </div>
+        <div id="rangeMeta" class="range-meta"></div>
+        <div class="bar-area">
+          <div id="marks" class="marks"></div>
+          <div id="bar" class="bar"><div id="segs"></div><div id="catchup" class="catchup-zone" hidden><span>catch-up keys</span></div><div id="cursor" class="cursor" hidden><span class="cursor-line"></span><span class="cursor-tag" id="cursorTag"></span></div><div id="barEmpty" class="empty">Waiting for the plan</div></div>
+          <div id="lane" class="lane"></div>
+          <div id="axis" class="axis"></div>
+        </div>
+        <div class="batch-wrap">
+          <div class="batch-h"><span>Batch size per chunk (rows); red dots are failed attempts</span><span id="batchNow"></span></div>
+          <div id="batchPlot" class="batch-plot"><div id="bcols" class="layer"></div><div id="bdots" class="layer"></div></div>
+        </div>
+      </section>
+
+      <section id="metrics" class="metrics" aria-label="Live metrics"></section>
+
+      <div class="two">
+        <section class="card" id="errorCard"></section>
+        <section class="card" id="verifyCard"></section>
+      </div>
+
+      <section class="card" id="gateCard">
+        <div class="card-h"><h2>Contract gate</h2><span id="gatePill" class="pill">Locked</span></div>
+        <p id="gateLead" class="gate-lead"></p>
+        <div id="gateBody"></div>
+        <div class="approve-row">
+          <label class="label" for="approver">Approver</label>
+          <input id="approver" class="input mono" value="data-platform-owner" maxlength="64" autocomplete="off">
+          <button id="approveBtn" class="btn primary" type="button" disabled>Approve contract</button>
+          <span id="approveHint" class="approve-hint"></span>
+        </div>
+      </section>
+    </div>
+
+    <div class="col-side">
+      <section class="card" id="decisionsCard">
+        <div class="card-h"><h2>Agent decisions</h2><span id="decCount" class="aside"></span></div>
+        <div id="decisionList" class="dlist"></div>
+      </section>
+      <section class="card" id="timelineCard">
+        <div class="card-h">
+          <h2>Event log</h2>
+          <label class="tl-tools"><input type="checkbox" id="showNoise"> show cost and chunk step events</label>
+        </div>
+        <div id="eventList" class="elist"></div>
+      </section>
+    </div>
+  </div>
+</div>
+
+<section class="card" id="evidenceCard">
+  <div class="card-h"><h2>Before and after: the same row lock, three strategies</h2><span class="aside">Committed replay results, evidence/replay-*.json · fictional local fixture</span></div>
+  <div id="evidenceBody" class="quiet">Loading committed evidence</div>
+</section>
+
+<details class="card trace" id="traceCard">
+  <summary><h2>Trace</h2><span id="traceSummary" class="muted small">Local span tree for the selected run; the same tree goes to neatlogs when NEATLOGS_API_KEY is set.</span></summary>
+  <div id="traceBody" class="trace-body"><div class="empty-note">No spans yet.</div></div>
+</details>
+
+<footer id="footer">All data on this page comes from a fictional local fixture on local Postgres 15. No real customer data.</footer>
+</div>
+
+<noscript><p style="padding:20px">This page needs JavaScript to poll the local API.</p></noscript>
+
+<script>
+'use strict';
+
+/* ------------------------------------------------------------------ helpers */
+const $ = (id) => document.getElementById(id);
+const ESC = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
+const esc = (v) => String(v === null || v === undefined ? '' : v).replace(/[&<>"']/g, (c) => ESC[c]);
+const isNum = (n) => n !== null && n !== undefined && n !== '' && isFinite(Number(n));
+const fmtInt = (n) => (isNum(n) ? Math.round(Number(n)).toLocaleString('en-US') : '-');
+const fmtMs = (n) => (isNum(n) ? fmtInt(n) + ' ms' : '-');
+const short = (h, n = 12) => (h ? String(h).slice(0, n) : '-');
+function fmtUsd(v) {
+  if (!isNum(v)) return '-';
+  const n = Number(v);
+  return '$' + (n >= 0.01 || n === 0 ? n.toFixed(2) : n.toFixed(7));
+}
+function parseTime(s) {
+  if (!s) return NaN;
+  return Date.parse(String(s).replace(/(\.\d{3})\d+/, '$1'));
+}
+function fmtRel(ms) {
+  if (!isFinite(ms)) return '';
+  const s = Math.max(0, ms) / 1000;
+  if (s < 600) return '+' + s.toFixed(3) + ' s';
+  return '+' + Math.floor(s / 60) + 'm ' + String(Math.floor(s % 60)).padStart(2, '0') + 's';
+}
+function clock(s) {
+  const t = parseTime(s);
+  if (!isFinite(t)) return '';
+  return new Date(t).toLocaleTimeString('en-GB', { hour12: false });
+}
+function setHTML(el, html) {
+  if (el && el._html !== html) { el.innerHTML = html; el._html = html; }
+}
+function errText(r) {
+  if (!r) return 'no response';
+  if (r.error) return r.error;
+  const d = r.data;
+  if (d && typeof d === 'object' && d.detail !== undefined) {
+    return typeof d.detail === 'string' ? d.detail : JSON.stringify(d.detail).slice(0, 300);
+  }
+  return 'HTTP ' + r.status;
+}
+async function api(path, opts = {}) {
+  const ctl = new AbortController();
+  const timer = setTimeout(() => ctl.abort(), opts.timeout || 6000);
+  try {
+    const init = { method: opts.method || 'GET', cache: 'no-store', signal: ctl.signal };
+    if (opts.body !== undefined) {
+      init.headers = { 'content-type': 'application/json' };
+      init.body = JSON.stringify(opts.body);
+    }
+    const res = await fetch(path, init);
+    const text = await res.text();
+    let data = null;
+    if (text) { try { data = JSON.parse(text); } catch (e) { data = text; } }
+    return { ok: res.ok, status: res.status, data };
+  } catch (err) {
+    return { ok: false, status: 0, data: null, error: (err && err.name === 'AbortError') ? 'request timed out' : String((err && err.message) || err) };
+  } finally {
+    clearTimeout(timer);
+  }
+}
+const CHECK = '<svg class="chk" viewBox="0 0 10 10" aria-hidden="true"><polyline points="1.5,5.5 4,8 8.5,2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
+/* ------------------------------------------------------------------ state machine */
+const PHASES = ['INIT', 'PLANNED', 'EXPAND_APPLY', 'EXPAND_VERIFY', 'BACKFILL_PLAN', 'BACKFILL_CHUNK_LOOP', 'BACKFILL_VERIFY',
+  'CONTRACT_GUARD', 'CONTRACT_READY', 'CONTRACT_APPLY', 'CONTRACT_VERIFY', 'COMPLETE'];
+const TERMINAL = new Set(['COMPLETE', 'ABORTED', 'FAILED', 'MANUAL_INTERVENTION']);
+const PHASE_HELP = {
+  INIT: 'Inspect the table and check the spec against the database',
+  PLANNED: 'Plan built; check for schema drift before applying anything',
+  EXPAND_APPLY: 'Additive steps only: nullable column, dual-write trigger, index',
+  EXPAND_VERIFY: 'Check the additive objects exist as planned',
+  BACKFILL_PLAN: 'Fix the key range and the first batch size',
+  BACKFILL_CHUNK_LOOP: 'Copy values in key-ordered chunks, one transaction per chunk',
+  BACKFILL_VERIFY: 'Deterministic parity check over every row',
+  CONTRACT_GUARD: 'Fresh proof and dependency scan before preparing the contract',
+  CONTRACT_READY: 'Contract prepared; waiting for owner approval',
+  CONTRACT_APPLY: 'Owner approved; apply constraints and drop the old column',
+  CONTRACT_VERIFY: 'Check the final schema and row counts',
+  COMPLETE: 'Done, with a final proof hash',
+};
+const PLANNER_LABEL = { adaptive: 'adaptive/v1', naive: 'naive-retry/v0' };
+
+/* REDUCER START: mirrors src/parachute/state.py so events can be replayed at a readable pace */
+function newView() {
+  return {
+    run_id: null, mode: null, planner: null, spec: null, started_at: null, updated_at: null, last_seq: 0,
+    phase: 'INIT', status: 'RUNNING', pause_reason: null, pause_detail: null, stoppedAt: null, abort_reason: null,
+    visited: new Set(['INIT']), phaseReasons: {},
+    baseline: null, plan: null, plan_hash: null, replans: 0, backfill_lower: null,
+    cursor: null, key_upper: null, batch_size: 0, chunks: [], failures: [], rows_backfilled: 0,
+    retry_count: 0, total_retries: 0, catch_ups: [],
+    lock_wait_ms: 0, db_ms: 0, cost_usd: 0, cost_cap_usd: null, tokens_in: 0, tokens_out: 0,
+    decisions: [], decision_count: 0, rejected: 0, last_error: null,
+    verifications: {}, contract: null, approved_by: null, contractSteps: {}, unapprovedDestructive: 0,
+    owner: null, final_proof_hash: null, resumes: 0,
+  };
+}
+
+function applyEvent(v, e) {
+  if (!e || typeof e !== 'object') return v;
+  v.last_seq = e.seq;
+  v.updated_at = e.at || v.updated_at;
+  switch (e.type) {
+    case 'run_started': {
+      const sp = e.spec || {};
+      v.run_id = e.run_id || null; v.mode = e.mode || null; v.planner = e.planner || null; v.spec = sp; v.started_at = e.at || null;
+      v.cost_cap_usd = sp.cost_cap_usd !== undefined ? sp.cost_cap_usd : null;
+      v.batch_size = (sp.chunk_policy && sp.chunk_policy.initial_batch) || 0;
+      break;
+    }
+    case 'lease_acquired':
+      e._prevOwner = v.owner;
+      v.owner = e.owner || v.owner;
+      break;
+    case 'schema_inspected':
+      if (e.purpose === 'baseline') v.baseline = e.snapshot || null;
+      break;
+    case 'plan_created':
+      if (v.plan) v.replans += 1;
+      v.plan = e.plan || null; v.plan_hash = e.plan_hash || null;
+      if (e.plan && e.plan.initial_batch) v.batch_size = e.plan.initial_batch;
+      break;
+    case 'phase_changed': {
+      const to = e.to_phase;
+      v.phaseReasons[to] = e.reason || '';
+      if (to === 'EXPAND_CLEANUP' || to === 'MANUAL_INTERVENTION') v.stoppedAt = e.from_phase;
+      if (to === 'CONTRACT_READY') v.status = 'AWAITING_APPROVAL';
+      else if (to === 'MANUAL_INTERVENTION') v.status = 'MANUAL_INTERVENTION';
+      else if (v.phase === 'CONTRACT_READY') v.status = 'RUNNING';
+      v.phase = to; v.visited.add(to);
+      break;
+    }
+    case 'backfill_planned':
+      v.cursor = e.lower; v.key_upper = e.upper; v.batch_size = e.batch_size; v.backfill_lower = e.lower;
+      break;
+    case 'chunk_committed': {
+      const c = e.chunk || {};
+      v.chunks.push(Object.assign({}, c, { batch: v.batch_size, seq: e.seq }));
+      if (isNum(c.upper)) v.cursor = c.upper + 1;
+      v.rows_backfilled += c.rows || 0;
+      v.retry_count = 0; v.last_error = null;
+      break;
+    }
+    case 'chunk_failed':
+      v.failures.push({ lower: e.lower, upper: e.upper, batch: e.batch_size, attempt: e.attempt, error: e.error || null,
+        lock_wait_ms: e.lock_wait_ms || 0, seq: e.seq, at: e.at });
+      v.retry_count += 1; v.total_retries += 1; v.last_error = e.error || null;
+      break;
+    case 'decision_made': {
+      const d = e.decision || {};
+      v.decision_count += 1;
+      if (!e.accepted) v.rejected += 1;
+      v.decisions.push({ seq: e.seq, at: e.at, d, accepted: !!e.accepted, rejection: e.rejection || null, forced: !!e.forced,
+        from_batch: v.batch_size, phase: v.phase, cursor: v.cursor });
+      if (e.accepted && d.batch_size) v.batch_size = d.batch_size;
+      break;
+    }
+    case 'catch_up_planned':
+      v.catch_ups.push({ previous_upper: e.previous_upper, new_upper: e.new_upper, new_rows: e.new_rows, seq: e.seq });
+      v.key_upper = e.new_upper;
+      break;
+    case 'verification_recorded':
+      if (e.report && e.report.scope) v.verifications[e.report.scope] = e.report;
+      break;
+    case 'contract_prepared':
+      v.contract = { sql_hash: e.sql_hash, statements: e.statements || [], rollback_statements: e.rollback_statements || [],
+        dependencies: e.dependencies || [], proof_hash: e.proof_hash, approval_id: e.approval_id, approved_by: null };
+      break;
+    case 'approval_granted':
+      v.approved_by = e.approver || null;
+      if (v.contract) v.contract.approved_by = v.approved_by;
+      break;
+    case 'step_recorded': {
+      const tool = String(e.tool || '');
+      if (tool.startsWith('apply_contract:')) {
+        v.contractSteps[tool.slice('apply_contract:'.length)] = { ok: !!e.ok, attempt: e.attempt, error: e.error || null, seq: e.seq };
+        if (e.ok && !v.approved_by) v.unapprovedDestructive += 1;
+      }
+      break;
+    }
+    case 'cost_recorded':
+      v.lock_wait_ms += e.lock_wait_ms || 0;
+      v.db_ms += e.db_ms || 0;
+      v.cost_usd += Number(e.cost_usd) || 0;
+      v.tokens_in += e.tokens_in || 0;
+      v.tokens_out += e.tokens_out || 0;
+      break;
+    case 'run_paused':
+      v.status = 'PAUSED'; v.pause_reason = e.reason || null; v.pause_detail = e.detail || '';
+      break;
+    case 'run_resumed':
+      v.status = v.phase === 'CONTRACT_READY' ? 'AWAITING_APPROVAL' : 'RUNNING';
+      v.pause_reason = null; v.pause_detail = null; v.retry_count = 0; v.resumes += 1;
+      if (e.new_cost_cap_usd !== null && e.new_cost_cap_usd !== undefined) v.cost_cap_usd = e.new_cost_cap_usd;
+      break;
+    case 'run_failed':
+      if (!v.stoppedAt) v.stoppedAt = v.phase;
+      v.phase = 'FAILED'; v.status = 'FAILED'; v.last_error = e.error || null; v.visited.add('FAILED');
+      break;
+    case 'run_completed':
+      v.phase = 'COMPLETE'; v.status = 'COMPLETE'; v.final_proof_hash = e.proof_hash || null; v.visited.add('COMPLETE');
+      break;
+    case 'run_aborted':
+      if (!v.stoppedAt) v.stoppedAt = v.phase;
+      v.phase = 'ABORTED'; v.status = 'ABORTED'; v.pause_reason = null; v.abort_reason = e.reason || ''; v.visited.add('ABORTED');
+      break;
+    default:
+      break;
+  }
+  return v;
+}
+
+function displayState(status, reason, phase) {
+  return status === 'PAUSED' && reason ? 'PAUSED_' + String(reason).toUpperCase() : phase;
+}
+/* REDUCER END */
+
+/* ------------------------------------------------------------------ app state */
+const S = {
+  meta: null, evidence: null, runs: [], job: { busy: false, kind: null, run_id: null, error: null },
+  runId: null, gen: 0, snap: null, snapStatus: 0, events: [], lastSeq: 0,
+  ptr: 0, view: newView(), playing: false, playSpeed: 'normal', jumpNext: true, liveRun: null,
+  trace: null, traceAt: 0, traceDirty: true, tracePlanner: null,
+  lastRunsAt: 0, runsDirty: true, plannerByRun: {}, showNoise: false, abortArmUntil: 0,
+  shownJobError: null, warned: {}, startPending: false,
+};
+try { S.plannerByRun = JSON.parse(sessionStorage.getItem('mp.planners') || '{}') || {}; } catch (e) { S.plannerByRun = {}; }
+
+const VISUAL = new Set(['run_started', 'plan_created', 'phase_changed', 'backfill_planned', 'chunk_committed', 'chunk_failed',
+  'decision_made', 'catch_up_planned', 'verification_recorded', 'contract_prepared', 'approval_granted', 'run_paused',
+  'run_resumed', 'run_failed', 'run_completed', 'run_aborted', 'lease_acquired']);
+const PACE = { live: 75, normal: 170, slow: 420 };
+
+function jobOnRun() { return !!(S.job.busy && S.job.run_id && S.job.run_id === S.runId); }
+function isLive() { return S.liveRun === S.runId || jobOnRun(); }
+
+/* Advance the view by one visual event (or to the end). */
+function advance(toEnd) {
+  while (S.ptr < S.events.length) {
+    const e = S.events[S.ptr++];
+    applyEvent(S.view, e);
+    if (!toEnd && VISUAL.has(e.type)) break;
+  }
+}
+let pacerTimer = null;
+function schedulePacer() {
+  if (pacerTimer) return;
+  if (S.ptr >= S.events.length) { if (S.playing) { S.playing = false; render(); } return; }
+  const gen = S.gen;
+  pacerTimer = setTimeout(() => {
+    pacerTimer = null;
+    if (gen !== S.gen) return;
+    // A live backlog that is far behind is skipped forward so the view never lags far behind the run.
+    if (!S.playing && S.events.length - S.ptr > 120) advance(true); else advance(false);
+    render();
+    schedulePacer();
+  }, S.playing ? PACE[S.playSpeed] || PACE.normal : PACE.live);
+}
+
+/* View model: reducer state while catching up, snapshot values once the view is level with the server. */
+function viewModel() {
+  const v = S.view;
+  const sn = S.snap;
+  const atRest = !!(sn && !S.playing && S.ptr === S.events.length && sn.revision === S.events.length);
+  const m = Object.assign({}, v);
+  m.atRest = atRest;
+  m.display_state = displayState(v.status, v.pause_reason, v.phase);
+  if (!atRest) return m;
+  m.phase = sn.phase || m.phase;
+  m.status = sn.status || m.status;
+  m.pause_reason = sn.pause_reason !== undefined ? sn.pause_reason : m.pause_reason;
+  m.display_state = sn.display_state || m.display_state;
+  if (sn.cursor !== undefined) m.cursor = sn.cursor;
+  if (sn.key_upper !== undefined) m.key_upper = sn.key_upper;
+  if (isNum(sn.batch_size)) m.batch_size = sn.batch_size;
+  if (isNum(sn.rows_backfilled)) m.rows_backfilled = sn.rows_backfilled;
+  if (isNum(sn.total_retries)) m.total_retries = sn.total_retries;
+  if (isNum(sn.retry_count)) m.retry_count = sn.retry_count;
+  if (isNum(sn.lock_wait_ms)) m.lock_wait_ms = sn.lock_wait_ms;
+  if (isNum(sn.cost_usd)) m.cost_usd = Number(sn.cost_usd);
+  if (sn.cost_cap_usd !== undefined) m.cost_cap_usd = sn.cost_cap_usd;
+  if (isNum(sn.decisions)) m.decision_count = sn.decisions;
+  if (isNum(sn.rejected_decisions)) m.rejected = sn.rejected_decisions;
+  m.last_error = sn.last_error || null;
+  m.verifications = sn.verifications || {};
+  m.contract = sn.contract && sn.contract.sql_hash ? sn.contract : null;
+  m.approved_by = (sn.contract && sn.contract.approved_by) || null;
+  m.final_proof_hash = sn.final_proof_hash || m.final_proof_hash;
+  checkConsistency(v, sn);
+  return m;
+}
+function checkConsistency(v, sn) {
+  const key = S.runId + ':' + sn.revision;
+  if (S.warned[key]) return;
+  S.warned[key] = true;
+  const diffs = [];
+  const cmp = (name, a, b) => { if (String(a) !== String(b)) diffs.push(name + ' view=' + a + ' server=' + b); };
+  cmp('phase', v.phase, sn.phase); cmp('status', v.status, sn.status); cmp('cursor', v.cursor, sn.cursor);
+  cmp('rows_backfilled', v.rows_backfilled, sn.rows_backfilled); cmp('total_retries', v.total_retries, sn.total_retries);
+  cmp('batch_size', v.batch_size, sn.batch_size); cmp('chunks', v.chunks.length, (sn.chunks || []).length);
+  cmp('decisions', v.decision_count, sn.decisions); cmp('lock_wait_ms', v.lock_wait_ms, sn.lock_wait_ms);
+  if (diffs.length) console.warn('[parachute] event replay differs from server snapshot:', diffs.join('; '));
+}
+
+/* ------------------------------------------------------------------ keyed DOM sync (only new items animate) */
+function syncKeyed(container, items, keyFn, create, update, animate) {
+  if (!container._map) container._map = new Map();
+  const map = container._map;
+  const seen = new Set();
+  for (const it of items) {
+    const k = keyFn(it);
+    seen.add(k);
+    let el = map.get(k);
+    if (!el) {
+      el = create(it);
+      if (animate) el.classList.add('enter');
+      container.appendChild(el);
+      map.set(k, el);
+    }
+    update(el, it);
+  }
+  for (const [k, el] of map) {
+    if (!seen.has(k)) { el.remove(); map.delete(k); }
+  }
+}
+function clearKeyed(container) {
+  if (!container) return;
+  container.innerHTML = '';
+  container._map = new Map();
+  container._html = undefined;
+  container._seqs = new Set();
+}
+const div = (cls) => { const d = document.createElement('div'); if (cls) d.className = cls; return d; };
+
+/* ------------------------------------------------------------------ rendering: header, controls, recent runs */
+function renderJob() {
+  const el = $('jobState');
+  const j = S.job || {};
+  if (j.busy) {
+    setHTML(el, '<span class="dot live"></span>Server running ' + esc(j.kind || 'job') + (j.run_id ? ' · <span class="mono">' + esc(j.run_id) + '</span>' : ''));
+    el.className = 'job';
+  } else if (j.error) {
+    setHTML(el, '<span class="dot err"></span>Last job failed: ' + esc(j.error));
+    el.className = 'job err';
+  } else {
+    setHTML(el, '<span class="dot"></span>Server idle');
+    el.className = 'job';
+  }
+  $('startBtn').disabled = !!j.busy || S.startPending || !S.meta;
+}
+
+function scenarioById(id) {
+  return ((S.meta && S.meta.scenarios) || []).find((s) => s.id === id) || null;
+}
+function renderScenarioInfo() {
+  const sc = scenarioById($('scenario').value);
+  if (!sc) { setHTML($('scenarioInfo'), ''); return; }
+  const parts = [esc(sc.description || '')];
+  parts.push('expected end state <b class="mono">' + esc((sc.expect || []).join(' or ')) + '</b>');
+  parts.push('seeded faults: ' + ((sc.faults || []).length ? '<span class="mono">' + esc(sc.faults.join(', ')) + '</span>' : 'none'));
+  if (sc.mode === 'baseline') parts.push('<b>baseline mode: one UPDATE in one transaction, no recovery</b>');
+  setHTML($('scenarioInfo'), parts.join(' · '));
+}
+
+function stateTone(state) {
+  const s = String(state || '');
+  if (s === 'COMPLETE') return 'green';
+  if (s === 'FAILED' || s === 'MANUAL_INTERVENTION') return 'red';
+  if (s === 'ABORTED') return '';
+  if (s.startsWith('PAUSED') || s === 'CONTRACT_READY' || s === 'AWAITING_APPROVAL') return 'yellow';
+  return 'dark';
+}
+function renderRecent() {
+  const runs = (S.runs || []).slice(0, 14);
+  if (!runs.length) { setHTML($('recentRuns'), '<span class="muted small">None yet</span>'); return; }
+  const html = runs.map((r) => {
+    const id = String(r.run_id || '');
+    const m = id.match(/^(.*)_(\d{7})$/);
+    const name = m ? m[1] : id;
+    const num = m ? m[2] : '';
+    const st = r.status === 'PAUSED' ? 'PAUSED' : r.phase;
+    const tone = stateTone(st === 'PAUSED' ? 'PAUSED' : st);
+    return '<button type="button" class="run-chip' + (id === S.runId ? ' active' : '') + '" data-run="' + esc(id) + '" title="' + esc(id + ' · ' + (r.mode || '') + ' · started ' + clock(r.created_at)) + '">' +
+      '<span class="rid">' + esc(name) + '</span><span class="rnum">' + esc(num) + '</span>' +
+      '<span class="pill ' + tone + '">' + esc(st || '') + '</span></button>';
+  }).join('');
+  setHTML($('recentRuns'), html);
+}
+
+/* ------------------------------------------------------------------ rendering: run head and phase strip */
+function plannerName(vm) {
+  if (S.snap && S.snap.planner) return S.snap.planner;
+  if (vm.planner) return vm.planner;
+  const r = S.snap && S.snap.result;
+  if (r && r.planner) return r.planner;
+  const d = vm.decisions.find((x) => x.d && x.d.planner && x.d.planner !== 'policy');
+  if (d) return d.d.planner;
+  if (S.tracePlanner) return S.tracePlanner;
+  const p = S.plannerByRun[S.runId];
+  return p ? (PLANNER_LABEL[p] || p) : '-';
+}
+
+function stateExplanation(vm) {
+  const ds = vm.display_state;
+  const err = vm.last_error;
+  if (ds === 'CONTRACT_READY') return 'Parity proven. The contract is prepared and waiting for owner approval. No destructive statement has run.';
+  if (ds === 'COMPLETE') return 'Contract applied after approval and verified. Final proof ' + short(vm.final_proof_hash, 16) + '.';
+  if (ds === 'FAILED') return 'Failed closed' + (vm.stoppedAt ? ' in ' + vm.stoppedAt : '') + ': ' + (err ? err.message : 'see the event log') + '.';
+  if (ds === 'ABORTED') return 'Aborted: ' + (vm.abort_reason || 'operator request') + '. Additive objects were rolled back.';
+  if (ds === 'MANUAL_INTERVENTION') return 'A contract step failed after irreversible work started. An operator must finish or repair it.';
+  if (ds === 'EXPAND_CLEANUP') return 'Rolling back the additive objects.';
+  if (String(ds).startsWith('PAUSED_')) {
+    const detail = vm.pause_detail ? vm.pause_detail.charAt(0).toUpperCase() + vm.pause_detail.slice(1) + '. ' : '';
+    const hint = {
+      budget: 'Resume with a higher cost cap to continue from the persisted cursor.',
+      lock_budget: 'Retry budget spent. Resume to retry from the persisted cursor.',
+      operator: 'Remove the dependent objects, then resume.',
+      drift: 'Too many new keys arrived. Review, then resume.',
+    }[vm.pause_reason] || 'Resume to continue from the persisted cursor.';
+    return 'Paused. ' + detail + hint;
+  }
+  if (vm.phase === 'BACKFILL_CHUNK_LOOP' && err) return 'Chunk at key ' + fmtInt(vm.cursor) + ' failed (' + (err.sqlstate || err.error_class) + '); rolled back, the agent is deciding how to retry.';
+  return 'In progress: ' + (PHASE_HELP[vm.phase] || vm.phase) + '.';
+}
+
+function renderRunHead(vm) {
+  const sn = S.snap;
+  const sp = vm.spec || {};
+  const ch = sp.change || {};
+  $('runTitle').textContent = S.runId || '-';
+  const target = (sn && sn.target) || (sp.target_table ? sp.target_table + '.' + ch.old_column + ' -> ' + ch.new_column : '');
+  const sub = [];
+  if (target) sub.push('<span class="mono">' + esc(target.replace('->', '→')) + '</span>');
+  if (sp.migration_id || (sn && sn.migration_id)) sub.push('migration <span class="mono">' + esc(sp.migration_id || sn.migration_id) + '</span>');
+  if (vm.mode || (sn && sn.mode)) sub.push('mode <span class="mono">' + esc(vm.mode || sn.mode) + '</span>');
+  if ((vm.mode || (sn && sn.mode)) === 'baseline') sub.push('planner <span class="mono">none</span> (baseline has no recovery)');
+  else sub.push('planner <span class="mono">' + esc(plannerName(vm)) + '</span>');
+  if (vm.started_at) sub.push('started ' + esc(clock(vm.started_at)));
+  if (vm.owner) sub.push('lease <span class="mono">' + esc(vm.owner) + '</span>');
+  setHTML($('runSub'), sub.join(' · '));
+
+  const preparing = !sn && S.snapStatus === 404 && jobOnRun();
+  const badge = $('stateBadge');
+  const ds = preparing ? 'STARTING' : (vm.display_state || '-');
+  badge.textContent = ds;
+  badge.className = 'state-badge ' + (preparing ? '' : stateTone(ds));
+  setHTML($('stateLive'), (jobOnRun() || S.playing) ? '<span class="dot live"></span>' + (S.playing ? 'replaying' : 'live') : '');
+  if (preparing) {
+    $('stateText').textContent = 'Resetting the fictional fixture and seeding 2,000 customers and 10,000 orders.';
+  } else if (!sn && S.snapStatus === 404) {
+    $('stateText').textContent = 'The server has no run with this id.';
+  } else {
+    $('stateText').textContent = S.events.length ? stateExplanation(vm) : 'Loading run.';
+  }
+
+  const r = sn && sn.result;
+  if (r && typeof r === 'object') {
+    const ic = r.independent_check || {};
+    const parts = [
+      'start job check: expected ' + esc((r.expected || []).join('|')) + ', got ' + esc(r.terminal_state),
+      r.passed ? '<span class="ok">behaved as expected</span>' : '<span class="bad">unexpected</span>',
+      'independent DB check ' + fmtInt(ic.rows) + ' rows, ' + (ic.wrong_or_missing === null || ic.wrong_or_missing === undefined ? 'n/a' : fmtInt(ic.wrong_or_missing)) + ' wrong or missing',
+      'false success ' + (r.false_success ? '<span class="bad">yes</span>' : 'no'),
+      fmtMs(r.wall_ms) + ' wall',
+    ];
+    setHTML($('resultLine'), parts.join(' · '));
+  } else {
+    setHTML($('resultLine'), '');
+  }
+
+  // Controls use the live server snapshot, never the replayed view.
+  const busy = !!S.job.busy;
+  const live = sn || {};
+  const paused = live.status === 'PAUSED';
+  $('resumeGroup').hidden = !paused;
+  $('resumeBtn').disabled = busy;
+  const ready = live.phase === 'CONTRACT_READY' && live.contract && live.contract.approval_id && !live.contract.approved_by;
+  $('reviewBtn').hidden = !ready;
+  const abortable = sn && !TERMINAL.has(live.phase) && live.phase !== 'CONTRACT_APPLY' && live.phase !== 'CONTRACT_VERIFY';
+  $('abortBtn').hidden = !abortable;
+  $('abortBtn').disabled = busy;
+  const armed = Date.now() < S.abortArmUntil;
+  $('abortBtn').textContent = armed ? 'Confirm abort' : 'Abort run';
+  $('abortBtn').classList.toggle('armed', armed);
+
+  $('replayBtn').disabled = !S.events.length;
+  $('skipBtn').hidden = !S.playing;
+  $('replayState').textContent = S.playing ? S.ptr + ' / ' + S.events.length + ' events' : '';
+
+  const mine = (S.runs || []).find((x) => x.run_id === S.runId);
+  const newer = !!mine && (S.runs || []).some((x) => x.run_id !== S.runId && parseTime(x.created_at) > parseTime(mine.created_at));
+  $('staleNote').hidden = !(newer && sn && !TERMINAL.has(sn.phase));
+}
+
+function renderPhases(vm) {
+  const cur = vm.phase;
+  const curIdx = PHASES.indexOf(cur);
+  const stopIdx = vm.stoppedAt ? PHASES.indexOf(vm.stoppedAt) : -1;
+  const refIdx = curIdx >= 0 ? curIdx : stopIdx;
+  const html = PHASES.map((p, i) => {
+    let cls = 'ph';
+    let sub = '';
+    if (cur === 'COMPLETE') {
+      cls += p === 'COMPLETE' ? ' final' : (vm.visited.has(p) ? ' done' : '');
+      sub = p === 'COMPLETE' ? 'complete' : '';
+    } else if (i === curIdx) {
+      if (vm.status === 'PAUSED') { cls += ' current paused'; sub = 'paused'; }
+      else if (vm.status === 'AWAITING_APPROVAL') { cls += ' current waiting'; sub = 'waiting for approval'; }
+      else { cls += ' current'; sub = 'in progress'; }
+    } else if (i === stopIdx && curIdx < 0) {
+      if (cur === 'ABORTED' || cur === 'EXPAND_CLEANUP') { cls += ' stopped aborted'; sub = 'aborted here'; }
+      else if (cur === 'MANUAL_INTERVENTION') { cls += ' stopped failed'; sub = 'needs operator'; }
+      else { cls += ' stopped failed'; sub = 'failed here'; }
+    } else if (i < refIdx && vm.visited.has(p)) {
+      cls += ' done';
+    }
+    if (!sub && p === 'PLANNED' && vm.replans) sub = 'replanned ×' + vm.replans;
+    if (!sub && p === 'BACKFILL_CHUNK_LOOP' && vm.catch_ups.length) sub = 'catch-up ×' + vm.catch_ups.length;
+    const done = cls.includes(' done') || cls.includes(' final');
+    const name = esc(p).replace(/_/g, '_<wbr>');
+    return '<li class="' + cls + '" title="' + esc(p + ': ' + (PHASE_HELP[p] || '') + (vm.phaseReasons[p] ? '. Reason: ' + vm.phaseReasons[p] : '')) + '">' +
+      '<span class="ph-i">' + String(i + 1).padStart(2, '0') + (done ? ' ' + CHECK : '') + '</span>' +
+      '<span class="ph-n">' + name + '</span><span class="ph-s">' + esc(sub) + '</span></li>';
+  }).join('');
+  setHTML($('phaseStrip'), html);
+
+  const paused = vm.status === 'PAUSED';
+  const side = [
+    ['EXPAND_CLEANUP', vm.visited.has('EXPAND_CLEANUP'), 'dark'],
+    [paused && vm.pause_reason ? 'PAUSED_' + String(vm.pause_reason).toUpperCase() : 'PAUSED_*', paused, 'yellow'],
+    ['FAILED', cur === 'FAILED', 'red'],
+    ['ABORTED', cur === 'ABORTED', 'dark'],
+    ['MANUAL_INTERVENTION', cur === 'MANUAL_INTERVENTION', 'red'],
+  ];
+  setHTML($('sideStates'), '<span class="label">Stop states</span>' +
+    side.map(([n, on, tone]) => '<span class="side' + (on ? ' on ' + tone : '') + '">' + esc(n) + '</span>').join(''));
+}
+
+/* ------------------------------------------------------------------ rendering: key range and batch chart */
+function renderRange(vm) {
+  const plan = vm.plan;
+  const lo = plan && isNum(plan.key_lower) ? plan.key_lower : vm.backfill_lower;
+  const plannedHi = plan && isNum(plan.key_upper) ? plan.key_upper : null;
+  const hi = Math.max(isNum(vm.key_upper) ? vm.key_upper : -Infinity, isNum(plannedHi) ? plannedHi : -Infinity);
+  const animate = isLive() || S.playing;
+  if (!isNum(lo) || !isFinite(hi)) {
+    $('barEmpty').hidden = false;
+    $('barEmpty').textContent = vm.phase === 'FAILED' ? 'No key range: the run failed before planning the backfill' : 'Waiting for the plan';
+    $('cursor').hidden = true; $('catchup').hidden = true;
+    clearKeyed($('segs')); clearKeyed($('marks')); clearKeyed($('lane')); clearKeyed($('bcols')); clearKeyed($('bdots'));
+    setHTML($('axis'), ''); setHTML($('batchNow'), '');
+    setHTML($('rangeMeta'), vm.plan === null && S.events.length ? 'No plan yet.' : '');
+    return;
+  }
+  $('barEmpty').hidden = true;
+  const span = Math.max(1, hi - lo + 1);
+  const pct = (k) => Math.max(0, Math.min(100, ((k - lo) / span) * 100));
+  const chunks = vm.chunks;
+  const fails = vm.failures;
+
+  // Committed chunks
+  syncKeyed($('segs'), chunks, (c) => 'c' + c.lower, () => div('seg'), (el, c) => {
+    const l = pct(c.lower), w = pct(c.upper + 1) - l;
+    el.style.left = l + '%'; el.style.width = w + '%';
+    el.classList.toggle('reconciled', !!c.reconciled);
+    el.textContent = w > 4.5 ? fmtInt(c.rows) + (c.reconciled && w > 9 ? ' · ledger' : '') : '';
+    el.title = 'keys ' + fmtInt(c.lower) + '-' + fmtInt(c.upper) + ' · ' + fmtInt(c.rows) + ' rows · attempt ' + (c.attempts || 1) +
+      (c.reconciled ? ' · adopted from the database ledger after a worker crash' : '') + (c.checksum ? ' · checksum ' + short(c.checksum, 12) : '');
+  }, animate);
+
+  // Catch-up zone beyond the planned upper bound
+  const cz = $('catchup');
+  if (isNum(plannedHi) && hi > plannedHi) {
+    cz.hidden = false; cz.style.left = pct(plannedHi + 1) + '%'; cz.style.right = '0';
+  } else cz.hidden = true;
+
+  // Cursor
+  const cur = $('cursor');
+  if (isNum(vm.cursor)) {
+    const p = pct(Math.min(vm.cursor, hi + 1));
+    cur.hidden = false; cur.style.transform = 'translateX(' + p.toFixed(3) + '%)';
+    cur.classList.toggle('flip', p > 82);
+    $('cursorTag').textContent = vm.cursor > hi ? 'cursor ' + fmtInt(vm.cursor) + ' · past last key' : 'cursor ' + fmtInt(vm.cursor);
+  } else cur.hidden = true;
+
+  // Failure marks above the bar, grouped by lower key
+  const groups = new Map();
+  fails.forEach((f) => { if (!groups.has(f.lower)) groups.set(f.lower, []); groups.get(f.lower).push(f); });
+  const gl = [...groups.entries()].map(([lower, list]) => ({ lower, list }));
+  syncKeyed($('marks'), gl, (g) => 'm' + g.lower, () => div('mark'), (el, g) => {
+    el.style.left = pct(g.lower) + '%';
+    el.textContent = g.list.length > 1 ? '×' + g.list.length : '';
+    const last = g.list[g.list.length - 1];
+    el.title = g.list.length + ' failed attempt(s) at key ' + fmtInt(g.lower) + ' · last: ' + ((last.error && last.error.sqlstate) || '') + ' ' + ((last.error && last.error.message) || '');
+  }, animate);
+
+  // Attempt lane: each failed attempt as the key range it tried, stacked per lower key
+  const rowsUsed = new Map();
+  const att = fails.map((f) => { const i = rowsUsed.get(f.lower) || 0; rowsUsed.set(f.lower, i + 1); return Object.assign({ row: i }, f); });
+  const maxRow = Math.min(10, Math.max(0, ...att.map((a) => a.row + 1)));
+  $('lane').style.height = (maxRow ? maxRow * 7 + 1 : 0) + 'px';
+  syncKeyed($('lane'), att, (a) => 'a' + a.seq, () => div('attempt'), (el, a) => {
+    const l = pct(a.lower), w = Math.max(0.4, pct(a.upper + 1) - l);
+    el.style.left = l + '%'; el.style.width = w + '%'; el.style.top = Math.min(a.row, 9) * 7 + 'px';
+    el.title = 'attempt ' + a.attempt + ': keys ' + fmtInt(a.lower) + '-' + fmtInt(a.upper) + ' · batch ' + fmtInt(a.batch) + ' · ' +
+      ((a.error && a.error.sqlstate) || '') + ' ' + ((a.error && a.error.error_class) || '') + ' · lock wait ' + fmtMs(a.lock_wait_ms) + ' · rolled back';
+  }, animate);
+
+  // Axis ticks
+  const ticks = [lo, lo + span * 0.25, lo + span * 0.5, lo + span * 0.75, hi].map((k, i) => (i === 0 || i === 4 ? k : Math.round(k / 10) * 10));
+  setHTML($('axis'), ticks.map((k, i) => '<span class="' + (i === 0 ? 'first' : i === 4 ? 'last' : '') + '" style="left:' + (i === 4 ? 100 : pct(k)) + '%">' + fmtInt(k) + '</span>').join(''));
+
+  // Meta line
+  const recon = chunks.filter((c) => c.reconciled).length;
+  const meta = [
+    '<span class="mono">' + esc(((vm.spec && vm.spec.target_table) || 'orders') + '.' + ((vm.spec && vm.spec.primary_key) || 'id')) + '</span> keys <span class="mono">' + fmtInt(lo) + '-' + fmtInt(hi) + '</span>',
+    fmtInt(chunks.length) + ' chunks committed' + (recon ? ' (' + recon + ' adopted from the ledger)' : ''),
+    fmtInt(fails.length) + ' failed attempts rolled back',
+  ];
+  if (vm.catch_ups.length) meta.push('catch-up added ' + fmtInt(vm.catch_ups.reduce((s, c) => s + (c.new_rows || 0), 0)) + ' keys beyond the plan');
+  setHTML($('rangeMeta'), meta.join(' · '));
+
+  // Batch size chart, aligned with the bar
+  const cp = (vm.spec && vm.spec.chunk_policy) || {};
+  const maxB = Math.max(1, ...chunks.map((c) => c.batch || 0), ...fails.map((f) => f.batch || 0), vm.batch_size || 0, (plan && plan.initial_batch) || 0);
+  const cols = chunks.map((c, i) => Object.assign({ label: i === 0 || (chunks[i - 1].batch !== c.batch) }, c));
+  syncKeyed($('bcols'), cols, (c) => 'b' + c.lower, () => { const d = div('bcol'); d.appendChild(div('blab')); return d; }, (el, c) => {
+    const l = pct(c.lower), w = pct(c.upper + 1) - l;
+    el.style.left = l + '%'; el.style.width = w + '%';
+    el.style.height = Math.max(2, ((c.batch || 0) / maxB) * 100) + '%';
+    el.classList.toggle('reconciled', !!c.reconciled);
+    el.firstChild.textContent = c.label ? fmtInt(c.batch) : '';
+    el.title = 'chunk ' + fmtInt(c.lower) + '-' + fmtInt(c.upper) + ' ran with batch size ' + fmtInt(c.batch);
+  }, animate);
+  syncKeyed($('bdots'), fails, (f) => 'd' + f.seq, () => div('bdot'), (el, f) => {
+    el.style.left = ((pct(f.lower) + pct(f.upper + 1)) / 2) + '%';
+    el.style.bottom = (((f.batch || 0) / maxB) * 100) + '%';
+    el.title = 'failed attempt ' + f.attempt + ': batch ' + fmtInt(f.batch) + ', keys ' + fmtInt(f.lower) + '-' + fmtInt(f.upper) + ', rolled back';
+  }, animate);
+  setHTML($('batchNow'), 'now <span class="mono">' + fmtInt(vm.batch_size) + '</span> · plan <span class="mono">' + fmtInt(plan && plan.initial_batch) +
+    '</span> · floor <span class="mono">' + fmtInt(cp.min_batch) + '</span> · max <span class="mono">' + fmtInt(cp.max_batch) + '</span> · scale 0-' + fmtInt(maxB));
+}
+
+/* ------------------------------------------------------------------ rendering: metrics */
+function renderMetrics(vm) {
+  const sn = S.snap || {};
+  const plan = vm.plan;
+  const lo = plan ? plan.key_lower : null;
+  const hi = isNum(vm.key_upper) ? vm.key_upper : (plan ? plan.key_upper : null);
+  let frac = 0;
+  if (isNum(lo) && isNum(hi) && isNum(vm.cursor)) frac = Math.max(0, Math.min(1, (vm.cursor - lo) / Math.max(1, hi - lo + 1)));
+  const extraKeys = vm.catch_ups.reduce((n, c) => n + (c.new_rows || 0), 0);
+  const total = plan ? plan.estimated_rows + extraKeys : (vm.baseline ? vm.baseline.row_count : null);
+  const cp = (vm.spec && vm.spec.chunk_policy) || {};
+  const maxRetries = isNum(sn.max_retries) ? sn.max_retries : (vm.spec && vm.spec.max_retries);
+  const lockBudget = isNum(sn.lock_budget_ms) ? sn.lock_budget_ms : (vm.spec && vm.spec.lock_budget_ms);
+  const over = isNum(vm.cost_cap_usd) && vm.cost_usd >= Number(vm.cost_cap_usd);
+  const ck = String(sn.checkpoint_ref || '');
+  const ckParts = ck.split(':');
+  const chain = sn.chain_ok === true ? '<span style="color:var(--green)">hash chain OK</span>'
+    : sn.chain_ok === false ? '<span style="color:var(--red)">hash chain BROKEN</span>' : 'hash chain not checked yet';
+  const tiles = [
+    { l: 'Rows backfilled', tone: frac >= 1 && vm.rows_backfilled ? 'green' : '',
+      v: fmtInt(vm.rows_backfilled) + ' <span class="of">/ ' + fmtInt(total) + '</span>',
+      s: '<div class="prog"><div style="transform:scaleX(' + frac.toFixed(4) + ')"></div></div>' },
+    { l: 'Batch size', v: fmtInt(vm.batch_size), s: 'floor ' + fmtInt(cp.min_batch) + ' · max ' + fmtInt(cp.max_batch) + ' rows' },
+    { l: 'Retries', tone: vm.retry_count ? 'red' : '', v: fmtInt(vm.total_retries), s: 'this chunk ' + fmtInt(vm.retry_count) + ' of ' + fmtInt(maxRetries) },
+    { l: 'Lock wait', v: fmtMs(vm.lock_wait_ms), s: 'lock timeout ' + esc(fmtMs(lockBudget)) + ' per statement' },
+    { l: 'Cost', tone: over ? 'yellow' : '', v: fmtUsd(vm.cost_usd),
+      s: 'cap ' + esc(fmtUsd(vm.cost_cap_usd)) + (vm.tokens_in || vm.tokens_out ? ' · tokens ' + fmtInt(vm.tokens_in) + '/' + fmtInt(vm.tokens_out) : ' · DB time, no LLM tokens') },
+    { l: 'Decisions', tone: vm.rejected ? 'red' : '', v: fmtInt(vm.decision_count), s: fmtInt(vm.rejected) + ' rejected by policy' },
+    { l: 'Events', tone: sn.chain_ok === false ? 'red' : '', v: fmtInt(S.ptr) + (S.ptr < S.events.length ? ' <span class="of">/ ' + fmtInt(S.events.length) + '</span>' : ''), s: chain },
+    { l: 'Persisted cursor', v: isNum(vm.cursor) ? fmtInt(vm.cursor) : '-', mono: true,
+      s: ck ? 'checkpoint at event ' + esc(ckParts[2] || '?') + ' · ' + esc(ckParts[3] || '') : 'no checkpoint yet' },
+  ];
+  setHTML($('metrics'), tiles.map((t) => '<div class="tile ' + (t.tone || '') + '"><div class="label">' + esc(t.l) + '</div><div class="v">' + t.v + '</div>' +
+    (String(t.s).startsWith('<div') ? t.s : '<div class="s' + (t.mono ? ' mono' : '') + '">' + t.s + '</div>') + '</div>').join(''));
+}
+
+/* ------------------------------------------------------------------ rendering: error and blocker card */
+function blockersTable(blockers) {
+  if (!blockers || !blockers.length) return '';
+  return '<table class="tbl"><thead><tr><th>Blocking pid</th><th>Lock mode</th><th>State</th><th class="num">Transaction age</th><th>Query hash</th></tr></thead><tbody>' +
+    blockers.map((b) => '<tr><td class="mono">' + esc(b.pid) + '</td><td class="mono">' + esc(b.lock_mode) + (b.granted === false ? ' (waiting)' : '') + '</td><td>' + esc(b.state || '-') +
+      '</td><td class="num">' + fmtMs(b.xact_age_ms) + '</td><td class="mono">' + esc(b.query_hash || '-') + '</td></tr>').join('') + '</tbody></table>';
+}
+function renderError(vm) {
+  const err = vm.last_error;
+  const fails = vm.failures;
+  let pill, body;
+  if (err) {
+    const failed = vm.phase === 'FAILED';
+    pill = '<span class="pill red">' + (failed ? 'failed closed' : vm.status === 'PAUSED' ? 'paused on error' : 'active') + '</span>';
+    body = '<dl class="kv"><dt>Error class</dt><dd class="mono">' + esc(err.error_class) + '</dd>' +
+      '<dt>SQLSTATE</dt><dd class="mono">' + esc(err.sqlstate || '-') + '</dd>' +
+      '<dt>Retryable</dt><dd>' + (err.retryable ? 'yes' : 'no') + '</dd></dl>' +
+      '<div class="msg red">' + esc(err.message) + '</div>' + blockersTable(err.blockers) +
+      (err.detail && err.detail.proof_hash ? '<div class="quiet">failed proof <span class="mono">' + esc(short(err.detail.proof_hash, 16)) + '</span></div>' : '') +
+      (err.operator_action ? '<div class="op-action">' + esc(err.operator_action) + '</div>' : '');
+  } else if (fails.length) {
+    const last = fails[fails.length - 1];
+    const e = last.error || {};
+    const atKeys = [...new Set(fails.map((f) => fmtInt(f.lower)))].join(', ');
+    pill = '<span class="pill green">recovered</span>';
+    body = '<p style="margin:0 0 8px;color:var(--text)">' + fmtInt(fails.length) + ' failed attempt' + (fails.length > 1 ? 's' : '') + ' at key ' + esc(atKeys) +
+      ' rolled back. Each failure kept the committed chunks and the cursor; the run continued from the persisted cursor.</p>' +
+      '<div class="label">Last failure</div><dl class="kv" style="margin-top:4px"><dt>Error class</dt><dd class="mono">' + esc(e.error_class || '-') + '</dd><dt>SQLSTATE</dt><dd class="mono">' + esc(e.sqlstate || '-') +
+      '</dd><dt>Attempt</dt><dd class="mono">' + esc(last.attempt) + ' · batch ' + fmtInt(last.batch) + ' · waited ' + fmtMs(last.lock_wait_ms) + '</dd></dl>' +
+      '<div class="msg">' + esc(e.message || '') + '</div>' + blockersTable(e.blockers);
+  } else {
+    pill = '<span class="pill">none</span>';
+    const lb = vm.spec && vm.spec.lock_budget_ms;
+    body = '<p class="quiet" style="margin:0">No errors in this run. Each statement waits at most ' + fmtMs(lb) + ' for a lock; a timeout rolls back only the current chunk, records who holds the lock, and asks the planner what to do.</p>';
+  }
+  setHTML($('errorCard'), '<div class="card-h"><h2>Lock and error detail</h2>' + pill + '</div>' + body);
+}
+
+/* ------------------------------------------------------------------ rendering: verification */
+const SCOPES = ['expand', 'backfill', 'contract_guard', 'contract'];
+const SCOPE_HELP = {
+  expand: 'additive objects exist as planned',
+  backfill: 'parity over every row after the last chunk',
+  contract_guard: 'fresh proof right before the contract is prepared',
+  contract: 'final schema after the approved contract',
+};
+const METRIC_ORDER = ['rows_total', 'rows_with_source', 'null_targets', 'mismatches', 'orphan_sources', 'parity', 'max_key', 'index_valid', 'dual_write_trigger',
+  'new_column_type', 'new_column_nullable', 'old_column_present', 'new_column_not_null', 'fk_validated', 'rows_joined'];
+function metricBad(k, v, scope) {
+  const s = String(v);
+  if (['null_targets', 'mismatches', 'orphan_sources'].includes(k)) return s !== '0';
+  if (['parity', 'index_valid', 'fk_validated', 'new_column_not_null'].includes(k)) return s !== 'True';
+  if (k === 'dual_write_trigger') return scope === 'contract' ? s === 'True' : s !== 'True';
+  if (k === 'old_column_present') return scope === 'contract' && s === 'True';
+  return false;
+}
+function renderVerify(vm) {
+  const ver = vm.verifications || {};
+  const present = SCOPES.filter((s) => ver[s]);
+  const extra = Object.keys(ver).filter((s) => !SCOPES.includes(s));
+  const all = present.concat(extra);
+  let body;
+  if (!all.length) {
+    body = '<p class="quiet" style="margin:0">No verification yet. The verifier runs after expand, after the backfill, and again right before the contract. The agent never counts its own message as proof.</p>';
+  } else {
+    body = all.map((scope) => {
+      const r = ver[scope] || {};
+      const m = r.metrics || {};
+      let ck = '';
+      if (m.source_checksum !== undefined || m.target_checksum !== undefined) {
+        const match = m.source_checksum === m.target_checksum;
+        ck = '<div class="cks ' + (match ? 'match' : 'diff') + '"><div class="ck"><div class="label">source checksum</div><div class="h">' + esc(m.source_checksum) + '</div></div>' +
+          '<div class="ck"><div class="label">target checksum ' + (match ? '(equal)' : '(differs)') + '</div><div class="h">' + esc(m.target_checksum) + '</div></div></div>';
+      }
+      const keys = METRIC_ORDER.filter((k) => m[k] !== undefined).concat(Object.keys(m).filter((k) => !METRIC_ORDER.includes(k) && k !== 'source_checksum' && k !== 'target_checksum'));
+      const chips = keys.map((k) => '<span class="mchip' + (metricBad(k, m[k], scope) ? ' bad' : '') + '">' + esc(k) + ' <b>' + esc(m[k]) + '</b></span>').join('');
+      const viol = (r.violations || []).length ? '<ul class="viol">' + r.violations.map((x) => '<li>' + esc(x.invariant) + ': observed ' + esc(x.observed) + ', expected ' + esc(x.expected) + '</li>').join('') + '</ul>' : '';
+      return '<div class="vblock"><div class="vhead"><span class="scope">' + esc(scope) + '</span><span class="pill ' + (r.passed ? 'green' : 'red') + '">' + (r.passed ? 'passed' : 'failed') + '</span>' +
+        '<span class="muted small">' + esc(SCOPE_HELP[scope] || '') + '</span><span class="proof" title="' + esc(r.proof_hash) + '">proof ' + esc(short(r.proof_hash, 12)) + '</span></div>' +
+        ck + '<div class="mchips">' + chips + '</div>' + viol + '</div>';
+    }).join('');
+  }
+  const failedAny = all.some((s) => ver[s] && !ver[s].passed);
+  const pill = !all.length ? '<span class="pill">not run</span>' : failedAny ? '<span class="pill red">proof failed</span>' : '<span class="pill green">' + all.length + ' passed</span>';
+  setHTML($('verifyCard'), '<div class="card-h"><h2>Deterministic verifier</h2>' + pill + '</div>' + body);
+}
+
+/* ------------------------------------------------------------------ rendering: contract gate */
+function stmtTag(s) {
+  const u = String(s).toUpperCase();
+  if (/DROP\s+COLUMN/.test(u)) return '<span class="t red">irreversible</span>';
+  if (/\bDROP\b/.test(u)) return '<span class="t">removes object</span>';
+  return '';
+}
+function renderGate(vm) {
+  const c = vm.contract;
+  const arts = (vm.plan && vm.plan.contract) || [];
+  const steps = vm.contractSteps || {};
+  const applied = Object.values(steps).filter((s) => s.ok).length;
+  const totalStmts = c ? (c.statements || []).length : arts.reduce((n, a) => n + (a.statements || []).length, 0);
+  const destructiveRun = Object.keys(steps).filter((k) => steps[k].ok).length;
+  const sn = S.snap || {};
+  const r = sn.result;
+  const unapproved = r && isNum(r.unapproved_destructive_steps) ? r.unapproved_destructive_steps : vm.unapprovedDestructive;
+  let pill = 'locked', tone = '', lead;
+  if (vm.phase === 'COMPLETE') {
+    pill = 'applied and verified'; tone = 'green';
+    lead = 'Owner ' + (vm.approved_by || '?') + ' approved SQL ' + short(c && c.sql_hash) + '. The agent re-checked schema and parity, applied the contract, and verified the final schema.';
+  } else if (vm.approved_by) {
+    pill = 'approved'; tone = 'green';
+    lead = 'Approved by ' + vm.approved_by + '. Before applying, the agent re-checks that the schema and the parity proof still match what was approved.';
+  } else if (c && vm.phase === 'CONTRACT_READY') {
+    pill = 'waiting for owner approval'; tone = 'yellow';
+    lead = 'Nothing destructive has run. Parity is proven and the contract below is bound to that proof by its SQL hash. It runs only after an owner approves approval id ' + (c.approval_id || '?') + '.';
+  } else if (vm.status === 'PAUSED' && vm.pause_reason === 'operator') {
+    pill = 'blocked by dependents'; tone = 'yellow';
+    lead = 'Parity holds, but other objects still read the column the contract would drop, so the contract was not prepared. ' + (vm.pause_detail || '');
+  } else if (vm.phase === 'FAILED' || vm.phase === 'ABORTED' || vm.phase === 'MANUAL_INTERVENTION') {
+    pill = c ? 'stopped' : 'never prepared'; tone = 'red';
+    lead = c ? 'The run stopped after the contract was prepared. See the error card.' : 'The run stopped before the verifier proved parity, so the contract was never prepared and nothing destructive ran.';
+  } else {
+    lead = 'Locked. The contract is prepared only after the verifier proves parity, and runs only after an owner approves it. Until then nothing destructive can run.';
+  }
+  $('gatePill').className = 'pill ' + tone;
+  $('gatePill').textContent = pill;
+  $('gateLead').textContent = lead;
+
+  const facts = [
+    ['Approval id', c ? c.approval_id : 'not issued', ''],
+    ['SQL hash', c ? short(c.sql_hash, 16) : '-', ''],
+    ['Bound to proof', c ? short(c.proof_hash, 16) : '-', ''],
+    ['Approved by', vm.approved_by || 'nobody yet', vm.approved_by ? 'green' : ''],
+    ['Contract steps run', destructiveRun + ' of ' + arts.length, ''],
+    ['Ran without approval', fmtInt(unapproved), unapproved ? 'red' : 'green'],
+  ];
+  let html = '<div class="gate-facts">' + facts.map(([k, v, t]) => '<div class="fact ' + t + '"><div class="label">' + esc(k) + '</div><div class="val">' + esc(v) + '</div></div>').join('') + '</div>';
+
+  const heading = c ? 'Contract statements (' + totalStmts + '), prepared and hashed' : 'Planned contract (' + totalStmts + ' statements), not prepared yet';
+  html += '<div class="label" style="margin-bottom:5px">' + esc(heading) + '</div>';
+  if (arts.length) {
+    html += '<div class="sql' + (c ? '' : ' dim') + '">' + arts.map((a) => {
+      const st = steps[a.name];
+      const status = st ? (st.ok ? '<span class="pill green">applied</span>' : '<span class="pill red">failed</span>') : '<span class="pill">not run</span>';
+      return '<div class="art"><div class="art-name">' + esc(a.name) + status + '</div><div class="stmts">' +
+        (a.statements || []).map((s) => '<div class="stmt">' + stmtTag(s) + '<span>' + esc(s) + '</span></div>').join('') + '</div></div>';
+    }).join('') + '</div>';
+  } else if (c && (c.statements || []).length) {
+    html += '<div class="sql"><div class="stmts">' + c.statements.map((s) => '<div class="stmt">' + stmtTag(s) + '<span>' + esc(s) + '</span></div>').join('') + '</div></div>';
+  } else {
+    html += '<p class="quiet">No plan yet.</p>';
+  }
+  const deps = (c && c.dependencies) || [];
+  html += '<div style="margin-top:10px;font-size:0.9rem"><span class="label">Dependencies found</span> ' +
+    (c ? (deps.length ? deps.map((d) => '<span class="pill mono">' + esc(d) + '</span>').join(' ') : '<span class="muted">none: no view, rule or function reads the old column</span>') :
+      (vm.status === 'PAUSED' && vm.pause_reason === 'operator' ? '<span class="mono" style="color:var(--yellow)">' + esc(vm.pause_detail || '') + '</span>' : '<span class="muted">scanned at the contract guard</span>')) + '</div>';
+  const rb = c ? (c.rollback_statements || []) : ((vm.plan && vm.plan.rollback_expand) || []).flatMap((a) => a.statements || []);
+  const open = S.rollbackOpen ? ' open' : '';
+  html += '<details class="fold" id="rbFold"' + open + '><summary>Rollback statements for the expand phase (' + rb.length + ')</summary><pre class="code">' + esc(rb.join('\n')) + '</pre></details>';
+  setHTML($('gateBody'), html);
+
+  // Approve button follows the live server state.
+  const ready = sn.phase === 'CONTRACT_READY' && sn.contract && sn.contract.approval_id && !sn.contract.approved_by;
+  $('approveBtn').disabled = !ready || !!S.job.busy;
+  const hint = $('approveHint');
+  if (!hint.classList.contains('err')) {
+    hint.textContent = ready ? (S.job.busy ? 'Waiting for the current job to finish.' : 'Approves approval id ' + sn.contract.approval_id + ' for SQL hash ' + short(sn.contract.sql_hash) + '.')
+      : 'Enabled only in CONTRACT_READY, after parity is proven.';
+  }
+}
+
+/* ------------------------------------------------------------------ rendering: decisions and events */
+function relTime(at) { return fmtRel(parseTime(at) - parseTime(S.view.started_at)); }
+
+function decisionEl(x) {
+  const d = x.d || {};
+  const el = div('dec' + (x.accepted ? '' : ' rejected'));
+  const parts = ['<span class="pill ' + (x.accepted ? 'blue' : 'red') + '">' + esc(d.kind || '?') + '</span>'];
+  if (!x.accepted) parts.push('<span class="pill red">rejected</span>');
+  if (x.forced || d.planner === 'policy') parts.push('<span class="pill">policy chose</span>');
+  if (isNum(d.batch_size)) {
+    parts.push('<span class="mono">batch ' + (x.from_batch && x.from_batch !== d.batch_size ? fmtInt(x.from_batch) + ' → ' : '') + fmtInt(d.batch_size) + '</span>');
+  }
+  if (isNum(d.backoff_ms)) parts.push('<span class="mono">wait ' + fmtMs(d.backoff_ms) + '</span>');
+  if (d.tokens_in || d.tokens_out) parts.push('<span class="mono">tokens ' + fmtInt(d.tokens_in) + '/' + fmtInt(d.tokens_out) + '</span>');
+  parts.push('<span>' + esc(d.planner || '') + '</span>');
+  parts.push('<span class="when">#' + esc(x.seq) + ' ' + esc(relTime(x.at)) + '</span>');
+  el.innerHTML = '<div class="dec-h">' + parts.join('') + '</div><p class="dec-s">' + esc(d.summary || '') + '</p>' +
+    (!x.accepted && x.rejection ? '<div class="rej">Policy rejected this answer: ' + esc(x.rejection) + '</div>' : '');
+  return el;
+}
+function renderDecisions(vm) {
+  const list = $('decisionList');
+  const ds = S.view.decisions;
+  if (!list._seqs) list._seqs = new Set();
+  if (!ds.length) {
+    if (!list._empty) {
+      list.innerHTML = '<div class="empty-note">No decisions yet. Policy lists the allowed actions; the planner is asked only when there is a real choice, such as after a lock timeout or when the batch can grow.</div>';
+      list._empty = true; list._seqs = new Set();
+    }
+  } else {
+    if (list._empty) { list.innerHTML = ''; list._empty = false; }
+    const animate = (isLive() || S.playing) && list._seqs.size > 0;
+    for (const x of ds) {
+      if (list._seqs.has(x.seq)) continue;
+      const el = decisionEl(x);
+      if (animate) el.classList.add('enter-fade');
+      list.prepend(el);
+      list._seqs.add(x.seq);
+    }
+  }
+  setHTML($('decCount'), esc(fmtInt(vm.decision_count) + ' made · ' + fmtInt(vm.rejected) + ' rejected'));
+}
+
+function evClass(e) {
+  switch (e.type) {
+    case 'chunk_failed': case 'run_failed': return 'red';
+    case 'run_aborted': return 'red';
+    case 'step_recorded': return e.ok ? (e.reconciled ? 'blue' : '') : 'red';
+    case 'chunk_committed': return e.chunk && e.chunk.reconciled ? 'blue' : 'green';
+    case 'verification_recorded': return e.report && e.report.passed ? 'green' : 'red';
+    case 'run_completed': case 'approval_granted': return 'green';
+    case 'decision_made': return e.accepted ? 'blue' : 'red';
+    case 'catch_up_planned': case 'run_resumed': return 'blue';
+    case 'lease_acquired': return e._prevOwner && e._prevOwner !== e.owner ? 'blue' : '';
+    case 'contract_prepared': case 'run_paused': return 'yellow';
+    case 'phase_changed': return e.to_phase === 'CONTRACT_READY' ? 'yellow' : e.to_phase === 'COMPLETE' ? 'green' : (e.to_phase === 'MANUAL_INTERVENTION' || e.to_phase === 'EXPAND_CLEANUP') ? 'red' : '';
+    default: return '';
+  }
+}
+const mo = (v) => '<span class="mono">' + esc(v) + '</span>';
+function evDetail(e) {
+  const err = e.error || {};
+  switch (e.type) {
+    case 'run_started': return 'mode ' + mo(e.mode) + ' · cost cap ' + mo(fmtUsd(e.spec && e.spec.cost_cap_usd)) + ' · lock timeout ' + mo(fmtMs(e.spec && e.spec.lock_budget_ms)) + ' · spec ' + mo(short(e.spec_hash, 10));
+    case 'lease_acquired': return 'owner ' + mo(e.owner) + ' · fence ' + mo(e.fence_token) + (e._prevOwner && e._prevOwner !== e.owner ? ' · lease moved from ' + mo(e._prevOwner) : '');
+    case 'schema_inspected': { const s = e.snapshot || {}; return esc(e.purpose) + ' · rows ' + mo(fmtInt(s.row_count)) + ' · max key ' + mo(fmtInt(s.max_key)) + ' · schema ' + mo(short(s.schema_hash, 10)); }
+    case 'plan_created': { const p = e.plan || {}; return 'keys ' + mo(fmtInt(p.key_lower) + '-' + fmtInt(p.key_upper)) + ' · batch ' + mo(fmtInt(p.initial_batch)) + ' · about ' + mo(fmtInt(p.estimated_chunks)) + ' chunks · plan ' + mo(short(e.plan_hash, 10)) + ' · ' + esc(e.planner); }
+    case 'phase_changed': return mo(e.from_phase + ' → ' + e.to_phase) + (e.reason ? ' · ' + esc(e.reason) : '');
+    case 'step_recorded': return mo(e.tool) + ' · ' + (e.ok ? 'ok' : 'failed') + ' · attempt ' + mo(e.attempt) + (isNum(e.rows) ? ' · ' + mo(fmtInt(e.rows)) + ' rows' : '') + ' · ' + mo(fmtMs(e.duration_ms)) +
+      (e.lock_wait_ms ? ' · lock wait ' + mo(fmtMs(e.lock_wait_ms)) : '') + (e.reconciled ? ' · reconciled' : '') + (e.error ? ' · ' + mo((err.sqlstate || '') + ' ' + (err.error_class || '')) : '');
+    case 'backfill_planned': return 'keys ' + mo(fmtInt(e.lower) + '-' + fmtInt(e.upper)) + ' · first batch ' + mo(fmtInt(e.batch_size));
+    case 'chunk_committed': { const c = e.chunk || {}; return 'keys ' + mo(fmtInt(c.lower) + '-' + fmtInt(c.upper)) + ' · ' + mo(fmtInt(c.rows)) + ' rows · attempt ' + mo(c.attempts) + (c.reconciled ? ' · adopted from the ledger after a crash' : ' · ' + mo(fmtMs(c.duration_ms))); }
+    case 'chunk_failed': return 'keys ' + mo(fmtInt(e.lower) + '-' + fmtInt(e.upper)) + ' · batch ' + mo(fmtInt(e.batch_size)) + ' · attempt ' + mo(e.attempt) + ' · ' + mo((err.sqlstate || '') + ' ' + (err.error_class || '')) + ' · waited ' + mo(fmtMs(e.lock_wait_ms)) + ' · rolled back';
+    case 'decision_made': { const d = e.decision || {}; return mo(d.kind) + (isNum(d.batch_size) ? ' · batch ' + mo(fmtInt(d.batch_size)) : '') + (isNum(d.backoff_ms) ? ' · wait ' + mo(fmtMs(d.backoff_ms)) : '') + ' · ' + esc(d.planner) + (e.accepted ? '' : ' · rejected: ' + esc(e.rejection)); }
+    case 'catch_up_planned': return 'upper ' + mo(fmtInt(e.previous_upper) + ' → ' + fmtInt(e.new_upper)) + ' · ' + mo(fmtInt(e.new_rows)) + ' new keys';
+    case 'verification_recorded': { const r = e.report || {}; return mo(r.scope) + ' · ' + (r.passed ? 'passed' : 'failed, ' + (r.violations || []).length + ' violation(s)') + ' · proof ' + mo(short(r.proof_hash, 10)); }
+    case 'contract_prepared': return 'approval ' + mo(e.approval_id) + ' · SQL ' + mo(short(e.sql_hash, 10)) + ' · ' + mo((e.statements || []).length) + ' statements · ' + mo((e.dependencies || []).length) + ' dependencies';
+    case 'approval_granted': return 'approval ' + mo(e.approval_id) + ' by ' + mo(e.approver) + ' · SQL ' + mo(short(e.sql_hash, 10));
+    case 'cost_recorded': return mo(fmtUsd(e.cost_usd)) + ' · DB ' + mo(fmtMs(e.db_ms)) + ' · lock ' + mo(fmtMs(e.lock_wait_ms)) + ' · rows ' + mo(fmtInt(e.rows)) + ' · ' + esc(e.phase);
+    case 'run_paused': return 'reason ' + mo(e.reason) + (e.detail ? ' · ' + esc(e.detail) : '');
+    case 'run_resumed': return esc(e.reason || '') + (e.new_cost_cap_usd !== null && e.new_cost_cap_usd !== undefined ? ' · new cap ' + mo(fmtUsd(e.new_cost_cap_usd)) : '');
+    case 'run_failed': return mo((err.error_class || '') + (err.sqlstate ? ' ' + err.sqlstate : '')) + ' · ' + esc(err.message || '');
+    case 'run_completed': return 'final proof ' + mo(short(e.proof_hash, 16));
+    case 'run_aborted': return esc(e.reason || '');
+    default: return '';
+  }
+}
+function isNoise(e) {
+  return e.type === 'cost_recorded' || (e.type === 'step_recorded' && e.tool === 'run_backfill_chunk');
+}
+function renderTimeline() {
+  const list = $('eventList');
+  if (!list._seqs) list._seqs = new Set();
+  const shown = S.events.slice(0, S.ptr).filter((e) => S.showNoise || !isNoise(e));
+  if (!shown.length) {
+    if (!list._empty) { list.innerHTML = '<div class="empty-note">No events yet.</div>'; list._empty = true; list._seqs = new Set(); }
+    return;
+  }
+  if (list._empty) { list.innerHTML = ''; list._empty = false; }
+  const animate = (isLive() || S.playing) && list._seqs.size > 0;
+  for (const e of shown) {
+    if (list._seqs.has(e.seq)) continue;
+    const row = div('ev ' + evClass(e) + (animate ? ' enter-fade' : ''));
+    row.innerHTML = '<span class="ev-seq">' + esc(e.seq) + '</span><span class="ev-type">' + esc(e.type) + '</span><span class="ev-time" title="' + esc(e.at) + '">' + esc(relTime(e.at)) + '</span><div class="ev-det">' + evDetail(e) + '</div>';
+    row.title = 'hash ' + short(e.hash, 16);
+    list.prepend(row);
+    list._seqs.add(e.seq);
+  }
+}
+
+/* ------------------------------------------------------------------ rendering: evidence */
+function renderEvidence() {
+  const ev = S.evidence;
+  if (!ev || typeof ev !== 'object' || (!ev['replay-naive-v0'] && !ev['replay-adaptive-v1'])) {
+    setHTML($('evidenceBody'), 'No committed evidence found on the server.');
+    return;
+  }
+  const v0 = Array.isArray(ev['replay-naive-v0']) ? ev['replay-naive-v0'] : [];
+  const v1 = Array.isArray(ev['replay-adaptive-v1']) ? ev['replay-adaptive-v1'] : [];
+  const find = (arr, id) => arr.find((r) => r && r.scenario_id === id) || null;
+  const cols = [
+    { t: 'Baseline', sub: 'one UPDATE in one transaction, no recovery', r: find(v1, 'baseline_lock_timeout') || find(v0, 'baseline_lock_timeout') },
+    { t: 'naive-retry/v0', sub: 'retries the same batch after 50 ms', r: find(v0, 'lock_timeout') },
+    { t: 'adaptive/v1', sub: 'shrinks the batch, backs off, resumes from the cursor', r: find(v1, 'lock_timeout') },
+  ];
+  const maxLock = Math.max(1, ...cols.map((c) => (c.r && c.r.lock_wait_ms) || 0));
+  const maxRetry = Math.max(1, ...cols.map((c) => (c.r && c.r.retries) || 0));
+  const tone = (r) => (!r ? '' : r.terminal_state === 'CONTRACT_READY' || r.terminal_state === 'COMPLETE' ? 'green' : String(r.terminal_state).startsWith('PAUSED') ? 'yellow' : 'red');
+  const bar = (val, max, t, unit) => '<div class="hbar"><div class="b ' + t + '" style="width:' + Math.max(2, (val / max) * 96).toFixed(1) + 'px"></div><span class="mono">' + fmtInt(val) + (unit || '') + '</span></div>';
+  const row = (label, fn) => '<tr><th>' + esc(label) + '</th>' + cols.map((c) => '<td class="num">' + (c.r ? fn(c.r, c) : '-') + '</td>').join('') + '</tr>';
+  let table = '<table class="cmp"><thead><tr><th></th>' + cols.map((c) => '<th>' + esc(c.t) + '<span class="sub">' + esc(c.sub) + '</span></th>').join('') + '</tr></thead><tbody>' +
+    row('Scenario', (r) => '<span class="mono">' + esc(r.scenario_id) + '</span>') +
+    row('End state', (r) => '<span class="pill ' + tone(r) + '">' + esc(r.terminal_state) + '</span>') +
+    row('Rows kept', (r) => fmtInt(r.rows_written) + ' <span class="muted">of ' + fmtInt(r.rows_seen) + '</span>') +
+    row('Failed attempts (retries)', (r) => bar(r.retries || 0, maxRetry, tone(r))) +
+    row('Lock wait', (r) => bar(r.lock_wait_ms || 0, maxLock, tone(r), ' ms')) +
+    row('Chunks committed', (r) => fmtInt(r.batches)) +
+    row('Wall time', (r) => fmtMs(r.wall_ms)) +
+    '</tbody></table>';
+  const [cb, cn, ca] = cols.map((c) => c.r);
+  const says = [];
+  if (cb) says.push('The baseline ended ' + cb.terminal_state + ' and kept ' + fmtInt(cb.rows_written) + ' of ' + fmtInt(cb.rows_seen) + ' rows.');
+  if (cn) says.push('The naive retry failed ' + fmtInt(cn.retries) + ' times and ended ' + cn.terminal_state + ' with ' + fmtInt(cn.rows_written) + ' rows.');
+  if (ca) says.push('The adaptive planner failed ' + fmtInt(ca.retries) + ' times, shrank the batch, and ended ' + ca.terminal_state + ' with ' + fmtInt(ca.rows_written) + ' rows.');
+  table += '<p class="quiet" style="margin:8px 0 0">Same seeded row lock in all three. ' + esc(says.join(' ')) + '</p>';
+
+  const total = (arr, label) => {
+    const passed = arr.filter((r) => r && r.passed).length;
+    const fs = arr.filter((r) => r && r.false_success).length;
+    const ud = arr.reduce((s, r) => s + ((r && r.unapproved_destructive_steps) || 0), 0);
+    return '<div class="total"><div class="label">' + esc(label) + ' suite</div><div class="v">' + passed + ' / ' + arr.length + '</div><div class="s">scenarios behaved as expected · false success ' + fs + ' · unapproved destructive steps ' + ud + '</div></div>';
+  };
+  const ids = [];
+  v1.concat(v0).forEach((r) => { if (r && r.scenario_id && !ids.includes(r.scenario_id)) ids.push(r.scenario_id); });
+  const cell = (r) => (r ? '<span class="cell ' + (r.passed ? 'pass' : 'fail') + '" title="' + esc('retries ' + r.retries + ' · lock wait ' + r.lock_wait_ms + ' ms') + '">' + esc(r.terminal_state) + '</span>' : '-');
+  const matrix = '<table class="matrix"><thead><tr><th>Scenario</th><th>Expected</th><th>naive-retry/v0</th><th>adaptive/v1</th></tr></thead><tbody>' +
+    ids.map((id) => { const a = find(v0, id), b = find(v1, id); const exp = (b || a || {}).expected || []; return '<tr><td class="mono">' + esc(id) + '</td><td class="mono">' + esc(exp.join('|')) + '</td><td>' + cell(a) + '</td><td>' + cell(b) + '</td></tr>'; }).join('') +
+    '</tbody></table><p class="quiet small" style="margin:6px 0 0">Green: ended in the expected state, with the independent database check agreeing.</p>';
+  setHTML($('evidenceBody'), '<div class="ev-grid"><div>' + table + '</div><div><div class="totals">' + total(v0, 'naive-retry/v0') + total(v1, 'adaptive/v1') + '</div>' + matrix + '</div></div>');
+}
+
+/* ------------------------------------------------------------------ rendering: trace */
+const TRACE_KEYS = ['action', 'batch_size', 'backoff_ms', 'step', 'purpose', 'lower', 'upper', 'rows', 'ok', 'passed', 'reconciled', 'error_class', 'sqlstate',
+  'lock_wait_ms', 'adopted_chunks', 'cursor_after', 'blockers', 'pids', 'oldest_xact_ms', 'proof_hash', 'violations', 'mismatches', 'null_targets', 'parity',
+  'dependencies', 'entry_phase', 'final_state', 'retries', 'exception'];
+function spanAttrs(s) {
+  const a = s.attrs || {};
+  const parts = [];
+  for (const k of TRACE_KEYS) {
+    const v = a[k];
+    if (v === undefined || v === null || v === '') continue;
+    parts.push(k + '=' + String(v).slice(0, 40));
+    if (parts.length >= 6) break;
+  }
+  const text = a.summary || a.reason;
+  if (text) parts.push('"' + String(text).slice(0, 140) + '"');
+  return parts.join(' ');
+}
+function renderTrace() {
+  const spans = Array.isArray(S.trace) ? S.trace.filter((s) => s && s.span_id) : [];
+  if (!spans.length) {
+    setHTML($('traceBody'), '<div class="empty-note">No spans recorded for this run yet.</div>');
+    $('traceSummary').textContent = 'Local span tree for the selected run; the same tree goes to neatlogs when NEATLOGS_API_KEY is set.';
+    return;
+  }
+  const byId = new Map(spans.map((s) => [s.span_id, s]));
+  const kids = new Map();
+  const roots = [];
+  spans.forEach((s) => {
+    if (s.parent_id && byId.has(s.parent_id)) { if (!kids.has(s.parent_id)) kids.set(s.parent_id, []); kids.get(s.parent_id).push(s); }
+    else roots.push(s);
+  });
+  const byStart = (a, b) => (a.start || 0) - (b.start || 0);
+  roots.sort(byStart);
+  kids.forEach((l) => l.sort(byStart));
+  const maxDur = Math.max(1, ...spans.map((s) => s.duration_ms || 0));
+  const rows = [];
+  const walk = (s, depth) => {
+    if (rows.length > 600) return;
+    const a = s.attrs || {};
+    const bad = s.status === 'error' || a.ok === false || a.passed === false;
+    rows.push('<div class="span' + (s.status === 'error' ? ' err' : '') + '"><div class="nm" style="padding-left:' + (depth * 18) + 'px" title="' + esc(JSON.stringify(a)) + '">' +
+      '<span class="kind ' + esc(s.kind) + (bad && s.kind !== 'WORKFLOW' ? ' bad' : '') + '">' + esc(s.kind) + '</span><span class="n">' + esc(s.name) + '</span><span class="a">' + esc(spanAttrs(s)) + '</span></div>' +
+      '<div class="dbar" style="width:' + Math.max(2, ((s.duration_ms || 0) / maxDur) * 90).toFixed(1) + 'px"></div><div class="dur">' + fmtMs(s.duration_ms) + '</div></div>');
+    (kids.get(s.span_id) || []).forEach((c) => walk(c, depth + 1));
+  };
+  roots.forEach((r) => walk(r, 0));
+  setHTML($('traceBody'), rows.join(''));
+  const errs = spans.filter((s) => s.status === 'error').length;
+  $('traceSummary').textContent = spans.length + ' spans in ' + roots.length + ' tree' + (roots.length > 1 ? 's' : '') + (errs ? ' · ' + errs + ' ended with an exception' : '') +
+    ' · the same tree goes to neatlogs when NEATLOGS_API_KEY is set';
+}
+
+/* ------------------------------------------------------------------ render all */
+function render() {
+  renderJob();
+  renderRecent();
+  const has = !!S.runId;
+  $('noRun').hidden = has;
+  $('runArea').hidden = !has;
+  if (!has) return;
+  const vm = viewModel();
+  renderRunHead(vm);
+  renderPhases(vm);
+  renderRange(vm);
+  renderMetrics(vm);
+  renderError(vm);
+  renderVerify(vm);
+  renderGate(vm);
+  renderDecisions(vm);
+  renderTimeline();
+}
+
+/* ------------------------------------------------------------------ run selection and replay */
+function resetRunViews() {
+  ['segs', 'marks', 'lane', 'bcols', 'bdots', 'decisionList', 'eventList'].forEach((id) => { const el = $(id); clearKeyed(el); el._empty = false; });
+}
+function selectRun(id, opts = {}) {
+  if (!id) return;
+  if (pacerTimer) { clearTimeout(pacerTimer); pacerTimer = null; }
+  S.gen += 1;
+  S.runId = id; S.snap = null; S.snapStatus = 0; S.events = []; S.lastSeq = 0; S.ptr = 0; S.view = newView();
+  S.playing = false; S.jumpNext = !opts.live; S.liveRun = opts.live ? id : null;
+  S.trace = null; S.traceDirty = true; S.tracePlanner = null; S.abortArmUntil = 0; S.rollbackOpen = false;
+  setHTML($('actionMsg'), ''); $('actionMsg').className = 'action-msg';
+  $('approveHint').classList.remove('err');
+  resetRunViews();
+  if ($('traceCard').open) renderTrace();
+  try { history.replaceState(null, '', '#run=' + encodeURIComponent(id)); } catch (e) { /* file or sandboxed context */ }
+  render();
+  kick();
+}
+function startReplay() {
+  if (!S.events.length) return;
+  if (pacerTimer) { clearTimeout(pacerTimer); pacerTimer = null; }
+  S.view = newView(); S.ptr = 0; S.playing = true; S.playSpeed = $('replaySpeed').value === 'slow' ? 'slow' : 'normal';
+  resetRunViews();
+  render();
+  schedulePacer();
+}
+function skipReplay() {
+  if (pacerTimer) { clearTimeout(pacerTimer); pacerTimer = null; }
+  S.playing = false;
+  advance(true);
+  render();
+}
+
+/* ------------------------------------------------------------------ polling */
+let tickTimer = null, ticking = false, kickAgain = false;
+function scheduleTick(ms) { if (tickTimer) clearTimeout(tickTimer); tickTimer = setTimeout(tick, ms); }
+function kick() { if (ticking) kickAgain = true; else scheduleTick(0); }
+
+async function refreshRuns() {
+  const r = await api('/api/runs');
+  if (r.ok && Array.isArray(r.data)) { S.runs = r.data; S.lastRunsAt = Date.now(); S.runsDirty = false; }
+}
+async function refreshTrace() {
+  const id = S.runId, gen = S.gen;
+  const r = await api('/api/runs/' + encodeURIComponent(id) + '/trace');
+  if (gen !== S.gen) return;
+  S.traceAt = Date.now(); S.traceDirty = false;
+  if (r.ok && Array.isArray(r.data)) {
+    S.trace = r.data;
+    const root = r.data.find((s) => s && s.kind === 'WORKFLOW' && s.attrs && s.attrs.planner);
+    if (root) S.tracePlanner = root.attrs.planner;
+    if ($('traceCard').open) renderTrace();
+  }
+}
+
+async function tick() {
+  tickTimer = null;
+  if (ticking) { kickAgain = true; return; }
+  ticking = true;
+  try {
+    const j = await api('/api/job');
+    if (j.ok && j.data && typeof j.data === 'object') {
+      const was = !!S.job.busy;
+      S.job = j.data;
+      if (was !== !!S.job.busy) { S.runsDirty = true; S.traceDirty = true; }
+      if (S.job.error && S.job.run_id === S.runId && S.shownJobError !== S.job.run_id + S.job.error && !S.job.busy) {
+        S.shownJobError = S.job.run_id + S.job.error;
+        showActionMsg('Job failed on the server: ' + S.job.error, true);
+      }
+      // Follow a run started elsewhere (for example from the CLI or curl).
+      if (S.job.busy && S.job.kind === 'start' && S.job.run_id && S.job.run_id !== S.runId && !S.runs.some((r) => r.run_id === S.job.run_id)) {
+        selectRun(S.job.run_id, { live: true });
+      }
+    } else if (!j.ok && j.status === 0) {
+      setHTML($('jobState'), '<span class="dot err"></span>API unreachable: ' + esc(j.error || ''));
+    }
+
+    if (S.runId) {
+      const id = S.runId, gen = S.gen;
+      const enc = encodeURIComponent(id);
+      const [s, ev] = await Promise.all([api('/api/runs/' + enc), api('/api/runs/' + enc + '/events?after=' + S.lastSeq)]);
+      if (gen === S.gen) {
+        if (s.status === 404) { S.snapStatus = 404; S.snap = null; }
+        else if (s.ok && s.data && typeof s.data === 'object') { S.snapStatus = 200; S.snap = s.data; }
+        if (ev.ok && Array.isArray(ev.data) && ev.data.length) {
+          let added = 0;
+          for (const e of ev.data) {
+            if (e && e.seq === S.lastSeq + 1) { S.events.push(e); S.lastSeq = e.seq; added += 1; }
+          }
+          if (added) {
+            if (S.jumpNext && !S.playing) { advance(true); }
+            else if (S.playing || isLive()) { schedulePacer(); }
+            else { advance(true); }
+          }
+        }
+        if (S.snapStatus === 200) S.jumpNext = false;
+      }
+    }
+
+    if (S.runsDirty || Date.now() - S.lastRunsAt > 4000) await refreshRuns();
+    const live = jobOnRun();
+    if (S.runId && (S.traceDirty || (live && $('traceCard').open && Date.now() - S.traceAt > 2000) || (!S.trace && Date.now() - S.traceAt > 5000))) await refreshTrace();
+    render();
+  } catch (err) {
+    console.error('[parachute] poll failed', err);
+  } finally {
+    ticking = false;
+    const sn = S.snap;
+    const recent = sn && !TERMINAL.has(sn.phase) && Date.now() - parseTime(sn.updated_at) < 8000;
+    const fast = !!S.job.busy || !!recent || S.startPending;
+    if (kickAgain) { kickAgain = false; scheduleTick(0); } else scheduleTick(fast ? 400 : 2000);
+  }
+}
+
+/* ------------------------------------------------------------------ actions */
+function showBanner(text) { $('bannerText').textContent = text; $('banner').hidden = false; }
+function showActionMsg(text, isErr) { const el = $('actionMsg'); el.textContent = text; el.className = 'action-msg' + (isErr ? ' err' : ''); el._html = undefined; }
+
+async function startRun() {
+  const scenario = $('scenario').value;
+  const planner = $('planner').value;
+  if (!scenarioById(scenario) || !((S.meta && S.meta.planners) || []).includes(planner)) { showBanner('Pick a known scenario and planner.'); return; }
+  S.startPending = true; renderJob();
+  const r = await api('/api/runs', { method: 'POST', body: { scenario, planner }, timeout: 10000 });
+  S.startPending = false;
+  if (r.ok && r.data && r.data.run_id) {
+    S.plannerByRun[r.data.run_id] = planner;
+    try { sessionStorage.setItem('mp.planners', JSON.stringify(S.plannerByRun)); } catch (e) { /* storage disabled */ }
+    S.job = { busy: true, kind: 'start', run_id: r.data.run_id, error: null };
+    $('banner').hidden = true;
+    S.runsDirty = true;
+    selectRun(r.data.run_id, { live: true });
+  } else if (r.status === 409) {
+    showBanner('A job is already running: ' + errText(r) + '. Each run resets the shared fixture, so only one runs at a time.');
+    kick();
+  } else {
+    showBanner('Could not start the run: ' + errText(r));
+    renderJob();
+  }
+}
+
+async function approve() {
+  const sn = S.snap;
+  if (!sn || sn.phase !== 'CONTRACT_READY' || !sn.contract || !sn.contract.approval_id) return;
+  const approver = $('approver').value.trim();
+  const hint = $('approveHint');
+  if (!/^[A-Za-z0-9._@-]{1,64}$/.test(approver)) {
+    $('approver').classList.add('bad');
+    hint.textContent = 'Approver must be 1-64 letters, digits, dot, dash, underscore or @.';
+    hint.classList.add('err');
+    return;
+  }
+  $('approver').classList.remove('bad'); hint.classList.remove('err');
+  $('approveBtn').disabled = true;
+  const r = await api('/api/runs/' + encodeURIComponent(S.runId) + '/approve', { method: 'POST', body: { approval_id: sn.contract.approval_id, approver } });
+  if (r.ok) {
+    S.liveRun = S.runId;
+    S.job = { busy: true, kind: 'approve', run_id: S.runId, error: null };
+    showActionMsg('Approval sent. The agent re-checks schema and parity, then applies the contract.', false);
+  } else {
+    hint.textContent = 'Approve failed: ' + errText(r);
+    hint.classList.add('err');
+  }
+  kick();
+}
+
+async function resume() {
+  const raw = $('costCap').value.trim();
+  const body = {};
+  if (raw) {
+    if (!/^\d{1,6}(\.\d{1,10})?$/.test(raw) || Number(raw) <= 0) {
+      $('costCap').classList.add('bad');
+      showActionMsg('Cost cap must be a positive number of dollars, for example 0.50.', true);
+      return;
+    }
+    body.cost_cap_usd = raw;
+  }
+  $('costCap').classList.remove('bad');
+  $('resumeBtn').disabled = true;
+  const r = await api('/api/runs/' + encodeURIComponent(S.runId) + '/resume', { method: 'POST', body });
+  if (r.ok) {
+    S.liveRun = S.runId;
+    S.job = { busy: true, kind: 'resume', run_id: S.runId, error: null };
+    showActionMsg('Resume sent' + (raw ? ' with a cost cap of $' + raw : '') + '. The run continues from the persisted cursor.', false);
+  } else {
+    showActionMsg('Resume failed: ' + errText(r), true);
+  }
+  kick();
+}
+
+async function abortRun() {
+  if (Date.now() >= S.abortArmUntil) {
+    S.abortArmUntil = Date.now() + 4000;
+    render();
+    setTimeout(render, 4100);
+    return;
+  }
+  S.abortArmUntil = 0;
+  $('abortBtn').disabled = true;
+  const r = await api('/api/runs/' + encodeURIComponent(S.runId) + '/abort', { method: 'POST', body: {} });
+  if (r.ok) {
+    S.liveRun = S.runId;
+    S.job = { busy: true, kind: 'abort', run_id: S.runId, error: null };
+    showActionMsg('Abort sent. The agent rolls back the additive objects and stops.', false);
+  } else {
+    showActionMsg('Abort failed: ' + errText(r), true);
+  }
+  kick();
+}
+
+/* ------------------------------------------------------------------ boot */
+function wire() {
+  $('startBtn').addEventListener('click', startRun);
+  $('scenario').addEventListener('change', renderScenarioInfo);
+  $('bannerClose').addEventListener('click', () => { $('banner').hidden = true; });
+  $('recentRuns').addEventListener('click', (ev) => {
+    const b = ev.target.closest('[data-run]');
+    if (b && b.dataset.run && b.dataset.run !== S.runId) selectRun(b.dataset.run, { live: !!S.job.busy && S.job.run_id === b.dataset.run });
+  });
+  $('approveBtn').addEventListener('click', approve);
+  $('approver').addEventListener('input', () => { $('approver').classList.remove('bad'); $('approveHint').classList.remove('err'); });
+  $('resumeBtn').addEventListener('click', resume);
+  $('costCap').addEventListener('keydown', (e) => { if (e.key === 'Enter') resume(); });
+  $('abortBtn').addEventListener('click', abortRun);
+  $('reviewBtn').addEventListener('click', () => $('gateCard').scrollIntoView({ behavior: 'smooth', block: 'start' }));
+  $('replayBtn').addEventListener('click', startReplay);
+  $('skipBtn').addEventListener('click', skipReplay);
+  $('showNoise').addEventListener('change', (e) => { S.showNoise = e.target.checked; const l = $('eventList'); clearKeyed(l); l._empty = false; renderTimeline(); });
+  $('traceCard').addEventListener('toggle', () => { if ($('traceCard').open) { renderTrace(); S.traceDirty = true; kick(); } });
+  document.addEventListener('toggle', (e) => { if (e.target && e.target.id === 'rbFold') S.rollbackOpen = e.target.open; }, true);
+  window.addEventListener('hashchange', () => {
+    const id = hashRun();
+    if (id && id !== S.runId) selectRun(id, { live: !!S.job.busy && S.job.run_id === id });
+  });
+}
+function hashRun() {
+  try { return decodeURIComponent((location.hash.match(/run=([^&]+)/) || [])[1] || ''); } catch (e) { return ''; }
+}
+
+async function boot() {
+  wire();
+  const [meta, evidence, job] = await Promise.all([api('/api/meta'), api('/api/evidence'), api('/api/job')]);
+  if (meta.ok && meta.data) {
+    S.meta = meta.data;
+    const scs = Array.isArray(S.meta.scenarios) ? S.meta.scenarios : [];
+    $('scenario').innerHTML = scs.map((s) => '<option value="' + esc(s.id) + '">' + esc(s.id + ' - ' + (s.description || '')) + '</option>').join('');
+    if (scs.some((s) => s.id === 'lock_timeout')) $('scenario').value = 'lock_timeout';
+    const pls = Array.isArray(S.meta.planners) ? S.meta.planners : [];
+    $('planner').innerHTML = pls.map((p) => '<option value="' + esc(p) + '">' + esc(PLANNER_LABEL[p] ? p + ' (' + PLANNER_LABEL[p] + ')' : p) + '</option>').join('');
+    if (pls.includes('adaptive')) $('planner').value = 'adaptive';
+    renderScenarioInfo();
+    if (S.meta.fixture) $('footer').textContent = S.meta.fixture + ' All data on this page is fictional; no real customer data.';
+  } else {
+    showBanner('Could not load /api/meta: ' + errText(meta));
+  }
+  if (evidence.ok) S.evidence = evidence.data;
+  renderEvidence();
+  if (job.ok && job.data) S.job = job.data;
+  await refreshRuns();
+  const fromHash = hashRun();
+  if (fromHash) selectRun(fromHash, { live: S.job.busy && S.job.run_id === fromHash });
+  else if (S.job.busy && S.job.run_id) selectRun(S.job.run_id, { live: true });
+  else if (S.runs.length) selectRun(S.runs[0].run_id);
+  else { render(); kick(); }
+}
+boot();
+</script>
+</body>
+</html>
