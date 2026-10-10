@@ -22,4 +22,6 @@ Drafts only. Nothing here has been posted. The author reviews and posts each one
 
 > Migration Parachute, built in 48 hours for #neatHack. Expand, chunked backfill, deterministic proof, owner-gated contract. Twelve adversarial replays, zero false successes, zero destructive statements without approval. Traces: @neatlogs. Build history: Entire checkpoints. Business model: cfo.ai. Demo: https://github.com/Sher110106/migration-parachute/releases/download/v0.1.0/execution-ui-replay.mp4 Repo: https://github.com/Sher110106/migration-parachute
 
+The final quote post must add the registered team name and project name, retain the official neatlogs submission post, and be published during the official submission window.
+
 Before posting, check each tagged handle against the official accounts.
