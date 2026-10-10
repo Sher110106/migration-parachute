@@ -2,7 +2,7 @@
 
 Paste the block below into Ari in cfo.ai. It builds the model from stated numbers only. Measured values come from this repository's cost ledger (see [`cfo-model-inputs.md`](cfo-model-inputs.md)). Everything else is an assumption, labelled as such; change any of them in cfo.ai afterwards.
 
-Replace the two `[set]` values (starting cash, fixed monthly cost) with your own figures before pasting, or leave the placeholders and edit them in the model.
+Starting cash ($50,000) and fixed monthly cost ($4,000) are placeholder assumptions; change them in cfo.ai if you have real figures. [`business-plan-check.md`](business-plan-check.md) recomputes the same plan with `scripts/plan_check.py`, so Ari's numbers can be checked.
 
 ---
 
@@ -26,8 +26,8 @@ Other costs (Assumptions)
 - Hosting and storage: $15 per paying team per month.
 - Support: 1 hour per paying team per month at $60 per hour.
 - Share of migrations that need human help: 5%, at 0.5 support hours each, on top of the above.
-- Fixed monthly cost (tools, infrastructure baseline, founder time): [set] per month.
-- Starting cash: [set].
+- Fixed monthly cost: $4,000 per month ($3,000 founder stipend, $500 tools, $500 infrastructure baseline). Placeholder assumption.
+- Starting cash: $50,000. Placeholder assumption.
 
 Outputs I need
 1. Monthly revenue, cost of revenue (tokens + database time + hosting + support), gross profit and gross margin %.

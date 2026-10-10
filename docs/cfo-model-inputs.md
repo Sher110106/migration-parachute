@@ -43,8 +43,8 @@ Ten times the rows cost about eleven times the database time on a clean run (56 
 | Failure rate needing human help | 5% | 2% | 10% | Replay suite: 0 false successes in 12 scenarios; real-world rate unknown |
 | New paying teams per month | 10 | 25 | 3 | Assumption |
 | Monthly churn | 3% | 2% | 6% | Assumption |
-| Starting cash | set | set | set | Owner's figure |
-| Fixed monthly cost (people, tools) | set | set | set | Owner's figure |
+| Starting cash | $50,000 | $50,000 | $50,000 | Placeholder assumption |
+| Fixed monthly cost (people, tools) | $4,000 | $4,000 | $4,000 | Placeholder assumption: $3,000 stipend, $500 tools, $500 infrastructure |
 
 ## Outputs the model should show
 
