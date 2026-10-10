@@ -3,6 +3,18 @@
     "checkpoint_id": "01M4JC2FEJ5SYGPHTRAR4VAG5A",
     "session_id": "d7294366-0b5a-45c4-b3a3-fd7eae3d2d90",
     "agent": "Claude Code",
+    "date": "2026-10-10T15:40:44+05:30",
+    "message": "Add Entire evidence: entire-graph analysis of the fix; stop pushing transcripts",
+    "is_logs_only": true,
+    "session_count": 1,
+    "session_ids": [
+      "d7294366-0b5a-45c4-b3a3-fd7eae3d2d90"
+    ]
+  },
+  {
+    "checkpoint_id": "01M4JC2FEJ5SYGPHTRAR4VAG5A",
+    "session_id": "d7294366-0b5a-45c4-b3a3-fd7eae3d2d90",
+    "agent": "Claude Code",
     "date": "2026-10-10T15:30:05+05:30",
     "message": "Initialise neatlogs once per process; record before/after traces",
     "is_logs_only": true,

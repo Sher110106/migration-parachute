@@ -4,7 +4,7 @@ The rules ask for "Checkpoints or entire-graph output from your repository". Thi
 
 ## What the recovery fix changed, from entire-graph
 
-`entire graph commit 809753d --json` gives an entity-level change list for the fix commit against its parent, the naive-retry v0 commit `2eca418`. The Python changes:
+`entire graph commit 5e05e92 --json` gives an entity-level change list for the fix commit against its parent, the naive-retry v0 commit `ed9edbe`. The Python changes:
 
 | File | Entity | Change |
 |---|---|---|
@@ -16,15 +16,15 @@ Nothing else in the agent changed. Measured on the same fixture and the same 6 s
 
 Files:
 
-- [`graph-commit-809753d-fix.json`](graph-commit-809753d-fix.json): the fix commit
-- [`graph-commit-2eca418-v0.json`](graph-commit-2eca418-v0.json): the v0 commit, which added the orchestrator, policy, verifier and replay suite
+- [`graph-commit-5e05e92-fix.json`](graph-commit-5e05e92-fix.json): the fix commit
+- [`graph-commit-ed9edbe-v0.json`](graph-commit-ed9edbe-v0.json): the v0 commit, which added the orchestrator, policy, verifier and replay suite
 - [`checkpoints-metadata.json`](checkpoints-metadata.json): `entire checkpoint explain --json`, which lists each commit's linked checkpoint, session id, agent and date and holds no transcript bytes
 
 To reproduce, with the Entire CLI and the `graph` plugin installed (`entire plugin install graph`):
 
 ```sh
-entire graph commit 809753d --json
-entire graph commit 2eca418 --json
+entire graph commit 5e05e92 --json
+entire graph commit ed9edbe --json
 entire graph doctor          # reports no_egress=true
 git log --format='%h %s%n%(trailers:key=Entire-Checkpoint)'
 ```

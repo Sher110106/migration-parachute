@@ -18,7 +18,7 @@ Same fixture, same seeded fault: a separate session holds row locks on keys 4,00
 
 Neither failing run claims success. Full replay suite, 12 scenarios: v0 passes 11, v1 passes 12. Both have zero false successes and zero destructive statements run without approval. Raw records: [`evidence/replay-naive-v0.json`](evidence/replay-naive-v0.json) and [`evidence/replay-adaptive-v1.json`](evidence/replay-adaptive-v1.json). Lock-wait figures vary by tens of milliseconds between runs; three repeats of each policy gave the same outcome every time.
 
-The v0 policy was committed and measured before the fix. The git history shows the order: `2eca418` (v0, 11/12) then `809753d` (fix, 12/12). The records each commit produced at the time are kept in [`evidence/history/`](evidence/history/); they used a 3.0 s lock. The lock is now held for 6 s, because v1's blocker inspection made each failed attempt slower, and at 3.5 s the naive policy sometimes outlasted the lock.
+The v0 policy was committed and measured before the fix. The git history shows the order: `ed9edbe` (v0, 11/12) then `5e05e92` (fix, 12/12). The records each commit produced at the time are kept in [`evidence/history/`](evidence/history/); they used a 3.0 s lock. The lock is now held for 6 s, because v1's blocker inspection made each failed attempt slower, and at 3.5 s the naive policy sometimes outlasted the lock.
 
 ## What the agent does
 
