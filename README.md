@@ -2,6 +2,8 @@
 
 A schema migration can be correct and still take down a service. Migration Parachute is an agent that runs an expand / backfill / contract migration on a live Postgres table. When another session holds the rows it needs, it rolls back the chunk, records who holds the lock, shrinks its batch, waits, and resumes from a saved cursor. It will not prepare the destructive step until a deterministic verifier proves parity, and it will not run that step until an owner approves the exact SQL.
 
+**Demo:** [179-second execution UI recording](https://github.com/Sher110106/migration-parachute/releases/download/v0.1.0/execution-ui-replay.mp4) · [release notes](https://github.com/Sher110106/migration-parachute/releases/tag/v0.1.0)
+
 Built for neatHack 2026 (10–12 October 2026). All code in this repository was written during the event.
 
 > The demo runs on a **fictional local fixture**: 2,000 customers and 10,000 orders on local Postgres 15, emails on the reserved `.test` domain. It never touches a real database.
